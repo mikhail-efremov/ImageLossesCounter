@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace MeshCollision
 {
@@ -9,7 +9,7 @@ namespace MeshCollision
     {
         private Bitmap bitmap;
         private int linesCount = 1;
-        private byte _sens = 1;
+        private byte trackBarSecivity = 1;
 
         public Form1()
         {
@@ -84,41 +84,39 @@ namespace MeshCollision
           
             Color customColor = pictureColorBox.BackColor;
             int hits = 0;
-            try
+
+            foreach (Line line in lines)
             {
-                foreach (Line line in lines)
+                foreach (Point point in line.Points)
                 {
-                    foreach (Point point in line.Points)
+                    if (StaticMethods.ColorSimilar(customColor, bitmap.GetPixel(point.X, point.Y), trackBarSecivity))
                     {
-                        if (StaticMethods.ColorSimilar(customColor, bitmap.GetPixel(point.X, point.Y), _sens))
-                        {
-                            hits++;
-                            e.Graphics.FillRectangle(new SolidBrush(customColor), point.X, point.Y, 1, 1);
-                        }
+                        hits++;
+                        e.Graphics.FillRectangle(Brushes.Red, point.X, point.Y, 1, 1);
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
 
+            DrawLines(lines, e.Graphics, brush);
 
+            pictureBox1.Image = bitmap;
+            InvalidateImage();
+
+            labelHitsCount.Text = @"Hits: " + hits;
+        }
+
+        private void DrawLines(List<Line> lines, Graphics graphics, Brush brush)
+        {
             if (checkBoxDrawMesh.Checked)
             {
                 foreach (Line line in lines)
                 {
                     foreach (Point point in line.Points)
                     {
-                        e.Graphics.FillRectangle(brush, point.X, point.Y, 1, 1);
+                        graphics.FillRectangle(brush, point.X, point.Y, 1, 1);
                     }
                 }
             }
-
-            pictureBox1.Image = bitmap;
-            InvalidateImage();
-
-            labelHitsCount.Text = @"Hits: " + hits;
         }
 
         private void buttonDraw_Click(object sender, EventArgs e)
@@ -152,7 +150,7 @@ namespace MeshCollision
         private void trackBarSens_ValueChanged(object sender, EventArgs e)
         {
             labelSens.Text = trackBarSens.Value.ToString();
-            _sens = (byte)trackBarSens.Value;
+            trackBarSecivity = (byte)trackBarSens.Value;
             InvalidateImage();
         }
 
