@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MeshCollision
 {
@@ -14,34 +11,40 @@ namespace MeshCollision
         public Point FirstPoint => Points[0];
         public Point LastPoint => Points[Points.Count - 1];
 
-        public Line(Point firstPoint, Point lastPoint)
+        public Line(Point firstPoint, Point lastPoint, int count)
         {
-            Points = new List<Point>();
-            ConstructLine(firstPoint, lastPoint);
+            Points = ConstructLine(firstPoint, lastPoint, count);
         }
 
-        private void ConstructLine(Point fPoint, Point sPoint)
+        private List<Point> ConstructLine(Point pointA, Point pointB, int count)
         {
-            var quantity = 20;
+            List<Point> points = new List<Point>(count);
 
-            var ydiff = sPoint.Y - fPoint.Y;
-            var xdiff = sPoint.X - fPoint.X;
+            int min, max;
 
-            var slope = (double) (sPoint.Y - fPoint.Y)/(sPoint.X - fPoint.X);
-            double x, y;
-
-            quantity--;
-
-            for (var i = 0; i < quantity; i++)
+            if (pointA.X == pointB.X)
             {
-                y = slope == 0 ? 0 : ydiff*(i/quantity);
-                x = slope == 0 ? xdiff*(i/quantity) : y/slope;
-                var point = new Point((int) Math.Round(x) + fPoint.X, (int) Math.Round(y) + fPoint.Y);
-
-                Points.Add(point);
+                min = Math.Min(pointA.Y, pointB.Y);
+                max = Math.Max(pointA.Y, pointB.Y);
+            }
+            else
+            {
+                min = Math.Min(pointA.X, pointB.X);
+                max = Math.Max(pointA.X, pointB.X);
             }
 
-            Points[quantity] = sPoint;
+            for (int i = min; i < max; ++i)
+            {
+                if (pointA.X == pointB.X)
+                {
+                    points.Add(new Point(pointA.X, i));
+                }
+                else
+                {
+                    points.Add(new Point(i, pointA.Y));
+                }
+            }
+            return points;
         }
     }
 }

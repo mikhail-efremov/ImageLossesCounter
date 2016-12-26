@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace MeshCollision
 {
@@ -32,17 +31,10 @@ namespace MeshCollision
         {
             if (sens >= 255)
                 return true;
-            try
-            {
                 if (c1.B > c2.B - sens && c1.B < c2.B + sens
                     && c1.G > c2.G - sens && c1.G < c2.G + sens
                     && c1.R > c2.R - sens && c1.R < c1.R + sens)
                     return true;
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
             return false;
         }
     }

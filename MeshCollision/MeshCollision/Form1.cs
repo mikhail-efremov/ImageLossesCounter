@@ -7,17 +7,14 @@ namespace MeshCollision
 {
     public partial class Form1 : Form
     {
-        private Bitmap _gBitmap;
-        private int _weightRange = 20;
-        private int _heightRange = 20;
-        private int _linesCount = 1;
+        private Bitmap bitmap;
+        private int linesCount = 1;
         private byte _sens = 1;
 
         public Form1()
         {
             InitializeComponent();
             LoadImage();
-            InitializeImage();
             FillColorPickRegion(Color.Black);
         }
 
@@ -29,13 +26,21 @@ namespace MeshCollision
                 return;
 
             pictureBox1.Image = image;
-            _gBitmap = new Bitmap(image);
+            bitmap = new Bitmap(image);
         }
 
-        private void InitializeImage()
+        private void InvalidateImage()
         {
-            _weightRange = _gBitmap.Width/_linesCount;
-            _heightRange = _gBitmap.Height/_linesCount;
+            if (bitmap == null)
+                return;
+
+            int count;
+            if (int.TryParse(textBoxLinesCount.Text, out count))
+            {
+                linesCount = count;
+            }
+            
+            pictureBox1.Invalidate();
         }
 
         public Bitmap UploadImage()
@@ -50,56 +55,46 @@ namespace MeshCollision
         
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
-            var lineXList = new List<Point>();
-            var lineYList = new List<Point>();
-            var lines = new List<Point>();
+            float weightIndent = bitmap.Width / (float)linesCount;
+            float heightIndent = bitmap.Height / (float)linesCount;
 
-            var g = e.Graphics;
+            List<Line> lines = new List<Line>();
+            Graphics graphics = e.Graphics;
+            Brush brush = Brushes.Red;
 
-            for (var y = 0; y < _linesCount; ++y)
+//horizontal
+            for (int index = 0; index < linesCount; index++)
             {
-                var xpt = new Point(0, y * _heightRange);
-                lineXList.Add(xpt);
-                var ypt = new Point(_gBitmap.Width, _heightRange * y);
-                lineYList.Add(ypt);
-
-                var spl = SplitLine(new Tuple<double, double>(xpt.X, xpt.Y),
-                    new Tuple<double, double>(ypt.X, ypt.Y), 99);
-                lines.AddRange(spl);
-
-                if(checkBoxDrawMesh.Checked)
-                    g.DrawLine(new Pen(Color.Aqua), xpt, ypt);
+                Point xpt = new Point(0, (int)Math.Round(index * heightIndent));
+                Point ypt = new Point(bitmap.Width, (int)Math.Round(heightIndent * index));
+                
+                Line line = new Line(xpt, ypt, bitmap.Width);
+                lines.Add(line);
             }
 
-            for (var x = 0; x < _linesCount; ++x)
+//vertical
+            for (var index = 0; index < linesCount; index++)
             {
-                var xpt = new Point(x* _weightRange, 0);
-                lineXList.Add(xpt);
-                var ypt = new Point(x* _weightRange, _gBitmap.Width);
-                lineYList.Add(ypt);
-                var spl = SplitLine(new Tuple<double, double>(xpt.X, xpt.Y),
-                    new Tuple<double, double>(ypt.X, ypt.Y), 99);
-                lines.AddRange(spl);
+                Point xpt = new Point((int)Math.Round(index* weightIndent), 0);
+                Point ypt = new Point((int)Math.Round(index* weightIndent), bitmap.Height);
 
-                if (checkBoxDrawMesh.Checked)
-                    g.DrawLine(new Pen(Color.Aqua), xpt, ypt);
+                Line line = new Line(xpt, ypt, bitmap.Height);
+                lines.Add(line);
             }
-            
-            var customColor = pictureColorBox.BackColor;
-            var hits = 0;
+          
+            Color customColor = pictureColorBox.BackColor;
+            int hits = 0;
             try
             {
-                foreach (var lin in lines)
+                foreach (Line line in lines)
                 {
-                    if (lin.X >= _gBitmap.Width)
-                        continue;
-                    if (lin.Y >= _gBitmap.Height)
-                        continue;
-
-                    if (StaticMethods.ColorSimilar(customColor, _gBitmap.GetPixel(lin.X, lin.Y), _sens))
+                    foreach (Point point in line.Points)
                     {
-                        hits++;
-                        _gBitmap.SetPixel(lin.X, lin.Y, Color.White);
+                        if (StaticMethods.ColorSimilar(customColor, bitmap.GetPixel(point.X, point.Y), _sens))
+                        {
+                            hits++;
+                            e.Graphics.FillRectangle(new SolidBrush(customColor), point.X, point.Y, 1, 1);
+                        }
                     }
                 }
             }
@@ -107,47 +102,41 @@ namespace MeshCollision
             {
                 Console.WriteLine(ex.Message);
             }
-            pictureBox1.Image = _gBitmap;
-            pictureBox1.Invalidate();
 
-            if(hits != 0)
+
+            if (checkBoxDrawMesh.Checked)
+            {
+                foreach (Line line in lines)
+                {
+                    foreach (Point point in line.Points)
+                    {
+                        e.Graphics.FillRectangle(brush, point.X, point.Y, 1, 1);
+                    }
+                }
+            }
+
+            pictureBox1.Image = bitmap;
+            InvalidateImage();
+
             labelHitsCount.Text = @"Hits: " + hits;
-        }
-
-        public static List<Point> SplitLine(
-            Tuple<double, double> a, Tuple<double, double> b, int count)
-        {
-            count = count + 1;
-
-            var d = Math.Sqrt((a.Item1 - b.Item1) * (a.Item1 - b.Item1) + (a.Item2 - b.Item2) * (a.Item2 - b.Item2)) / count;
-            var fi = Math.Atan2(b.Item2 - a.Item2, b.Item1 - a.Item1);
-
-            var points = new List<Point>(count + 1);
-
-            for (var i = 0; i <= count; ++i)
-                points.Add(new Point((int) (a.Item1 + i * d * Math.Cos(fi)), (int) (a.Item2 + i * d * Math.Sin(fi))));
-
-            return points;
         }
 
         private void buttonDraw_Click(object sender, EventArgs e)
         {
-            int linesCount;
-            if(int.TryParse(textBoxLinesCount.Text, out linesCount))
-                _linesCount = linesCount;
-            InitializeImage();
-            pictureBox1.Invalidate();
+            InvalidateImage();
         }
 
         private void FillColorPickRegion(Color color)
         {
-            var flag = new Bitmap(30, 30);
-            var flagGraphics = Graphics.FromImage(flag);
-            var iterator = 0;
-            while (iterator <= 30)
+            int regionSize = 30;
+
+            Bitmap flag = new Bitmap(regionSize, regionSize);
+            Graphics flagGraphics = Graphics.FromImage(flag);
+            int iterator = 0;
+            while (iterator <= regionSize)
             {
                 var myBrush = new SolidBrush(colorDialog1.Color);
-                flagGraphics.FillRectangle(myBrush, 0, iterator, 30, 30);
+                flagGraphics.FillRectangle(myBrush, 0, iterator, regionSize, regionSize);
                 iterator++;
             }
             pictureColorBox.Image = flag;
@@ -157,16 +146,14 @@ namespace MeshCollision
         private void buttonLoadImage_Click(object sender, EventArgs e)
         {
             LoadImage();
-            InitializeImage();
-            pictureBox1.Invalidate();
+            InvalidateImage();
         }
 
         private void trackBarSens_ValueChanged(object sender, EventArgs e)
         {
             labelSens.Text = trackBarSens.Value.ToString();
             _sens = (byte)trackBarSens.Value;
-            InitializeImage();
-            pictureBox1.Invalidate();
+            InvalidateImage();
         }
 
         private void pictureColorBox_Click(object sender, EventArgs e)
@@ -176,7 +163,7 @@ namespace MeshCollision
             if (result == DialogResult.OK)
             {
                 FillColorPickRegion(colorDialog1.Color);
-                pictureBox1.Invalidate();
+                InvalidateImage();
             }
             this.Show();
         }
