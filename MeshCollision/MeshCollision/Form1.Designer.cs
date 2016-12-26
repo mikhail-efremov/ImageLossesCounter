@@ -34,11 +34,11 @@
             this.textBoxLinesCount = new System.Windows.Forms.TextBox();
             this.buttonDraw = new System.Windows.Forms.Button();
             this.checkBoxDrawMesh = new System.Windows.Forms.CheckBox();
-            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             this.pictureColorBox = new System.Windows.Forms.PictureBox();
             this.buttonLoadImage = new System.Windows.Forms.Button();
             this.trackBarSens = new System.Windows.Forms.TrackBar();
             this.labelSens = new System.Windows.Forms.Label();
+            this.colorDialog1 = new System.Windows.Forms.ColorDialog();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureColorBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarSens)).BeginInit();
@@ -46,9 +46,12 @@
             // 
             // pictureBox1
             // 
+            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox1.Location = new System.Drawing.Point(167, 12);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(1111, 604);
+            this.pictureBox1.Size = new System.Drawing.Size(795, 364);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
@@ -80,7 +83,7 @@
             // 
             // buttonDraw
             // 
-            this.buttonDraw.Location = new System.Drawing.Point(13, 223);
+            this.buttonDraw.Location = new System.Drawing.Point(15, 223);
             this.buttonDraw.Name = "buttonDraw";
             this.buttonDraw.Size = new System.Drawing.Size(75, 23);
             this.buttonDraw.TabIndex = 5;
@@ -121,7 +124,7 @@
             // 
             // trackBarSens
             // 
-            this.trackBarSens.Location = new System.Drawing.Point(15, 109);
+            this.trackBarSens.Location = new System.Drawing.Point(15, 143);
             this.trackBarSens.Maximum = 255;
             this.trackBarSens.Name = "trackBarSens";
             this.trackBarSens.Size = new System.Drawing.Size(131, 45);
@@ -141,7 +144,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1290, 628);
+            this.ClientSize = new System.Drawing.Size(971, 385);
             this.Controls.Add(this.labelSens);
             this.Controls.Add(this.trackBarSens);
             this.Controls.Add(this.buttonLoadImage);
@@ -170,11 +173,11 @@
         private System.Windows.Forms.TextBox textBoxLinesCount;
         private System.Windows.Forms.Button buttonDraw;
         private System.Windows.Forms.CheckBox checkBoxDrawMesh;
-        private System.Windows.Forms.ColorDialog colorDialog1;
         private System.Windows.Forms.PictureBox pictureColorBox;
         private System.Windows.Forms.Button buttonLoadImage;
         private System.Windows.Forms.TrackBar trackBarSens;
         private System.Windows.Forms.Label labelSens;
+        private System.Windows.Forms.ColorDialog colorDialog1;
     }
 }
 

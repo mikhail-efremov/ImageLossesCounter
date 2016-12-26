@@ -12,21 +12,24 @@ namespace MeshCollision
         private int _heightRange = 20;
         private int _linesCount = 1;
         private byte _sens = 1;
-   //     private int hits = 0;
 
         public Form1()
         {
             InitializeComponent();
             LoadImage();
             InitializeImage();
-            FillColorPickRegion(new ColorDialog {Color = Color.Black});
+            FillColorPickRegion(Color.Black);
         }
 
         private void LoadImage()
         {
-            pictureBox1.Image = UploadImage();
-       //     pictureBox1.SizeMode =PictureBoxSizeMode.Zoom;
-            _gBitmap = new Bitmap(pictureBox1.Image);
+            Image image = UploadImage();
+
+            if (image == null)
+                return;
+
+            pictureBox1.Image = image;
+            _gBitmap = new Bitmap(image);
         }
 
         private void InitializeImage()
@@ -136,15 +139,7 @@ namespace MeshCollision
             pictureBox1.Invalidate();
         }
 
-        private void pictureColorBox_Click(object sender, EventArgs e)
-        {
-            colorDialog1.ShowDialog();
-            var colorDiag = colorDialog1;
-            FillColorPickRegion(colorDiag);
-            pictureBox1.Invalidate();
-        }
-
-        private void FillColorPickRegion(ColorDialog colorDiag)
+        private void FillColorPickRegion(Color color)
         {
             var flag = new Bitmap(30, 30);
             var flagGraphics = Graphics.FromImage(flag);
@@ -156,8 +151,7 @@ namespace MeshCollision
                 iterator++;
             }
             pictureColorBox.Image = flag;
-            if (colorDiag != null)
-                pictureColorBox.BackColor = colorDiag.Color;
+            pictureColorBox.BackColor = color;
         }
 
         private void buttonLoadImage_Click(object sender, EventArgs e)
@@ -169,11 +163,22 @@ namespace MeshCollision
 
         private void trackBarSens_ValueChanged(object sender, EventArgs e)
         {
-         //   hits = 0;
             labelSens.Text = trackBarSens.Value.ToString();
             _sens = (byte)trackBarSens.Value;
             InitializeImage();
             pictureBox1.Invalidate();
+        }
+
+        private void pictureColorBox_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            DialogResult result = colorDialog1.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                FillColorPickRegion(colorDialog1.Color);
+                pictureBox1.Invalidate();
+            }
+            this.Show();
         }
     }
 }
