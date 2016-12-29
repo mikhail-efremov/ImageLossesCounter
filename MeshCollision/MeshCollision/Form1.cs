@@ -55,8 +55,20 @@ namespace MeshCollision
         
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
-            float weightIndent = bitmap.Width / (float)linesCount;
-            float heightIndent = bitmap.Height / (float)linesCount;
+            float weightIndent = 0;
+            float heightIndent = 0;
+
+            if (linesCount >= bitmap.Width)
+            {
+                linesCount = bitmap.Width;
+            }
+            weightIndent = bitmap.Width / (float)linesCount;
+
+            if (linesCount >= bitmap.Height)
+            {
+                linesCount = bitmap.Height;
+            }
+            heightIndent = bitmap.Height / (float)linesCount;
 
             List<Line> lines = new List<Line>();
             Graphics graphics = e.Graphics;
@@ -126,18 +138,6 @@ namespace MeshCollision
 
         private void FillColorPickRegion(Color color)
         {
-            int regionSize = 30;
-
-            Bitmap flag = new Bitmap(regionSize, regionSize);
-            Graphics flagGraphics = Graphics.FromImage(flag);
-            int iterator = 0;
-            while (iterator <= regionSize)
-            {
-                var myBrush = new SolidBrush(colorDialog1.Color);
-                flagGraphics.FillRectangle(myBrush, 0, iterator, regionSize, regionSize);
-                iterator++;
-            }
-            pictureColorBox.Image = flag;
             pictureColorBox.BackColor = color;
         }
 
@@ -164,6 +164,22 @@ namespace MeshCollision
                 InvalidateImage();
             }
             this.Show();
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            ImageClick(e);
+        }
+
+        private void ImageClick(EventArgs e)
+        {
+            if (pictureBox1.Image == null)
+                return;
+            
+            MouseEventArgs mouseEvent = (MouseEventArgs)e;
+            Point coordinates = mouseEvent.Location;
+            
+            FillColorPickRegion(new Bitmap(pictureBox1.Image).GetPixel(coordinates.X, coordinates.Y));
         }
     }
 }
