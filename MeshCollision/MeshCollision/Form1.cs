@@ -61,6 +61,15 @@ namespace MeshCollision
 			List<Line> lines = GetRawMesh();
 			List<Line> similarLines = GetSimilarMesh(lines);
 
+			List<Line> coincidence = CoincidenceAnalyth.GetCoincidence(similarLines);
+			coincidenceLabel.Text = "coincidence: " + coincidence.Count;
+
+			int average = 0;
+			coincidence.ForEach(line => average = average + line.Points.Count);
+			if(average != 0)
+				average = average / coincidence.Count;
+			averageLabel.Text = "average coincidence: " + average;
+
 			if (checkBoxDrawMesh.Checked) {
 				DrawLines(lines, e.Graphics, brush);
 			}

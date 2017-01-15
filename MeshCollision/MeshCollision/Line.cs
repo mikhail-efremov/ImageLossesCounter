@@ -21,7 +21,11 @@ namespace MeshCollision
             Points = ConstructLine(firstPoint, lastPoint, count);
         }
 
-        private List<Point> ConstructLine(Point pointA, Point pointB, int count)
+		public override string ToString() {
+			return string.Format("[{0}:{1}] [{2}:{3}] Count:{4}", FirstPoint.X, FirstPoint.Y, LastPoint.X, LastPoint.Y, Points.Count);
+		}
+
+		private List<Point> ConstructLine(Point pointA, Point pointB, int count)
         {
             List<Point> points = new List<Point>(count);
 
