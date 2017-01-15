@@ -11,6 +11,11 @@ namespace MeshCollision
         public Point FirstPoint => Points[0];
         public Point LastPoint => Points[Points.Count - 1];
 
+		public Line() 
+		{
+			Points = new List<Point>();
+		}
+
         public Line(Point firstPoint, Point lastPoint, int count)
         {
             Points = ConstructLine(firstPoint, lastPoint, count);

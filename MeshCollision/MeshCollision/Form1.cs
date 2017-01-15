@@ -55,78 +55,94 @@ namespace MeshCollision
         
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
-            float weightIndent = 0;
-            float heightIndent = 0;
-
-            if (linesCount >= bitmap.Width)
-            {
-                linesCount = bitmap.Width;
-            }
-            weightIndent = bitmap.Width / (float)linesCount;
-
-            if (linesCount >= bitmap.Height)
-            {
-                linesCount = bitmap.Height;
-            }
-            heightIndent = bitmap.Height / (float)linesCount;
-
-            List<Line> lines = new List<Line>();
             Graphics graphics = e.Graphics;
             Brush brush = Brushes.Red;
+        
+			List<Line> lines = GetRawMesh();
+			List<Line> similarLines = GetSimilarMesh(lines);
 
-//horizontal
-            for (int index = 0; index < linesCount; index++)
-            {
-                Point xpt = new Point(0, (int)Math.Round(index * heightIndent));
-                Point ypt = new Point(bitmap.Width, (int)Math.Round(heightIndent * index));
-                
-                Line line = new Line(xpt, ypt, bitmap.Width);
-                lines.Add(line);
-            }
+			if (checkBoxDrawMesh.Checked) {
+				DrawLines(lines, e.Graphics, brush);
+			}
 
-//vertical
-            for (var index = 0; index < linesCount; index++)
-            {
-                Point xpt = new Point((int)Math.Round(index* weightIndent), 0);
-                Point ypt = new Point((int)Math.Round(index* weightIndent), bitmap.Height);
-
-                Line line = new Line(xpt, ypt, bitmap.Height);
-                lines.Add(line);
-            }
-          
-            Color customColor = pictureColorBox.BackColor;
-            int hits = 0;
-
-            foreach (Line line in lines)
-            {
-                foreach (Point point in line.Points)
-                {
-                    if (StaticMethods.ColorSimilar(customColor, bitmap.GetPixel(point.X, point.Y), trackBarSecivity))
-                    {
-                        hits++;
-                        e.Graphics.FillRectangle(Brushes.Red, point.X, point.Y, 1, 1);
-                    }
-                }
-            }
-
-            DrawLines(lines, e.Graphics, brush);
+			DrawLines(similarLines, e.Graphics, brush);
 
             pictureBox1.Image = bitmap;
             InvalidateImage();
 
-            labelHitsCount.Text = @"Hits: " + hits;
+			int hits = 0;
+			similarLines.ForEach(line => hits = hits + line.Points.Count);
+
+			labelHitsCount.Text = @"Hits: " + hits;
         }
+
+		private List<Line> GetRawMesh() 
+		{
+			float weightIndent = 0;
+			float heightIndent = 0;
+
+			if (linesCount >= bitmap.Width) {
+				linesCount = bitmap.Width;
+			}
+			weightIndent = bitmap.Width / (float)linesCount;
+
+			if (linesCount >= bitmap.Height) {
+				linesCount = bitmap.Height;
+			}
+			heightIndent = bitmap.Height / (float)linesCount;
+
+			List<Line> lines = new List<Line>();
+
+			//horizontal
+			for (int index = 0; index < linesCount; index++) {
+				Point xpt = new Point(0, (int)Math.Round(index * heightIndent));
+				Point ypt = new Point(bitmap.Width, (int)Math.Round(heightIndent * index));
+
+				Line line = new Line(xpt, ypt, bitmap.Width);
+				lines.Add(line);
+			}
+
+			//vertical
+			for (var index = 0; index < linesCount; index++) {
+				Point xpt = new Point((int)Math.Round(index * weightIndent), 0);
+				Point ypt = new Point((int)Math.Round(index * weightIndent), bitmap.Height);
+
+				Line line = new Line(xpt, ypt, bitmap.Height);
+				lines.Add(line);
+			}
+
+			return lines;
+		}
+
+		private List<Line> GetSimilarMesh(List<Line> lines) 
+		{
+			Color customColor = pictureColorBox.BackColor;
+
+			List<Line> result = new List<Line>();
+
+			foreach (Line line in lines) {
+				Line searchLine = new Line();
+
+				foreach (Point point in line.Points) {
+					if (StaticMethods.ColorSimilar(customColor, bitmap.GetPixel(point.X, point.Y), trackBarSecivity)) {
+						if (!result.Contains(searchLine)) {
+							result.Add(searchLine);
+						}
+						result[result.IndexOf(searchLine)].Points.Add(point);
+					}
+				}
+			}
+
+			return result;
+		}
 
         private void DrawLines(List<Line> lines, Graphics graphics, Brush brush)
         {
-            if (checkBoxDrawMesh.Checked)
+            foreach (Line line in lines)
             {
-                foreach (Line line in lines)
+                foreach (Point point in line.Points)
                 {
-                    foreach (Point point in line.Points)
-                    {
-                        graphics.FillRectangle(brush, point.X, point.Y, 1, 1);
-                    }
+                    graphics.FillRectangle(brush, point.X, point.Y, 1, 1);
                 }
             }
         }
