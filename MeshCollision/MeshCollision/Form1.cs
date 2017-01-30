@@ -11,6 +11,8 @@ namespace MeshCollision
         private int linesCount = 1;
         private byte trackBarSecivity = 1;
 
+		private List<MeshCollideObject> meshCollideObjects = new List<MeshCollideObject>();
+
         public Form1()
         {
             InitializeComponent();
@@ -21,8 +23,8 @@ namespace MeshCollision
         private void LoadImage()
         {
             Image image = UploadImage();
-
-            if (image == null)
+			
+			if (image == null)
                 return;
 
             pictureBox1.Image = image;
@@ -56,94 +58,38 @@ namespace MeshCollision
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
             Graphics graphics = e.Graphics;
-            Brush brush = Brushes.Red;
-        
-			List<Line> lines = GetRawMesh();
-			List<Line> similarLines = GetSimilarMesh(lines);
 
-			List<Line> coincidence = CoincidenceAnalyth.GetCoincidence(similarLines);
-			coincidenceLabel.Text = "coincidence: " + coincidence.Count;
+			foreach (var meshCollideObject in meshCollideObjects) {
+				var brush = new SolidBrush(meshCollideObject.MeshColor);
 
-			int average = 0;
-			coincidence.ForEach(line => average = average + line.Points.Count);
-			if(average != 0)
-				average = average / coincidence.Count;
-			averageLabel.Text = "average coincidence: " + average;
+				List<Line> lines = meshCollideObject.GetRawMesh(bitmap);
+				List<Line> similarLines = meshCollideObject.GetSimilarMesh(lines, bitmap);
 
-			if (checkBoxDrawMesh.Checked) {
-				DrawLines(lines, e.Graphics, brush);
+				List<Line> coincidence = CoincidenceAnalyth.GetCoincidence(similarLines);
+
+				meshCollideObject.CoincidencesWithoutInterrupt = coincidence.Count;
+
+				int average = 0;
+				coincidence.ForEach(line => average = average + line.Points.Count);
+				if (average != 0)
+					average = average / coincidence.Count;
+				meshCollideObject.AverageCoincidences = average;
+
+/*				if (checkBoxDrawMesh.Checked) {
+					DrawLines(lines, e.Graphics, brush);
+				}
+*/
+				DrawLines(similarLines, e.Graphics, brush);
+
+				int hits = 0;
+				similarLines.ForEach(line => hits = hits + line.Points.Count);
+
+				meshCollideObject.Hits = hits;
 			}
-
-			DrawLines(similarLines, e.Graphics, brush);
-
+			
             pictureBox1.Image = bitmap;
             InvalidateImage();
-
-			int hits = 0;
-			similarLines.ForEach(line => hits = hits + line.Points.Count);
-
-			labelHitsCount.Text = @"Hits: " + hits;
         }
-
-		private List<Line> GetRawMesh() 
-		{
-			float weightIndent = 0;
-			float heightIndent = 0;
-
-			if (linesCount >= bitmap.Width) {
-				linesCount = bitmap.Width;
-			}
-			weightIndent = bitmap.Width / (float)linesCount;
-
-			if (linesCount >= bitmap.Height) {
-				linesCount = bitmap.Height;
-			}
-			heightIndent = bitmap.Height / (float)linesCount;
-
-			List<Line> lines = new List<Line>();
-
-			//horizontal
-			for (int index = 0; index < linesCount; index++) {
-				Point xpt = new Point(0, (int)Math.Round(index * heightIndent));
-				Point ypt = new Point(bitmap.Width, (int)Math.Round(heightIndent * index));
-
-				Line line = new Line(xpt, ypt, bitmap.Width);
-				lines.Add(line);
-			}
-
-			//vertical
-			for (var index = 0; index < linesCount; index++) {
-				Point xpt = new Point((int)Math.Round(index * weightIndent), 0);
-				Point ypt = new Point((int)Math.Round(index * weightIndent), bitmap.Height);
-
-				Line line = new Line(xpt, ypt, bitmap.Height);
-				lines.Add(line);
-			}
-
-			return lines;
-		}
-
-		private List<Line> GetSimilarMesh(List<Line> lines) 
-		{
-			Color customColor = pictureColorBox.BackColor;
-
-			List<Line> result = new List<Line>();
-
-			foreach (Line line in lines) {
-				Line searchLine = new Line();
-
-				foreach (Point point in line.Points) {
-					if (StaticMethods.ColorSimilar(customColor, bitmap.GetPixel(point.X, point.Y), trackBarSecivity)) {
-						if (!result.Contains(searchLine)) {
-							result.Add(searchLine);
-						}
-						result[result.IndexOf(searchLine)].Points.Add(point);
-					}
-				}
-			}
-
-			return result;
-		}
 
         private void DrawLines(List<Line> lines, Graphics graphics, Brush brush)
         {
@@ -191,7 +137,18 @@ namespace MeshCollision
             this.Show();
         }
 
-        private void pictureBox1_Click(object sender, EventArgs e)
+		private void pictureBoxMeshColor_Click(object sender, EventArgs e) {
+/*			this.Hide();
+			DialogResult result = colorDialog1.ShowDialog();
+			if (result == DialogResult.OK) {
+				pictureBoxMeshColor.BackColor = colorDialog1.Color;
+				InvalidateImage();
+			}
+			this.Show();
+*/
+		}
+
+		private void pictureBox1_Click(object sender, EventArgs e)
         {
             ImageClick(e);
         }
@@ -206,5 +163,23 @@ namespace MeshCollision
             
             FillColorPickRegion(new Bitmap(pictureBox1.Image).GetPixel(coordinates.X, coordinates.Y));
         }
-    }
+		
+		private static int _nextLocation = 0;
+		private void button1_Click(object sender, EventArgs e) {
+			var meshObj = new MeshCollideObject();
+			meshCollideObjects.Add(meshObj);
+
+			var controlls = meshObj.GetControlls();
+			for (int i = 0; i < controlls.Length; i++) {
+				var label = new Label();
+				label.Text = controlls[i].Description;
+				label.Location = new Point(12, _nextLocation);
+				controlls[i].Control.Location = new Point(label.Size.Width + 10, _nextLocation);
+
+				panel1.Controls.Add(label);
+				panel1.Controls.Add(controlls[i].Control);
+				_nextLocation += 24;
+			}
+		}
+	}
 }
