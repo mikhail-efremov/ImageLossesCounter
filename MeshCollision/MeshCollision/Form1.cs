@@ -8,8 +8,6 @@ namespace MeshCollision
     public partial class Form1 : Form
     {
         private Bitmap bitmap;
-        private int linesCount = 1;
-        private byte trackBarSecivity = 1;
 
 		private List<MeshCollideObject> meshCollideObjects = new List<MeshCollideObject>();
 
@@ -17,7 +15,6 @@ namespace MeshCollision
         {
             InitializeComponent();
             LoadImage();
-            FillColorPickRegion(Color.Black);
         }
 
         private void LoadImage()
@@ -35,13 +32,6 @@ namespace MeshCollision
         {
             if (bitmap == null)
                 return;
-
-            int count;
-            if (int.TryParse(textBoxLinesCount.Text, out count))
-            {
-                linesCount = count;
-            }
-            
             pictureBox1.Invalidate();
         }
 
@@ -63,7 +53,7 @@ namespace MeshCollision
 				var brush = new SolidBrush(meshCollideObject.MeshColor);
 
 				List<Line> lines = meshCollideObject.GetRawMesh(bitmap);
-				List<Line> similarLines = meshCollideObject.GetSimilarMesh(lines, bitmap);
+				List<Line> similarLines = meshCollideObject.GetSimilarMesh(lines, bitmap, meshCollideObjects);
 
 				List<Line> coincidence = CoincidenceAnalyth.GetCoincidence(similarLines);
 
@@ -74,11 +64,7 @@ namespace MeshCollision
 				if (average != 0)
 					average = average / coincidence.Count;
 				meshCollideObject.AverageCoincidences = average;
-
-/*				if (checkBoxDrawMesh.Checked) {
-					DrawLines(lines, e.Graphics, brush);
-				}
-*/
+				
 				DrawLines(similarLines, e.Graphics, brush);
 
 				int hits = 0;
@@ -107,46 +93,11 @@ namespace MeshCollision
             InvalidateImage();
         }
 
-        private void FillColorPickRegion(Color color)
-        {
-            pictureColorBox.BackColor = color;
-        }
-
         private void buttonLoadImage_Click(object sender, EventArgs e)
         {
             LoadImage();
             InvalidateImage();
         }
-
-        private void trackBarSens_ValueChanged(object sender, EventArgs e)
-        {
-            labelSens.Text = trackBarSens.Value.ToString();
-            trackBarSecivity = (byte)trackBarSens.Value;
-            InvalidateImage();
-        }
-
-        private void pictureColorBox_Click(object sender, EventArgs e)
-        {
-            this.Hide();
-            DialogResult result = colorDialog1.ShowDialog();
-            if (result == DialogResult.OK)
-            {
-                FillColorPickRegion(colorDialog1.Color);
-                InvalidateImage();
-            }
-            this.Show();
-        }
-
-		private void pictureBoxMeshColor_Click(object sender, EventArgs e) {
-/*			this.Hide();
-			DialogResult result = colorDialog1.ShowDialog();
-			if (result == DialogResult.OK) {
-				pictureBoxMeshColor.BackColor = colorDialog1.Color;
-				InvalidateImage();
-			}
-			this.Show();
-*/
-		}
 
 		private void pictureBox1_Click(object sender, EventArgs e)
         {
@@ -160,8 +111,6 @@ namespace MeshCollision
             
             MouseEventArgs mouseEvent = (MouseEventArgs)e;
             Point coordinates = mouseEvent.Location;
-            
-            FillColorPickRegion(new Bitmap(pictureBox1.Image).GetPixel(coordinates.X, coordinates.Y));
         }
 		
 		private static int _nextLocation = 0;
@@ -180,6 +129,7 @@ namespace MeshCollision
 				panel1.Controls.Add(controlls[i].Control);
 				_nextLocation += 24;
 			}
+			_nextLocation += 24;
 		}
 	}
 }

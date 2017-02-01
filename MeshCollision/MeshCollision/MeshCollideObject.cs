@@ -2,11 +2,14 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MeshCollision
 {
 	public class MeshCollideObject
 	{
+		public List<Line> SimilarMesh = new List<Line>();
+
 		private Label hitsLabel = new Label();
 		public int Hits {
 			get { return Int32.Parse(hitsLabel.Text); }
@@ -68,7 +71,7 @@ namespace MeshCollision
 			coincidencesWithoutInterruptLabel.Text = "0";
 			LinesCount = 30;
 			detectionSensLabel.Text = "0";
-			DetectionSens = 100;
+			DetectionSens = 0;
 
 			sensTrackBar.Maximum = 255;
 			sensTrackBar.ValueChanged += SensTrackBar_ValueChanged;
@@ -135,26 +138,51 @@ namespace MeshCollision
 			return lines;
 		}
 
-		public List<Line> GetSimilarMesh(List<Line> lines, Bitmap bitmap) {
+		public List<Line> GetSimilarMesh(List<Line> lines, Bitmap bitmap, List<MeshCollideObject> except) {
 			Color customColor = searchingColorPictureBox.BackColor;
 			int sens = DetectionSens;
 
-			List<Line> result = new List<Line>();
+			SimilarMesh.Clear();
 
 			foreach (Line line in lines) {
 				Line searchLine = new Line();
 
 				foreach (Point point in line.Points) {
 					if (StaticMethods.ColorSimilar(customColor, bitmap.GetPixel(point.X, point.Y), (byte)sens)) {
-						if (!result.Contains(searchLine)) {
-							result.Add(searchLine);
+						if (!SimilarMesh.Contains(searchLine)) {
+							SimilarMesh.Add(searchLine);
 						}
-						result[result.IndexOf(searchLine)].Points.Add(point);
+						/*
+						bool add = true;
+						foreach (var exc in except) {
+							/*							if(exc.SimilarMesh.Count <= exc.SimilarMesh.IndexOf(searchLine))
+															if (exc.SimilarMesh[exc.SimilarMesh.IndexOf(searchLine)].Points.Contains(point)) 
+															{
+																add = false;
+															}
+													}
+							*/
+							/*
+						foreach (var l in exc.SimilarMesh) {
+								foreach (var p in l.Points) {
+									if (point.X == p.X) {
+										if (point.Y == p.Y) {
+											add = false;
+											goto HACK;
+										}
+									}
+								}
+							}
+						}
+						HACK:
+					*/
+			//			if(add)
+							SimilarMesh[SimilarMesh.IndexOf(searchLine)].Points.Add(point);
 					}
 				}
 			}
 
-			return result;
+			return SimilarMesh;
 		}
 
 		public CustomControl[] GetControlls() {
