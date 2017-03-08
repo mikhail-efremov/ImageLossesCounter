@@ -5,57 +5,62 @@ using System.Collections.Generic;
 
 namespace MeshCollision
 {
-    public partial class Form1 : Form
+  public partial class Form1 : Form
+  {
+    public static Bitmap Bitmap;
+    private List<MeshCollideObject> meshCollideObjects = new List<MeshCollideObject>();
+
+    public Form1()
     {
-        private Bitmap bitmap;
+      InitializeComponent();
+      LoadImage();
 
-		private List<MeshCollideObject> meshCollideObjects = new List<MeshCollideObject>();
+      panel1.AutoScroll = false;
+      panel1.HorizontalScroll.Enabled = false;
+      panel1.HorizontalScroll.Visible = false;
+      panel1.HorizontalScroll.Maximum = 0;
+      panel1.AutoScroll = true;
+    }
 
-        public Form1()
-        {
-            InitializeComponent();
-            LoadImage();
-        }
-
-        private void LoadImage()
-        {
-            Image image = UploadImage();
+    private void LoadImage()
+    {
+      Image image = UploadImage();
 			
 			if (image == null)
-                return;
+        return;
 
-            pictureBox1.Image = image;
-            bitmap = new Bitmap(image);
-        }
+      pictureBox1.Image = image;
+      Bitmap = new Bitmap(image);
+    }
 
-        private void InvalidateImage()
-        {
-            if (bitmap == null)
-                return;
-            pictureBox1.Invalidate();
-        }
+    private void InvalidateImage()
+    {
+      if (Bitmap == null)
+        return;
+      pictureBox1.Invalidate();
+    }
 
-        public Bitmap UploadImage()
-        {
-            var open = new OpenFileDialog
-            {
-                Filter = @"Image Files(*.jpg; *.jpeg; *.gif; *.bmp)|*.jpg; *.jpeg; *.gif; *.bmp"
-            };
+    public Bitmap UploadImage()
+    {
+      var open = new OpenFileDialog
+      {
+        Filter = @"Image Files(*.jpg; *.jpeg; *.gif; *.bmp)|*.jpg; *.jpeg; *.gif; *.bmp"
+      };
 
-            return open.ShowDialog() == DialogResult.OK ? new Bitmap(open.FileName) : null;
-        }
-        
-        private void pictureBox1_Paint(object sender, PaintEventArgs e)
-        {
-            Graphics graphics = e.Graphics;
+      return open.ShowDialog() == DialogResult.OK ? new Bitmap(open.FileName) : null;
+    }
 
-			foreach (var meshCollideObject in meshCollideObjects) {
-				var brush = new SolidBrush(meshCollideObject.MeshColor);
+    private void pictureBox1_Paint(object sender, PaintEventArgs e)
+    {
+      var graphics = e.Graphics;
 
-				List<Line> lines = meshCollideObject.GetRawMesh(bitmap);
-				List<Line> similarLines = meshCollideObject.GetSimilarMesh(lines, bitmap, meshCollideObjects);
+      foreach (var meshCollideObject in meshCollideObjects) {
+        var brush = new SolidBrush(meshCollideObject.MeshColor);
 
-				List<Line> coincidence = CoincidenceAnalyth.GetCoincidence(similarLines);
+				var lines = meshCollideObject.GetRawMesh(Bitmap);
+				var similarLines = meshCollideObject.GetSimilarMesh(lines, Bitmap, meshCollideObjects);
+
+				var coincidence = CoincidenceAnalyth.GetCoincidence(similarLines);
 
 				meshCollideObject.CoincidencesWithoutInterrupt = coincidence.Count;
 
@@ -65,53 +70,39 @@ namespace MeshCollision
 					average = average / coincidence.Count;
 				meshCollideObject.AverageCoincidences = average;
 				
-				DrawLines(similarLines, e.Graphics, brush);
+				DrawLines(similarLines, graphics, brush);
 
 				int hits = 0;
 				similarLines.ForEach(line => hits = hits + line.Points.Count);
 
 				meshCollideObject.Hits = hits;
 			}
-			
-            pictureBox1.Image = bitmap;
-            InvalidateImage();
-        }
 
-        private void DrawLines(List<Line> lines, Graphics graphics, Brush brush)
-        {
-            foreach (Line line in lines)
-            {
-                foreach (Point point in line.Points)
-                {
-                    graphics.FillRectangle(brush, point.X, point.Y, 1, 1);
-                }
-            }
-        }
+      pictureBox1.Image = Bitmap;
+      InvalidateImage();
+    }
 
-        private void buttonDraw_Click(object sender, EventArgs e)
+    private void DrawLines(List<Line> lines, Graphics graphics, Brush brush)
+    {
+      foreach (var line in lines)
+      {
+        foreach (var point in line.Points)
         {
-            InvalidateImage();
+          graphics.FillRectangle(brush, point.X, point.Y, 1, 1);
         }
+      }
+    }
 
-        private void buttonLoadImage_Click(object sender, EventArgs e)
-        {
-            LoadImage();
-            InvalidateImage();
-        }
+    private void buttonDraw_Click(object sender, EventArgs e)
+    {
+      InvalidateImage();
+    }
 
-		private void pictureBox1_Click(object sender, EventArgs e)
-        {
-            ImageClick(e);
-        }
-
-        private void ImageClick(EventArgs e)
-        {
-            if (pictureBox1.Image == null)
-                return;
-            
-            MouseEventArgs mouseEvent = (MouseEventArgs)e;
-            Point coordinates = mouseEvent.Location;
-        }
+    private void buttonLoadImage_Click(object sender, EventArgs e)
+    {
+      LoadImage();
+      InvalidateImage();
+    }
 		
 		private static int _nextLocation = 0;
 		private void button1_Click(object sender, EventArgs e) {
@@ -119,17 +110,30 @@ namespace MeshCollision
 			meshCollideObjects.Add(meshObj);
 
 			var controlls = meshObj.GetControlls();
-			for (int i = 0; i < controlls.Length; i++) {
-				var label = new Label();
-				label.Text = controlls[i].Description;
-				label.Location = new Point(12, _nextLocation);
-				controlls[i].Control.Location = new Point(label.Size.Width + 10, _nextLocation);
+			foreach (CustomControl control in controlls)
+			{
+			  if (!string.IsNullOrEmpty(control.Description))
+			  {
+			    var label = new Label
+			    {
+			      Text = control.Description,
+			      Location = new Point(12, _nextLocation)
+			    };
+			    control.Control.Location = new Point(label.Size.Width + 10, _nextLocation);
 
-				panel1.Controls.Add(label);
-				panel1.Controls.Add(controlls[i].Control);
-				_nextLocation += 24;
+			    panel1.Controls.Add(label);
+			    panel1.Controls.Add(control.Control);
+			  }
+			  else
+			  {
+          control.Control.Location = new Point(10, _nextLocation);
+          panel1.Controls.Add(control.Control);
+        }
+
+			  _nextLocation += 24;
 			}
-			_nextLocation += 24;
+      
+      _nextLocation += 24;
 		}
 	}
 }

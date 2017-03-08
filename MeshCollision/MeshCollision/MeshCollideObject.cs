@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace MeshCollision
 {
@@ -40,7 +39,10 @@ namespace MeshCollision
 			set { meshColorPictureBox.BackColor = value; }
 		}
 
-		private PictureBox searchingColorPictureBox = new PictureBox();
+    private Button changeColorButton = new Button();
+    public Button ChangeColorButton => changeColorButton;
+
+	  private PictureBox searchingColorPictureBox = new PictureBox();
 		public Color SearchingColor {
 			get { return searchingColorPictureBox.BackColor; }
 			set { searchingColorPictureBox.BackColor = value; }
@@ -58,10 +60,38 @@ namespace MeshCollision
 			var colorBoxColor = Color.Red;
 			var searchColor = Color.Green;
 
-			searchingColorPictureBox.Size = colorBoxSize;
+		  changeColorButton.Text = @"Change color";
+		  changeColorButton.Width = 100;
+      changeColorButton.Click += (sender, args) =>
+      {
+        var form = Form1.ActiveForm;
+        form.Hide();
+        
+        var newForm = new Form();
+
+        var pic = new PictureBox();
+        pic.Image = new Bitmap(Form1.Bitmap);
+        newForm.Size = form.Size;
+        pic.Size = Form1.Bitmap.Size;
+        pic.Click += (o, eventArgs) =>
+        {
+          var mArgs = (MouseEventArgs) eventArgs;
+          searchingColorPictureBox.BackColor = Form1.Bitmap.GetPixel(mArgs.X, mArgs.Y);
+          var form1 = Form1.ActiveForm;
+          form1.Hide();
+
+          form.Show();
+        };
+        newForm.Controls.Add(pic);
+        newForm.ShowDialog();
+
+        form.Show();
+      };
+
+      searchingColorPictureBox.Size = colorBoxSize;
 			searchingColorPictureBox.BackColor = searchColor;
 			searchingColorPictureBox.Click += DetectionColorPictureBox_Click;
-
+ 
 			meshColorPictureBox.Size = colorBoxSize;
 			meshColorPictureBox.BackColor = colorBoxColor;
 			meshColorPictureBox.Click += MeshColorPictureBox_Click;
@@ -186,18 +216,20 @@ namespace MeshCollision
 		}
 
 		public CustomControl[] GetControlls() {
-			var controlls = new List<CustomControl>();
-
-			controlls.Add(new CustomControl("Hits:", hitsLabel));
-			controlls.Add(new CustomControl("Average coincideces length:", averageCoincidencesLabel));
-			controlls.Add(new CustomControl("Coincidence without interrupt:", coincidencesWithoutInterruptLabel));
-			controlls.Add(new CustomControl("Lines count:", linesCountLabel));
-			controlls.Add(new CustomControl("Mesh color:", meshColorPictureBox));
-			controlls.Add(new CustomControl("Searching color:", searchingColorPictureBox));
-			controlls.Add(new CustomControl("Sens:", detectionSensLabel));
-			controlls.Add(new CustomControl("Sens trackbar:", sensTrackBar));
-			
-			return controlls.ToArray();
+		  var controlls = new List<CustomControl>
+		  {
+		    new CustomControl("Hits:", hitsLabel),
+		    new CustomControl("Average coincideces length:", averageCoincidencesLabel),
+		    new CustomControl("Coincidence without interrupt:", coincidencesWithoutInterruptLabel),
+		    new CustomControl("Lines count:", linesCountLabel),
+		    new CustomControl("Mesh color:", meshColorPictureBox),
+        new CustomControl(string.Empty, ChangeColorButton),
+		    new CustomControl("Searching color:", searchingColorPictureBox),
+		    new CustomControl("Sens:", detectionSensLabel),
+		    new CustomControl("Sens trackbar:", sensTrackBar)
+		  };
+      
+		  return controlls.ToArray();
 		}
 	}
 }
