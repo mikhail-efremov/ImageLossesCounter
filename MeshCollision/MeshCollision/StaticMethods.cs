@@ -37,5 +37,10 @@ namespace MeshCollision
                     return true;
             return false;
         }
+
+      public static bool ColorEqual(Color c1, Color c2)
+      {
+        return c1.B == c2.B && c1.G == c2.G && c1.R == c2.R;
+      }
     }
 }

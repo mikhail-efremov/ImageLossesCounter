@@ -91,7 +91,7 @@ namespace MeshCollision
       searchingColorPictureBox.Size = colorBoxSize;
 			searchingColorPictureBox.BackColor = searchColor;
 			searchingColorPictureBox.Click += DetectionColorPictureBox_Click;
- 
+      
 			meshColorPictureBox.Size = colorBoxSize;
 			meshColorPictureBox.BackColor = colorBoxColor;
 			meshColorPictureBox.Click += MeshColorPictureBox_Click;
@@ -99,7 +99,7 @@ namespace MeshCollision
 			hitsLabel.Text = "0";
 			averageCoincidencesLabel.Text = "0";
 			coincidencesWithoutInterruptLabel.Text = "0";
-			LinesCount = 30;
+			LinesCount = 60; // LINES COUNT
 			detectionSensLabel.Text = "0";
 			DetectionSens = 0;
 
@@ -130,10 +130,10 @@ namespace MeshCollision
 			form.Show();
 		}
 
-		public List<Line> GetRawMesh(Bitmap bitmap) {
+		public static List<Line> GetRawMesh(Bitmap bitmap) {
 			float weightIndent = 0;
 			float heightIndent = 0;
-			int linesCount = LinesCount;
+			int linesCount = 40; //LINES COUNT
 
 			if (linesCount >= bitmap.Width) {
 				linesCount = bitmap.Width;
@@ -168,48 +168,32 @@ namespace MeshCollision
 			return lines;
 		}
 
-		public List<Line> GetSimilarMesh(List<Line> lines, Bitmap bitmap, List<MeshCollideObject> except) {
-			Color customColor = searchingColorPictureBox.BackColor;
-			int sens = DetectionSens;
-
+		public List<Line> GetSimilarMesh(List<Line> lines, Bitmap bitmap, List<MeshCollideObject> except)
+		{
+		  var colors = new Color[2]
+		  {
+		    Color.Black,
+		    Color.White
+		  };
 			SimilarMesh.Clear();
 
-			foreach (Line line in lines) {
-				Line searchLine = new Line();
+			foreach (var line in lines) {
+				var searchLine = new Line();
 
-				foreach (Point point in line.Points) {
-					if (StaticMethods.ColorSimilar(customColor, bitmap.GetPixel(point.X, point.Y), (byte)sens)) {
-						if (!SimilarMesh.Contains(searchLine)) {
-							SimilarMesh.Add(searchLine);
-						}
-						/*
-						bool add = true;
-						foreach (var exc in except) {
-							/*							if(exc.SimilarMesh.Count <= exc.SimilarMesh.IndexOf(searchLine))
-															if (exc.SimilarMesh[exc.SimilarMesh.IndexOf(searchLine)].Points.Contains(point)) 
-															{
-																add = false;
-															}
-													}
-							*/
-							/*
-						foreach (var l in exc.SimilarMesh) {
-								foreach (var p in l.Points) {
-									if (point.X == p.X) {
-										if (point.Y == p.Y) {
-											add = false;
-											goto HACK;
-										}
-									}
-								}
-							}
-						}
-						HACK:
-					*/
-			//			if(add)
-							SimilarMesh[SimilarMesh.IndexOf(searchLine)].Points.Add(point);
-					}
-				}
+			  foreach (var color in colors)
+			  {
+			    foreach (Point point in line.Points)
+			    {
+			      if (StaticMethods.ColorEqual(color, bitmap.GetPixel(point.X, point.Y)))
+			      {
+			        if (!SimilarMesh.Contains(searchLine))
+			        {
+			          SimilarMesh.Add(searchLine);
+			        }
+			        SimilarMesh[SimilarMesh.IndexOf(searchLine)].Points.Add(point);
+			      }
+			    }
+			  }
 			}
 
 			return SimilarMesh;
