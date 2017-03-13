@@ -33,23 +33,28 @@
       this.buttonLoadImage = new System.Windows.Forms.Button();
       this.colorDialog1 = new System.Windows.Forms.ColorDialog();
       this.panel1 = new System.Windows.Forms.Panel();
-      this.label2 = new System.Windows.Forms.Label();
-      this.label1 = new System.Windows.Forms.Label();
       this.pictureBox2 = new System.Windows.Forms.PictureBox();
+      this.maxPictureBox = new System.Windows.Forms.PictureBox();
+      this.minPictureBox = new System.Windows.Forms.PictureBox();
       this.buttonAddNewMeshSet = new System.Windows.Forms.Button();
       this.trackBar1 = new System.Windows.Forms.TrackBar();
       this.button1 = new System.Windows.Forms.Button();
-      this.colorCointeinerPictureBox = new System.Windows.Forms.PictureBox();
+      this.hslCointeinerPictureBox = new System.Windows.Forms.PictureBox();
+      this.sValueTrackBar = new System.Windows.Forms.TrackBar();
+      this.lValueTrackBar = new System.Windows.Forms.TrackBar();
+      this.sValueInfoLabel = new System.Windows.Forms.Label();
+      this.lValueInfoLable = new System.Windows.Forms.Label();
       this.selectionRangeSlider1 = new MeshCollision.SelectionRangeSlider();
-      this.minPictureBox = new System.Windows.Forms.PictureBox();
-      this.maxPictureBox = new System.Windows.Forms.PictureBox();
+      this.linesCountInfoLabel = new System.Windows.Forms.Label();
+      this.linesCountTextBox = new System.Windows.Forms.TextBox();
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-      this.panel1.SuspendLayout();
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
-      ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
-      ((System.ComponentModel.ISupportInitialize)(this.colorCointeinerPictureBox)).BeginInit();
-      ((System.ComponentModel.ISupportInitialize)(this.minPictureBox)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.maxPictureBox)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.minPictureBox)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.hslCointeinerPictureBox)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.sValueTrackBar)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.lValueTrackBar)).BeginInit();
       this.SuspendLayout();
       // 
       // pictureBox1
@@ -59,9 +64,10 @@
             | System.Windows.Forms.AnchorStyles.Right)));
       this.pictureBox1.Location = new System.Drawing.Point(257, 12);
       this.pictureBox1.Name = "pictureBox1";
-      this.pictureBox1.Size = new System.Drawing.Size(459, 381);
+      this.pictureBox1.Size = new System.Drawing.Size(459, 291);
       this.pictureBox1.TabIndex = 0;
       this.pictureBox1.TabStop = false;
+      this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
       this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
       // 
       // buttonDraw
@@ -88,41 +94,34 @@
       // 
       this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-      this.panel1.Controls.Add(this.maxPictureBox);
-      this.panel1.Controls.Add(this.minPictureBox);
-      this.panel1.Controls.Add(this.label2);
-      this.panel1.Controls.Add(this.label1);
-      this.panel1.Controls.Add(this.pictureBox2);
       this.panel1.Location = new System.Drawing.Point(12, 70);
       this.panel1.Name = "panel1";
-      this.panel1.Size = new System.Drawing.Size(239, 323);
+      this.panel1.Size = new System.Drawing.Size(239, 20);
       this.panel1.TabIndex = 14;
-      // 
-      // label2
-      // 
-      this.label2.AutoSize = true;
-      this.label2.Location = new System.Drawing.Point(16, 93);
-      this.label2.Name = "label2";
-      this.label2.Size = new System.Drawing.Size(35, 13);
-      this.label2.TabIndex = 17;
-      this.label2.Text = "label2";
-      // 
-      // label1
-      // 
-      this.label1.AutoSize = true;
-      this.label1.Location = new System.Drawing.Point(16, 80);
-      this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(35, 13);
-      this.label1.TabIndex = 16;
-      this.label1.Text = "label1";
       // 
       // pictureBox2
       // 
-      this.pictureBox2.Location = new System.Drawing.Point(3, 27);
+      this.pictureBox2.Location = new System.Drawing.Point(202, 41);
       this.pictureBox2.Name = "pictureBox2";
-      this.pictureBox2.Size = new System.Drawing.Size(100, 50);
+      this.pictureBox2.Size = new System.Drawing.Size(23, 24);
       this.pictureBox2.TabIndex = 1;
       this.pictureBox2.TabStop = false;
+      // 
+      // maxPictureBox
+      // 
+      this.maxPictureBox.Location = new System.Drawing.Point(698, 343);
+      this.maxPictureBox.Name = "maxPictureBox";
+      this.maxPictureBox.Size = new System.Drawing.Size(18, 15);
+      this.maxPictureBox.TabIndex = 20;
+      this.maxPictureBox.TabStop = false;
+      // 
+      // minPictureBox
+      // 
+      this.minPictureBox.Location = new System.Drawing.Point(674, 343);
+      this.minPictureBox.Name = "minPictureBox";
+      this.minPictureBox.Size = new System.Drawing.Size(18, 15);
+      this.minPictureBox.TabIndex = 19;
+      this.minPictureBox.TabStop = false;
       // 
       // buttonAddNewMeshSet
       // 
@@ -138,7 +137,7 @@
       // 
       this.trackBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.trackBar1.Location = new System.Drawing.Point(12, 470);
+      this.trackBar1.Location = new System.Drawing.Point(12, 448);
       this.trackBar1.Maximum = 3619;
       this.trackBar1.Minimum = -1;
       this.trackBar1.Name = "trackBar1";
@@ -149,7 +148,7 @@
       // 
       // button1
       // 
-      this.button1.Location = new System.Drawing.Point(107, 400);
+      this.button1.Location = new System.Drawing.Point(107, 335);
       this.button1.Name = "button1";
       this.button1.Size = new System.Drawing.Size(75, 23);
       this.button1.TabIndex = 17;
@@ -157,47 +156,96 @@
       this.button1.UseVisualStyleBackColor = true;
       this.button1.Click += new System.EventHandler(this.button1_Click_1);
       // 
-      // colorCointeinerPictureBox
+      // hslCointeinerPictureBox
       // 
-      this.colorCointeinerPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+      this.hslCointeinerPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.colorCointeinerPictureBox.Location = new System.Drawing.Point(15, 448);
-      this.colorCointeinerPictureBox.Name = "colorCointeinerPictureBox";
-      this.colorCointeinerPictureBox.Size = new System.Drawing.Size(701, 16);
-      this.colorCointeinerPictureBox.TabIndex = 18;
-      this.colorCointeinerPictureBox.TabStop = false;
+      this.hslCointeinerPictureBox.Location = new System.Drawing.Point(12, 383);
+      this.hslCointeinerPictureBox.Name = "hslCointeinerPictureBox";
+      this.hslCointeinerPictureBox.Size = new System.Drawing.Size(701, 16);
+      this.hslCointeinerPictureBox.TabIndex = 18;
+      this.hslCointeinerPictureBox.TabStop = false;
+      // 
+      // sValueTrackBar
+      // 
+      this.sValueTrackBar.Location = new System.Drawing.Point(35, 405);
+      this.sValueTrackBar.Maximum = 1000;
+      this.sValueTrackBar.Name = "sValueTrackBar";
+      this.sValueTrackBar.Size = new System.Drawing.Size(156, 45);
+      this.sValueTrackBar.TabIndex = 20;
+      this.sValueTrackBar.Value = 1;
+      this.sValueTrackBar.ValueChanged += new System.EventHandler(this.sValueTrackBar_ValueChanged);
+      // 
+      // lValueTrackBar
+      // 
+      this.lValueTrackBar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.lValueTrackBar.Location = new System.Drawing.Point(557, 405);
+      this.lValueTrackBar.Maximum = 1000;
+      this.lValueTrackBar.Name = "lValueTrackBar";
+      this.lValueTrackBar.Size = new System.Drawing.Size(156, 45);
+      this.lValueTrackBar.TabIndex = 21;
+      this.lValueTrackBar.Value = 1;
+      this.lValueTrackBar.ValueChanged += new System.EventHandler(this.lValueTrackBar_ValueChanged);
+      // 
+      // sValueInfoLabel
+      // 
+      this.sValueInfoLabel.AutoSize = true;
+      this.sValueInfoLabel.Location = new System.Drawing.Point(12, 405);
+      this.sValueInfoLabel.Name = "sValueInfoLabel";
+      this.sValueInfoLabel.Size = new System.Drawing.Size(17, 13);
+      this.sValueInfoLabel.TabIndex = 22;
+      this.sValueInfoLabel.Text = "S:";
+      // 
+      // lValueInfoLable
+      // 
+      this.lValueInfoLable.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+      this.lValueInfoLable.AutoSize = true;
+      this.lValueInfoLable.Location = new System.Drawing.Point(534, 405);
+      this.lValueInfoLable.Name = "lValueInfoLable";
+      this.lValueInfoLable.Size = new System.Drawing.Size(16, 13);
+      this.lValueInfoLable.TabIndex = 23;
+      this.lValueInfoLable.Text = "L:";
       // 
       // selectionRangeSlider1
       // 
       this.selectionRangeSlider1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.selectionRangeSlider1.Location = new System.Drawing.Point(15, 424);
+      this.selectionRangeSlider1.Location = new System.Drawing.Point(12, 364);
       this.selectionRangeSlider1.Name = "selectionRangeSlider1";
-      this.selectionRangeSlider1.Size = new System.Drawing.Size(701, 18);
+      this.selectionRangeSlider1.Size = new System.Drawing.Size(701, 13);
       this.selectionRangeSlider1.TabIndex = 16;
       // 
-      // minPictureBox
+      // linesCountInfoLabel
       // 
-      this.minPictureBox.Location = new System.Drawing.Point(3, 147);
-      this.minPictureBox.Name = "minPictureBox";
-      this.minPictureBox.Size = new System.Drawing.Size(100, 50);
-      this.minPictureBox.TabIndex = 19;
-      this.minPictureBox.TabStop = false;
+      this.linesCountInfoLabel.AutoSize = true;
+      this.linesCountInfoLabel.Location = new System.Drawing.Point(12, 107);
+      this.linesCountInfoLabel.Name = "linesCountInfoLabel";
+      this.linesCountInfoLabel.Size = new System.Drawing.Size(35, 13);
+      this.linesCountInfoLabel.TabIndex = 24;
+      this.linesCountInfoLabel.Text = "Lines:";
       // 
-      // maxPictureBox
+      // linesCountTextBox
       // 
-      this.maxPictureBox.Location = new System.Drawing.Point(109, 147);
-      this.maxPictureBox.Name = "maxPictureBox";
-      this.maxPictureBox.Size = new System.Drawing.Size(100, 50);
-      this.maxPictureBox.TabIndex = 20;
-      this.maxPictureBox.TabStop = false;
+      this.linesCountTextBox.Location = new System.Drawing.Point(53, 104);
+      this.linesCountTextBox.Name = "linesCountTextBox";
+      this.linesCountTextBox.Size = new System.Drawing.Size(100, 20);
+      this.linesCountTextBox.TabIndex = 25;
       // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.ClientSize = new System.Drawing.Size(728, 516);
-      this.Controls.Add(this.colorCointeinerPictureBox);
+      this.ClientSize = new System.Drawing.Size(728, 490);
+      this.Controls.Add(this.linesCountTextBox);
+      this.Controls.Add(this.linesCountInfoLabel);
+      this.Controls.Add(this.pictureBox2);
+      this.Controls.Add(this.minPictureBox);
+      this.Controls.Add(this.maxPictureBox);
+      this.Controls.Add(this.lValueInfoLable);
+      this.Controls.Add(this.sValueInfoLabel);
+      this.Controls.Add(this.lValueTrackBar);
+      this.Controls.Add(this.sValueTrackBar);
+      this.Controls.Add(this.hslCointeinerPictureBox);
       this.Controls.Add(this.button1);
       this.Controls.Add(this.selectionRangeSlider1);
       this.Controls.Add(this.buttonAddNewMeshSet);
@@ -209,13 +257,13 @@
       this.Name = "Form1";
       this.Text = "Form1";
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-      this.panel1.ResumeLayout(false);
-      this.panel1.PerformLayout();
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-      ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
-      ((System.ComponentModel.ISupportInitialize)(this.colorCointeinerPictureBox)).EndInit();
-      ((System.ComponentModel.ISupportInitialize)(this.minPictureBox)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.maxPictureBox)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.minPictureBox)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.hslCointeinerPictureBox)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.sValueTrackBar)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.lValueTrackBar)).EndInit();
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -231,13 +279,17 @@
 		private System.Windows.Forms.Button buttonAddNewMeshSet;
     private System.Windows.Forms.PictureBox pictureBox2;
     private System.Windows.Forms.TrackBar trackBar1;
-    private System.Windows.Forms.Label label2;
-    private System.Windows.Forms.Label label1;
     private SelectionRangeSlider selectionRangeSlider1;
     private System.Windows.Forms.Button button1;
-    private System.Windows.Forms.PictureBox colorCointeinerPictureBox;
+    private System.Windows.Forms.PictureBox hslCointeinerPictureBox;
     private System.Windows.Forms.PictureBox maxPictureBox;
     private System.Windows.Forms.PictureBox minPictureBox;
+    private System.Windows.Forms.TrackBar sValueTrackBar;
+    private System.Windows.Forms.TrackBar lValueTrackBar;
+    private System.Windows.Forms.Label sValueInfoLabel;
+    private System.Windows.Forms.Label lValueInfoLable;
+    private System.Windows.Forms.Label linesCountInfoLabel;
+    private System.Windows.Forms.TextBox linesCountTextBox;
   }
 }
 

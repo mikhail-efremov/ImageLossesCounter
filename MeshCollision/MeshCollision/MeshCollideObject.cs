@@ -70,13 +70,16 @@ namespace MeshCollision
         var newForm = new Form();
 
         var pic = new PictureBox();
-        pic.Image = new Bitmap(Form1.Bitmap);
+        pic.Image = new Bitmap(Form1.Bitmap.Bitmap);
         newForm.Size = form.Size;
-        pic.Size = Form1.Bitmap.Size;
+        pic.Size = Form1.Bitmap.Bitmap.Size;
         pic.Click += (o, eventArgs) =>
         {
           var mArgs = (MouseEventArgs) eventArgs;
-          searchingColorPictureBox.BackColor = Form1.Bitmap.GetPixel(mArgs.X, mArgs.Y);
+          Form1.Bitmap.Lock();
+          var pixel = Form1.Bitmap.GetPixel(mArgs.X, mArgs.Y);
+          Form1.Bitmap.Unlock();
+          searchingColorPictureBox.BackColor = Color.FromArgb(pixel.R, pixel.G, pixel.B);
           var form1 = Form1.ActiveForm;
           form1.Hide();
 
@@ -130,45 +133,44 @@ namespace MeshCollision
 			form.Show();
 		}
 
-		public static List<Line> GetRawMesh(Bitmap bitmap) {
+		public static List<Line> GetRawMesh(UnsafeBitmap bitmap, int linesCount) {
 			float weightIndent = 0;
 			float heightIndent = 0;
-			int linesCount = 40; //LINES COUNT
 
-			if (linesCount >= bitmap.Width) {
-				linesCount = bitmap.Width;
+			if (linesCount >= bitmap.Bitmap.Width) {
+				linesCount = bitmap.Bitmap.Width;
 			}
-			weightIndent = bitmap.Width / (float)linesCount;
+			weightIndent = bitmap.Bitmap.Width / (float)linesCount;
 
-			if (linesCount >= bitmap.Height) {
-				linesCount = bitmap.Height;
+			if (linesCount >= bitmap.Bitmap.Height) {
+				linesCount = bitmap.Bitmap.Height;
 			}
-			heightIndent = bitmap.Height / (float)linesCount;
+			heightIndent = bitmap.Bitmap.Height / (float)linesCount;
 
 			List<Line> lines = new List<Line>();
 
 			//horizontal
 			for (int index = 0; index < linesCount; index++) {
 				Point xpt = new Point(0, (int)Math.Round(index * heightIndent));
-				Point ypt = new Point(bitmap.Width, (int)Math.Round(heightIndent * index));
+				Point ypt = new Point(bitmap.Bitmap.Width, (int)Math.Round(heightIndent * index));
 
-				Line line = new Line(xpt, ypt, bitmap.Width);
+				Line line = new Line(xpt, ypt, bitmap.Bitmap.Width);
 				lines.Add(line);
 			}
 
 			//vertical
 			for (var index = 0; index < linesCount; index++) {
 				Point xpt = new Point((int)Math.Round(index * weightIndent), 0);
-				Point ypt = new Point((int)Math.Round(index * weightIndent), bitmap.Height);
+				Point ypt = new Point((int)Math.Round(index * weightIndent), bitmap.Bitmap.Height);
 
-				Line line = new Line(xpt, ypt, bitmap.Height);
+				Line line = new Line(xpt, ypt, bitmap.Bitmap.Height);
 				lines.Add(line);
 			}
 
 			return lines;
 		}
 
-		public List<Line> GetSimilarMesh(List<Line> lines, Bitmap bitmap, List<MeshCollideObject> except)
+		public List<Line> GetSimilarMesh(List<Line> lines, UnsafeBitmap bitmap, List<MeshCollideObject> except)
 		{
 		  var colors = new Color[2]
 		  {
