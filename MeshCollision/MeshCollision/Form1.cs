@@ -2,10 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MeshCollision
 {
@@ -61,8 +58,7 @@ namespace MeshCollision
 
       return open.ShowDialog() == DialogResult.OK ? new Bitmap(open.FileName) : null;
     }
-
-    Stopwatch sw = Stopwatch.StartNew();
+    
     private void pictureBox1_Paint(object sender, PaintEventArgs e)
     {
       var graphics = e.Graphics;
@@ -71,16 +67,8 @@ namespace MeshCollision
       InvalidateImage();
     }
     
-    private double lastUsage = 0f;
     private void DrawWithRanges(Graphics graphics)
     {
-      //if (sw.ElapsedMilliseconds > lastUsage + 3000)
-      //  lastUsage = sw.ElapsedMilliseconds;
-      //else
-      //{
-      //  return;
-      //} 
-
       if(_colors == null)
         return;
 
@@ -88,8 +76,10 @@ namespace MeshCollision
       foreach (var color in _colors)
       {
         var similarLines = GetSimilarMesh(lines, Bitmap, color);
-        if(similarLines.Count() > 0)
+        if (similarLines.Any())
+        {
           DrawLines(similarLines, graphics, Brushes.Red);
+        }
       }
     }
     
@@ -230,23 +220,6 @@ namespace MeshCollision
       _nextLocation += 24;
 		}
 
-    private void trackBar1_Scroll(object sender, EventArgs e)
-    {
-      var strin = trackBar1.Value.ToString();
-      if (strin.Length < 2)
-        strin += "0";
-
-      string normal = new string(strin.ToCharArray(), 0, strin.Length - 1);
-      var inta = 0;
-      if (strin == "-1")
-        inta = -1;
-      else
-        inta = Convert.ToInt32(normal);
-
-      var color = Hsl.ColorFromHsl(inta / 360d, SValue, LValue);
-      pictureBox2.BackColor = color;
-    }
-
     private void SuperSliderAddeder(SelectionRangeSlider Slider) {
       Brush b = new SolidBrush(Color.Black);
 
@@ -255,7 +228,7 @@ namespace MeshCollision
 
       foreach (var sli in Slider.Sliders) {
         if (sli.SelectedMin == 0 && sli.SelectedMax == mMax) {
-          MessageBox.Show(@"You wonna add slider to full slider's range, realy?", @"Error");
+          return;
         }
         if (sli.SelectedMax != mMax)
           if (sli.SelectedMax > mMin) {
@@ -314,14 +287,14 @@ namespace MeshCollision
 
     private void sValueTrackBar_ValueChanged(object sender, EventArgs e)
     {
-      SValue = sValueTrackBar.Value / 1000d;
+      SValue = (double)sValueTrackBar.Value / sValueTrackBar.Maximum;
       if(selectionRangeSlider1.Sliders.Count > 0)
         OnSlideSelectionChanged(selectionRangeSlider1.Sliders[0], null);
     }
 
     private void lValueTrackBar_ValueChanged(object sender, EventArgs e)
     {
-      LValue = lValueTrackBar.Value / 1000d;
+      LValue = (double)lValueTrackBar.Value / lValueTrackBar.Maximum;
       if (selectionRangeSlider1.Sliders.Count > 0)
         OnSlideSelectionChanged(selectionRangeSlider1.Sliders[0], null);
     }
