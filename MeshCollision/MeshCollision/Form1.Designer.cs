@@ -42,9 +42,11 @@
       this.linesCountInfoLabel = new System.Windows.Forms.Label();
       this.linesCountTextBox = new System.Windows.Forms.TextBox();
       this.buttonGetLinesCount = new System.Windows.Forms.Button();
-      this.selectionRangeSlider1 = new MeshCollision.SelectionRangeSlider();
       this.linesColorInfoLabel = new System.Windows.Forms.Label();
       this.colorGetPictureBox = new System.Windows.Forms.PictureBox();
+      this.hitsInfoLabel = new System.Windows.Forms.Label();
+      this.hitsTextBox = new System.Windows.Forms.TextBox();
+      this.selectionRangeSlider1 = new MeshCollision.SelectionRangeSlider();
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.maxPictureBox)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.minPictureBox)).BeginInit();
@@ -187,14 +189,6 @@
       this.buttonGetLinesCount.UseVisualStyleBackColor = true;
       this.buttonGetLinesCount.Click += new System.EventHandler(this.buttonGetLinesCount_Click);
       // 
-      // selectionRangeSlider1
-      // 
-      this.selectionRangeSlider1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.selectionRangeSlider1.Location = new System.Drawing.Point(11, 353);
-      this.selectionRangeSlider1.Name = "selectionRangeSlider1";
-      this.selectionRangeSlider1.Size = new System.Drawing.Size(701, 13);
-      this.selectionRangeSlider1.TabIndex = 16;
-      // 
       // linesColorInfoLabel
       // 
       this.linesColorInfoLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
@@ -215,11 +209,40 @@
       this.colorGetPictureBox.TabStop = false;
       this.colorGetPictureBox.Click += new System.EventHandler(this.colorGetPictureBox_Click);
       // 
+      // hitsInfoLabel
+      // 
+      this.hitsInfoLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.hitsInfoLabel.AutoSize = true;
+      this.hitsInfoLabel.Location = new System.Drawing.Point(11, 446);
+      this.hitsInfoLabel.Name = "hitsInfoLabel";
+      this.hitsInfoLabel.Size = new System.Drawing.Size(28, 13);
+      this.hitsInfoLabel.TabIndex = 29;
+      this.hitsInfoLabel.Text = "Hits:";
+      // 
+      // hitsTextBox
+      // 
+      this.hitsTextBox.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.hitsTextBox.Location = new System.Drawing.Point(73, 439);
+      this.hitsTextBox.Name = "hitsTextBox";
+      this.hitsTextBox.ReadOnly = true;
+      this.hitsTextBox.Size = new System.Drawing.Size(79, 20);
+      this.hitsTextBox.TabIndex = 30;
+      // 
+      // selectionRangeSlider1
+      // 
+      this.selectionRangeSlider1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.selectionRangeSlider1.Location = new System.Drawing.Point(11, 353);
+      this.selectionRangeSlider1.Name = "selectionRangeSlider1";
+      this.selectionRangeSlider1.Size = new System.Drawing.Size(701, 13);
+      this.selectionRangeSlider1.TabIndex = 16;
+      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(728, 468);
+      this.Controls.Add(this.hitsTextBox);
+      this.Controls.Add(this.hitsInfoLabel);
       this.Controls.Add(this.colorGetPictureBox);
       this.Controls.Add(this.linesColorInfoLabel);
       this.Controls.Add(this.buttonGetLinesCount);
@@ -269,6 +292,8 @@
     private System.Windows.Forms.Button buttonGetLinesCount;
     private System.Windows.Forms.Label linesColorInfoLabel;
     private System.Windows.Forms.PictureBox colorGetPictureBox;
+    private System.Windows.Forms.Label hitsInfoLabel;
+    private System.Windows.Forms.TextBox hitsTextBox;
   }
 }
 

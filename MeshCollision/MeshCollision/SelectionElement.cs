@@ -58,6 +58,7 @@ namespace MeshCollision
     public int LValue1000 { get; set; } = 500;
     public double SValue1 => SValue1000 / 1000d;
     public double LValue1 => LValue1000 / 1000d;
+    public int Hits { get; set; } = 0;
 
     [Description("Fired when SelectedMin or SelectedMax changes.")]
     public event EventHandler SelectionChanged;

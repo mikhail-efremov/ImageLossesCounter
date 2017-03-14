@@ -67,15 +67,32 @@ namespace MeshCollision
       if(_colors == null)
         return;
 
+      linesCountTextBox.Text = _linesCount.ToString();
       var lines = MeshCollideObject.GetRawMesh(Bitmap, _linesCount);
       foreach (var color in _colors)
       {
         var similarLines = GetSimilarMesh(lines, Bitmap, color, 50);
         if (similarLines.Any())
         {
+          /*
+          var coincidence = CoincidenceAnalyth.GetCoincidence(similarLines);
+          meshCollideObject.CoincidencesWithoutInterrupt = coincidence.Count;
+
+          int average = 0;
+          coincidence.ForEach(line => average = average + line.Points.Count);
+          if (average != 0)
+            average = average / coincidence.Count;
+          meshCollideObject.AverageCoincidences = average;
+          */
+          int hits = 0;
+          similarLines.ForEach(line => hits = hits + line.Points.Count);
+          
+          selectionRangeSlider1.CurrentSelectionElement.Hits = hits;
           DrawLines(similarLines, graphics, new SolidBrush(selectionRangeSlider1.CurrentSelectionElement.LinesColor));
         }
       }
+      if(selectionRangeSlider1.CurrentSelectionElement != null)
+        hitsTextBox.Text = selectionRangeSlider1.CurrentSelectionElement.Hits.ToString();
     }
     
     private List<Line> GetSimilarMesh(IEnumerable<Line> lines, UnsafeBitmap bitmap, Color color, byte sens)
@@ -83,7 +100,7 @@ namespace MeshCollision
       var similarMesh = new List<Line>();
       
       Bitmap.Lock();
-             foreach (var line in lines)
+      foreach (var line in lines)
       {
         {
           var searchLine = new Line();
@@ -185,6 +202,7 @@ namespace MeshCollision
       sValueTrackBar.Value = element.SValue1000;
       lValueTrackBar.Value = element.LValue1000;
       OnSlideSelectionChanged(sender, eventArgs);
+      hitsTextBox.Text = element.Hits.ToString();
     }
 
     private void SetMinMaxColorBoxes(SelectionElement element)
@@ -283,7 +301,10 @@ namespace MeshCollision
     {
       var count = 0;
       if (int.TryParse(linesCountTextBox.Text, out count))
+      {
         _linesCount = count;
+        selectionRangeSlider1.CurrentSelectionElement.LinesCount = count;
+      }
     }
 
     private void colorGetPictureBox_Click(object sender, EventArgs e) {
@@ -297,32 +318,6 @@ namespace MeshCollision
       if(selectionRangeSlider1.CurrentSelectionElement == null)
         return;
       selectionRangeSlider1.CurrentSelectionElement.LinesColor = cd.Color;
-    }
-
-    private void DrawWithSingleColor(Graphics graphics) {
-      foreach (var meshCollideObject in _meshCollideObjects) {
-        var brush = new SolidBrush(meshCollideObject.MeshColor);
-
-        var lines = MeshCollideObject.GetRawMesh(Bitmap, 1);
-        var similarLines = meshCollideObject.GetSimilarMesh(lines, Bitmap, _meshCollideObjects);
-
-        var coincidence = CoincidenceAnalyth.GetCoincidence(similarLines);
-
-        meshCollideObject.CoincidencesWithoutInterrupt = coincidence.Count;
-
-        int average = 0;
-        coincidence.ForEach(line => average = average + line.Points.Count);
-        if (average != 0)
-          average = average / coincidence.Count;
-        meshCollideObject.AverageCoincidences = average;
-
-        DrawLines(similarLines, graphics, brush);
-
-        int hits = 0;
-        similarLines.ForEach(line => hits = hits + line.Points.Count);
-
-        meshCollideObject.Hits = hits;
-      }
     }
   }
 }
