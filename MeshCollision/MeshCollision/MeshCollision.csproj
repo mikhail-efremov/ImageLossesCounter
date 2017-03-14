@@ -63,7 +63,7 @@
     <Compile Include="SelectionRangeSlider.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Slider.cs" />
+    <Compile Include="SelectionElement.cs" />
     <Compile Include="StaticMethods.cs" />
     <Compile Include="UnsafeBitmap.cs" />
     <EmbeddedResource Include="Form1.resx">

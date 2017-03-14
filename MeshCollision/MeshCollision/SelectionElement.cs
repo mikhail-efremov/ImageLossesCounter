@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Drawing;
-using System.Windows.Forms;
 using System.ComponentModel;
 
 namespace MeshCollision
 {
-  public class Slider
+  public class SelectionElement
   {
-    private Brush brush;
-    public Brush Brush {
-      get { return brush; }
-      set { brush = value; }
-    }
-
     [Description("Minimum value of the slider.")]
     public int Min {
       get { return min; }
@@ -50,15 +43,29 @@ namespace MeshCollision
     int selectedMax = 0;
     private int Width = 0;
     private int Height = 0;
-    public Slider(int Width, int Height, Brush brush, int m_max, int m_min) {
+    public SelectionElement(int Width, int Height, int m_max, int m_min, Color linesColor) {
       this.Width = Width;
       this.Height = Height;
-      this.brush = brush;
+      LinesColor = linesColor;
 
       selectedMax = m_max;
       selectedMin = m_min;
     }
+
+    public int LinesCount { get; set; } = 0;
+    public Color LinesColor { get; set; }
+    public int SValue1000 { get; set; } = 1000;
+    public int LValue1000 { get; set; } = 500;
+    public double SValue1 => SValue1000 / 1000d;
+    public double LValue1 => LValue1000 / 1000d;
+
     [Description("Fired when SelectedMin or SelectedMax changes.")]
     public event EventHandler SelectionChanged;
+    public event EventHandler ElementSelected;
+
+    public void SelectElement()
+    {
+      ElementSelected?.Invoke(this, null);
+    }
   }
 }
