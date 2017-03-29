@@ -26,21 +26,21 @@ namespace MeshCollision
                 return true;
             return false;
         }
-        
-        public static bool ColorSimilar(Color c1, Color c2, byte sens)
-        {
-            if (sens >= 255)
-                return true;
-                if (c1.B > c2.B - sens && c1.B < c2.B + sens
-                    && c1.G > c2.G - sens && c1.G < c2.G + sens
-                    && c1.R > c2.R - sens && c1.R < c1.R + sens)
-                    return true;
-            return false;
-        }
 
-      public static bool ColorEqual(Color c1, Color c2)
-      {
-        return c1.B == c2.B && c1.G == c2.G && c1.R == c2.R;
-      }
+    public static bool ColorSimilar(Color c1, Color c2, byte sens)
+    {
+      if (sens >= 255)
+        return true;
+      if (c1.R >= c2.R - sens && c1.R <= c2.R + sens)
+        if (c1.G >= c2.G - sens && c1.G <= c2.G + sens)
+          if (c1.B >= c2.B - sens && c1.B <= c2.B + sens)
+            return true;
+      return false;
     }
+
+    public static bool ColorEqual(Color c1, Color c2)
+    {
+      return c1.B == c2.B && c1.G == c2.G && c1.R == c2.R;
+    }
+  }
 }

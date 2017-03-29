@@ -3,6 +3,8 @@ using System.Linq;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace MeshCollision
 {
@@ -67,34 +69,54 @@ namespace MeshCollision
       if(_colors == null)
         return;
 
-      linesCountTextBox.Text = _linesCount.ToString();
+      var points = new List<Point>();
+      
       var lines = MeshCollideObject.GetRawMesh(Bitmap, _linesCount);
+
       foreach (var color in _colors)
       {
         var similarLines = GetSimilarMesh(lines, Bitmap, color, 50);
-        if (similarLines.Any())
+        foreach (var simLine in similarLines)
         {
-          /*
-          var coincidence = CoincidenceAnalyth.GetCoincidence(similarLines);
-          meshCollideObject.CoincidencesWithoutInterrupt = coincidence.Count;
-
-          int average = 0;
-          coincidence.ForEach(line => average = average + line.Points.Count);
-          if (average != 0)
-            average = average / coincidence.Count;
-          meshCollideObject.AverageCoincidences = average;
-          */
-          int hits = 0;
-          similarLines.ForEach(line => hits = hits + line.Points.Count);
-          
-          selectionRangeSlider1.CurrentSelectionElement.Hits = hits;
-          DrawLines(similarLines, graphics, new SolidBrush(selectionRangeSlider1.CurrentSelectionElement.LinesColor));
+          foreach (var point in simLine.Points)
+          {
+            if (!points.Contains(point))
+            {
+              points.Add(point);
+              file.AppendLine(CustomStringByPoint(point));
+            }
+          }
         }
       }
-      if(selectionRangeSlider1.CurrentSelectionElement != null)
-        hitsTextBox.Text = selectionRangeSlider1.CurrentSelectionElement.Hits.ToString();
+      
+      if (selectionRangeSlider1.CurrentSelectionElement != null)
+      {
+        DrawLines(points, graphics, new SolidBrush(selectionRangeSlider1.CurrentSelectionElement.LinesColor));
+        selectionRangeSlider1.CurrentSelectionElement.Hits = points.Count;
+        hitsTextBox.Text = points.Count.ToString();
+        var desctop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        var path = desctop + "\\points.txt";
+        File.Delete(path);
+        File.WriteAllText(path, file.ToString());
+        file.Clear();
+      }
+      index = 0;
     }
-    
+
+    private StringBuilder file = new StringBuilder();
+
+    private int index = 0;
+    private string CustomStringByPoint(Point point)
+    {
+      index++;
+      Bitmap.Lock();
+      var rgb = Bitmap.GetPixel(point.X, point.Y);
+      var hsl = Hsl.FromRGB(rgb.R, rgb.G, rgb.B);
+
+      Bitmap.Unlock();
+      return $"{index} [X:{point.X} Y:{point.Y}]     [R:{rgb.R} G:{rgb.G} B:{rgb.B}]  [H:{hsl.H} S:{hsl.S} L:{hsl.L}]";
+    }
+
     private List<Line> GetSimilarMesh(IEnumerable<Line> lines, UnsafeBitmap bitmap, Color color, byte sens)
     {
       var similarMesh = new List<Line>();
@@ -148,10 +170,14 @@ namespace MeshCollision
     {
       foreach (var line in lines)
       {
-        foreach (var point in line.Points)
-        {
-          graphics.FillRectangle(brush, point.X, point.Y, 1, 1);
-        }
+        DrawLines(line.Points, graphics, brush);
+      }
+    }
+
+    private static void DrawLines(IEnumerable<Point> points, Graphics graphics, Brush brush)
+    {
+      foreach (var point in points) {
+        graphics.FillRectangle(brush, point.X, point.Y, 1, 1);
       }
     }
 
