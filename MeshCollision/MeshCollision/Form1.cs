@@ -14,7 +14,7 @@ namespace MeshCollision
     private readonly List<MeshCollideObject> _meshCollideObjects = new List<MeshCollideObject>();
     private readonly List<Color> _colors = new List<Color>();
 
-    private static int _linesCount = 10;
+    private static int _linesCount = 15;
 
     public Form1()
     {
@@ -66,12 +66,14 @@ namespace MeshCollision
     
     private void DrawWithRanges(Graphics graphics)
     {
-      if(_colors == null)
+      if(_colors == null || _colors.Count == 0)
         return;
-
+//      linesCountTextBox.Text = _linesCount.ToString();
       var points = new List<Point>();
       
       var lines = MeshCollideObject.GetRawMesh(Bitmap, _linesCount);
+      if(selectionRangeSlider1.CurrentSelectionElement != null)
+        selectionRangeSlider1.CurrentSelectionElement.Hits = 0;
 
       foreach (var color in _colors)
       {
@@ -80,10 +82,10 @@ namespace MeshCollision
         {
           foreach (var point in simLine.Points)
           {
-            if (!points.Contains(point))
+//            if (!points.Contains(point))
             {
               points.Add(point);
-              file.AppendLine(CustomStringByPoint(point));
+//              file.AppendLine(CustomStringByPoint(point));
             }
           }
         }
@@ -93,17 +95,17 @@ namespace MeshCollision
       {
         DrawLines(points, graphics, new SolidBrush(selectionRangeSlider1.CurrentSelectionElement.LinesColor));
         selectionRangeSlider1.CurrentSelectionElement.Hits = points.Count;
-        hitsTextBox.Text = points.Count.ToString();
-        var desctop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-        var path = desctop + "\\points.txt";
-        File.Delete(path);
-        File.WriteAllText(path, file.ToString());
-        file.Clear();
+//        hitsTextBox.Text = points.Count.ToString();
+//        var desctop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+//        var path = desctop + "\\points.txt";
+//        File.Delete(path);
+//        File.WriteAllText(path, file.ToString());
+//        file.Clear();
       }
       index = 0;
     }
 
-    private StringBuilder file = new StringBuilder();
+//    private StringBuilder file = new StringBuilder();
 
     private int index = 0;
     private string CustomStringByPoint(Point point)
@@ -114,7 +116,8 @@ namespace MeshCollision
       var hsl = Hsl.FromRGB(rgb.R, rgb.G, rgb.B);
 
       Bitmap.Unlock();
-      return $"{index} [X:{point.X} Y:{point.Y}]     [R:{rgb.R} G:{rgb.G} B:{rgb.B}]  [H:{hsl.H} S:{hsl.S} L:{hsl.L}]";
+      return $"({point.X},{point.Y})";
+        // $"{index} [X:{point.X} Y:{point.Y}]     [R:{rgb.R} G:{rgb.G} B:{rgb.B}]  [H:{hsl.H} S:{hsl.S} L:{hsl.L}]";
     }
 
     private List<Line> GetSimilarMesh(IEnumerable<Line> lines, UnsafeBitmap bitmap, Color color, byte sens)
@@ -217,13 +220,14 @@ namespace MeshCollision
       selectionRangeSlider1.Invalidate();
       
       var element = (SelectionElement) sender;
+
       SetColors(element, element.SelectedMin, element.SelectedMax);
       SetMinMaxColorBoxes(element);
     }
 
     private void OnSliderElementSelected(object sender, EventArgs eventArgs) {
       var element = (SelectionElement)sender;
-      linesCountTextBox.Text = element.LinesCount.ToString();
+//      linesCountTextBox.Text = element.LinesCount.ToString();
       colorGetPictureBox.BackColor = element.LinesColor;
       sValueTrackBar.Value = element.SValue1000;
       lValueTrackBar.Value = element.LValue1000;
