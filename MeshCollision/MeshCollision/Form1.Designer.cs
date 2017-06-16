@@ -47,6 +47,7 @@
       this.hitsInfoLabel = new System.Windows.Forms.Label();
       this.hitsTextBox = new System.Windows.Forms.TextBox();
       this.selectionRangeSlider1 = new MeshCollision.SelectionRangeSlider();
+      this.buttonDraw = new System.Windows.Forms.Button();
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.maxPictureBox)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.minPictureBox)).BeginInit();
@@ -236,11 +237,23 @@
       this.selectionRangeSlider1.Size = new System.Drawing.Size(701, 13);
       this.selectionRangeSlider1.TabIndex = 16;
       // 
+      // buttonDraw
+      // 
+      this.buttonDraw.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.buttonDraw.Location = new System.Drawing.Point(188, 311);
+      this.buttonDraw.Name = "buttonDraw";
+      this.buttonDraw.Size = new System.Drawing.Size(75, 23);
+      this.buttonDraw.TabIndex = 31;
+      this.buttonDraw.Text = "Draw";
+      this.buttonDraw.UseVisualStyleBackColor = true;
+      this.buttonDraw.Click += new System.EventHandler(this.buttonDraw_Click);
+      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(728, 468);
+      this.Controls.Add(this.buttonDraw);
       this.Controls.Add(this.hitsTextBox);
       this.Controls.Add(this.hitsInfoLabel);
       this.Controls.Add(this.colorGetPictureBox);
@@ -294,6 +307,7 @@
     private System.Windows.Forms.PictureBox colorGetPictureBox;
     private System.Windows.Forms.Label hitsInfoLabel;
     private System.Windows.Forms.TextBox hitsTextBox;
+    private System.Windows.Forms.Button buttonDraw;
   }
 }
 

@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Linq;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
+using System.Linq;
+using MeshCollision.ColorSpaces;
 
 namespace MeshCollision
 {
   public partial class Form1 : Form
   {
     public static UnsafeBitmap Bitmap;
-    private readonly List<MeshCollideObject> _meshCollideObjects = new List<MeshCollideObject>();
-    private readonly List<Color> _colors = new List<Color>();
-
     private static int _linesCount = 15;
 
     public Form1()
@@ -58,96 +54,68 @@ namespace MeshCollision
     
     private void pictureBox1_Paint(object sender, PaintEventArgs e)
     {
-      var graphics = e.Graphics;
-      DrawWithRanges(graphics);
       PaintHslCointeinerPictureBox();
       InvalidateImage();
     }
-    
-    private void DrawWithRanges(Graphics graphics)
+
+    private void DrawWithRanges(Graphics graphics, List<IColorSpace> colors)
     {
-      if(_colors == null || _colors.Count == 0)
+      if (colors == null || colors.Count == 0) {
+        DrawLines(new Point[] { }, graphics, new SolidBrush(selectionRangeSlider1.CurrentSelectionElement.LinesColor));
+        selectionRangeSlider1.CurrentSelectionElement.Hits = 0;
         return;
-//      linesCountTextBox.Text = _linesCount.ToString();
+      }
+
       var points = new List<Point>();
-      
-      var lines = MeshCollideObject.GetRawMesh(Bitmap, _linesCount);
-      if(selectionRangeSlider1.CurrentSelectionElement != null)
+
+      var lines = MeshCollideObject.GetRawMesh(Bitmap.Bitmap, _linesCount);
+      if (selectionRangeSlider1.CurrentSelectionElement != null)
         selectionRangeSlider1.CurrentSelectionElement.Hits = 0;
 
-      foreach (var color in _colors)
-      {
-        var similarLines = GetSimilarMesh(lines, Bitmap, color, 50);
-        foreach (var simLine in similarLines)
-        {
-          foreach (var point in simLine.Points)
-          {
-//            if (!points.Contains(point))
-            {
+      foreach (var color in colors) {
+        var similarLines = GetSimilarMesh(lines, Bitmap, color, 100);
+        foreach (var simLine in similarLines) {
+          foreach (var point in simLine.Points) {
+            if (!points.Contains(point)) {
               points.Add(point);
-//              file.AppendLine(CustomStringByPoint(point));
             }
           }
         }
       }
-      
-      if (selectionRangeSlider1.CurrentSelectionElement != null)
-      {
+
+      if (selectionRangeSlider1.CurrentSelectionElement != null) {
         DrawLines(points, graphics, new SolidBrush(selectionRangeSlider1.CurrentSelectionElement.LinesColor));
         selectionRangeSlider1.CurrentSelectionElement.Hits = points.Count;
-//        hitsTextBox.Text = points.Count.ToString();
-//        var desctop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-//        var path = desctop + "\\points.txt";
-//        File.Delete(path);
-//        File.WriteAllText(path, file.ToString());
-//        file.Clear();
       }
-      index = 0;
     }
 
-//    private StringBuilder file = new StringBuilder();
-
-    private int index = 0;
-    private string CustomStringByPoint(Point point)
-    {
-      index++;
-      Bitmap.Lock();
-      var rgb = Bitmap.GetPixel(point.X, point.Y);
-      var hsl = Hsl.FromRGB(rgb.R, rgb.G, rgb.B);
-
-      Bitmap.Unlock();
-      return $"({point.X},{point.Y})";
-        // $"{index} [X:{point.X} Y:{point.Y}]     [R:{rgb.R} G:{rgb.G} B:{rgb.B}]  [H:{hsl.H} S:{hsl.S} L:{hsl.L}]";
-    }
-
-    private List<Line> GetSimilarMesh(IEnumerable<Line> lines, UnsafeBitmap bitmap, Color color, byte sens)
+    private List<Line> GetSimilarMesh(IEnumerable<Line> lines, UnsafeBitmap bitmap, IColorSpace colorSpace, byte sens)
     {
       var similarMesh = new List<Line>();
       
       Bitmap.Lock();
       foreach (var line in lines)
       {
+        var searchLine = new Line();
+        foreach (var point in line.Points)
         {
-          var searchLine = new Line();
-          foreach (var point in line.Points)
+          if (colorSpace.ColorSimilar(point, bitmap, sens))
           {
-            if (StaticMethods.ColorSimilar(color, bitmap.GetPixel(point.X, point.Y), sens))
+            if (!similarMesh.Contains(searchLine))
             {
-              if (!similarMesh.Contains(searchLine))
-              {
-                similarMesh.Add(searchLine);
-              }
-              if (similarMesh.Contains(searchLine))
-                similarMesh[similarMesh.IndexOf(searchLine)].Points.Add(point);
+              similarMesh.Add(searchLine);
             }
+            if (similarMesh.Contains(searchLine))
+              similarMesh[similarMesh.IndexOf(searchLine)].Points.Add(point);
           }
         }
       }
       Bitmap.Unlock();
       return similarMesh;
     }
-    
-    private void PaintHslCointeinerPictureBox() {
+
+    private void PaintHslCointeinerPictureBox() 
+    {
       if (selectionRangeSlider1.CurrentSelectionElement == null)
         return;
 
@@ -156,7 +124,7 @@ namespace MeshCollision
       
       for (var i = 0; i < width; i++)
       {
-        var color = Hsl.ColorFromHsl((double)i / width,
+        var color = HslColorSpace.ColorFromHsl((double)i / width,
           selectionRangeSlider1.CurrentSelectionElement.SValue1,
           selectionRangeSlider1.CurrentSelectionElement.LValue1);
 
@@ -169,7 +137,7 @@ namespace MeshCollision
       hslCointeinerPictureBox.Image = image;
     }
 
-    private static void DrawLines(IEnumerable<Line> lines, Graphics graphics, Brush brush)
+    private  void DrawLines(IEnumerable<Line> lines, Graphics graphics, Brush brush)
     {
       foreach (var line in lines)
       {
@@ -177,7 +145,7 @@ namespace MeshCollision
       }
     }
 
-    private static void DrawLines(IEnumerable<Point> points, Graphics graphics, Brush brush)
+    private  void DrawLines(IEnumerable<Point> points, Graphics graphics, Brush brush)
     {
       foreach (var point in points) {
         graphics.FillRectangle(brush, point.X, point.Y, 1, 1);
@@ -220,14 +188,21 @@ namespace MeshCollision
       selectionRangeSlider1.Invalidate();
       
       var element = (SelectionElement) sender;
-
-      SetColors(element, element.SelectedMin, element.SelectedMax);
       SetMinMaxColorBoxes(element);
+    }
+
+    private void DrawMesh(SelectionRangeSlider selectionRangeSlider, int minH, int maxH)
+    {
+      var element = selectionRangeSlider.CurrentSelectionElement;
+
+      element.SelectedMin = minH;
+      element.SelectedMax = maxH;
+
+      selectionRangeSlider.Invalidate();
     }
 
     private void OnSliderElementSelected(object sender, EventArgs eventArgs) {
       var element = (SelectionElement)sender;
-//      linesCountTextBox.Text = element.LinesCount.ToString();
       colorGetPictureBox.BackColor = element.LinesColor;
       sValueTrackBar.Value = element.SValue1000;
       lValueTrackBar.Value = element.LValue1000;
@@ -240,8 +215,8 @@ namespace MeshCollision
       var min = element.SelectedMin;
       var max = element.SelectedMax;
 
-      var minColor = Hsl.ColorFromHsl((double)min / element.Max, element.SValue1, element.LValue1);
-      var maxColor = Hsl.ColorFromHsl((double)max / element.Max, element.SValue1, element.LValue1);
+      var minColor = HslColorSpace.ColorFromHsl((double)min / element.Max, element.SValue1, element.LValue1);
+      var maxColor = HslColorSpace.ColorFromHsl((double)max / element.Max, element.SValue1, element.LValue1);
 
       SetColorPictureBox(maxPictureBox, maxColor);
       SetColorPictureBox(minPictureBox, minColor);
@@ -297,34 +272,46 @@ namespace MeshCollision
       var secondPixel = Bitmap.GetPixel(secondClickData.X, secondClickData.Y);
       Bitmap.Unlock();
 
-      var firstHsl = Hsl.FromRGB(firstPixel.R, firstPixel.G, firstPixel.B);
-      var secondHsl = Hsl.FromRGB(secondPixel.R, secondPixel.G, secondPixel.B);
+      var firstHsl = HslColorSpace.FromRGB(firstPixel.R, firstPixel.G, firstPixel.B);
+      var secondHsl = HslColorSpace.FromRGB(secondPixel.R, secondPixel.G, secondPixel.B);
       
       var maxH = firstHsl.H > secondHsl.H ? firstHsl.H : secondHsl.H;
       var minH = firstHsl.H < secondHsl.H ? firstHsl.H : secondHsl.H;
 
-      if (selectionRangeSlider1.CurrentSelectionElement == null)
-        return;
-      SetColors(selectionRangeSlider1.CurrentSelectionElement, (int)minH, (int)maxH);
-
-      selectionRangeSlider1.CurrentSelectionElement.SelectedMin = (int)minH;
-      selectionRangeSlider1.CurrentSelectionElement.SelectedMax = (int)maxH;
-
-      selectionRangeSlider1.Invalidate();
+      DrawMesh(selectionRangeSlider1, (int)minH, (int)maxH);
     }
 
-    private void SetColors(SelectionElement element, int min, int max)
+    private List<IColorSpace> SetColors(SelectionElement element, int min, int max)
     {
-      _colors.Clear();
+      var colors = new List<IColorSpace>();
 
       if (selectionRangeSlider1.Sliders.Count < 1)
-        return;
+        return null;
 
       _firstClick = true;
 
       for (; min < max; min++) {
-        _colors.Add(Hsl.ColorFromHsl((double)min / element.Max, element.SValue1, element.LValue1));
+        colors.Add(new RgbColorSpace(
+          HslColorSpace.ColorFromHsl((double)min / element.Max, element.SValue1, element.LValue1)));
       }
+
+      return colors;
+    }
+
+    private List<IColorSpace> SetHslColor(SelectionElement element, int min, int max)
+    {
+      var colors = new List<IColorSpace>();
+
+      if (selectionRangeSlider1.Sliders.Count < 1)
+        return null;
+
+      _firstClick = true;
+
+      for (; min < max; min++) {
+        colors.Add(new HslColorSpace((float)min / element.Max, (float)element.SValue1, (float)element.LValue1));
+      }
+
+      return colors;
     }
 
     private void buttonGetLinesCount_Click(object sender, EventArgs e)
@@ -348,6 +335,19 @@ namespace MeshCollision
       if(selectionRangeSlider1.CurrentSelectionElement == null)
         return;
       selectionRangeSlider1.CurrentSelectionElement.LinesColor = cd.Color;
+    }
+
+    private void buttonDraw_Click(object sender, EventArgs e)
+    {
+      var element = selectionRangeSlider1.CurrentSelectionElement;
+      var colors = SetColors(element, element.SelectedMin, element.SelectedMax);
+        // SetHslColor(element, element.SelectedMin, element.SelectedMax);
+
+      var image = Bitmap.Bitmap;
+
+      DrawWithRanges(Graphics.FromImage(image), colors);
+
+      pictureBox1.Image = image;
     }
   }
 }

@@ -16,3 +16,12 @@ C:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.P
 C:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.csproj.GenerateResource.Cache
 C:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.exe
 C:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.pdb
+D:\_\Repo\ImageLossesCounter\MeshCollision\MeshCollision\bin\Debug\MeshCollision.exe.config
+D:\_\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.exe
+D:\_\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.pdb
+D:\_\Repo\ImageLossesCounter\MeshCollision\MeshCollision\bin\Debug\MeshCollision.exe
+D:\_\Repo\ImageLossesCounter\MeshCollision\MeshCollision\bin\Debug\MeshCollision.pdb
+D:\_\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.csprojResolveAssemblyReference.cache
+D:\_\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.Form1.resources
+D:\_\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.Properties.Resources.resources
+D:\_\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.csproj.GenerateResource.Cache

@@ -133,72 +133,41 @@ namespace MeshCollision
 			form.Show();
 		}
 
-		public static List<Line> GetRawMesh(UnsafeBitmap bitmap, int linesCount) {
+		public static List<Line> GetRawMesh(Bitmap bitmap, int linesCount) {
 			float weightIndent = 0;
 			float heightIndent = 0;
 
-			if (linesCount >= bitmap.Bitmap.Width) {
-				linesCount = bitmap.Bitmap.Width;
+			if (linesCount >= bitmap.Width) {
+				linesCount = bitmap.Width;
 			}
-			weightIndent = bitmap.Bitmap.Width / (float)linesCount;
+			weightIndent = bitmap.Width / (float)linesCount;
 
-			if (linesCount >= bitmap.Bitmap.Height) {
-				linesCount = bitmap.Bitmap.Height;
+			if (linesCount >= bitmap.Height) {
+				linesCount = bitmap.Height;
 			}
-			heightIndent = bitmap.Bitmap.Height / (float)linesCount;
+			heightIndent = bitmap.Height / (float)linesCount;
 
 			List<Line> lines = new List<Line>();
 
 			//horizontal
 			for (int index = 0; index < linesCount; index++) {
 				Point xpt = new Point(0, (int)Math.Round(index * heightIndent));
-				Point ypt = new Point(bitmap.Bitmap.Width, (int)Math.Round(heightIndent * index));
+				Point ypt = new Point(bitmap.Width, (int)Math.Round(heightIndent * index));
 
-				Line line = new Line(xpt, ypt, bitmap.Bitmap.Width);
+				Line line = new Line(xpt, ypt, bitmap.Width);
 				lines.Add(line);
 			}
 
 			//vertical
 			for (var index = 0; index < linesCount; index++) {
 				Point xpt = new Point((int)Math.Round(index * weightIndent), 0);
-				Point ypt = new Point((int)Math.Round(index * weightIndent), bitmap.Bitmap.Height);
+				Point ypt = new Point((int)Math.Round(index * weightIndent), bitmap.Height);
 
-				Line line = new Line(xpt, ypt, bitmap.Bitmap.Height);
+				Line line = new Line(xpt, ypt, bitmap.Height);
 				lines.Add(line);
 			}
 
 			return lines;
-		}
-
-		public List<Line> GetSimilarMesh(List<Line> lines, UnsafeBitmap bitmap, List<MeshCollideObject> except)
-		{
-		  var colors = new Color[2]
-		  {
-		    Color.Black,
-		    Color.White
-		  };
-			SimilarMesh.Clear();
-
-			foreach (var line in lines) {
-				var searchLine = new Line();
-
-			  foreach (var color in colors)
-			  {
-			    foreach (Point point in line.Points)
-			    {
-			      if (StaticMethods.ColorEqual(color, bitmap.GetPixel(point.X, point.Y)))
-			      {
-			        if (!SimilarMesh.Contains(searchLine))
-			        {
-			          SimilarMesh.Add(searchLine);
-			        }
-			        SimilarMesh[SimilarMesh.IndexOf(searchLine)].Points.Add(point);
-			      }
-			    }
-			  }
-			}
-
-			return SimilarMesh;
 		}
 
 		public CustomControl[] GetControlls() {

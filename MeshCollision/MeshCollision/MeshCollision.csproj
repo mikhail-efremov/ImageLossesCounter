@@ -36,6 +36,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -48,6 +49,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CoincidenceAnalyth.cs" />
+    <Compile Include="ColorSpaces\HslColorSpace.cs" />
+    <Compile Include="ColorSpaces\IColorSpace.cs" />
+    <Compile Include="ColorSpaces\RgbColorSpace.cs" />
     <Compile Include="CustomControl.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -55,7 +59,6 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Hsl.cs" />
     <Compile Include="Line.cs" />
     <Compile Include="MeshCollideObject.cs" />
     <Compile Include="Program.cs" />
