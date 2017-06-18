@@ -3,6 +3,9 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Linq;
+using System.Resources;
+using System.Threading;
+using System.Threading.Tasks;
 using MeshCollision.ColorSpaces;
 
 namespace MeshCollision
@@ -58,59 +61,44 @@ namespace MeshCollision
       InvalidateImage();
     }
 
-    private void DrawWithRanges(Graphics graphics, List<IColorSpace> colors)
+    private List<Line> GetHitLines(List<IColorSpace> colors)
     {
       if (colors == null || colors.Count == 0) {
-        DrawLines(new Point[] { }, graphics, new SolidBrush(selectionRangeSlider1.CurrentSelectionElement.LinesColor));
         selectionRangeSlider1.CurrentSelectionElement.Hits = 0;
-        return;
-      }
 
-      var points = new List<Point>();
+        return new List<Line>();
+      }
 
       var lines = MeshCollideObject.GetRawMesh(Bitmap.Bitmap, _linesCount);
       if (selectionRangeSlider1.CurrentSelectionElement != null)
         selectionRangeSlider1.CurrentSelectionElement.Hits = 0;
 
-      foreach (var color in colors) {
-        var similarLines = GetSimilarMesh(lines, Bitmap, color, 100);
-        foreach (var simLine in similarLines) {
-          foreach (var point in simLine.Points) {
-            if (!points.Contains(point)) {
-              points.Add(point);
-            }
-          }
-        }
-      }
 
-      if (selectionRangeSlider1.CurrentSelectionElement != null) {
-        DrawLines(points, graphics, new SolidBrush(selectionRangeSlider1.CurrentSelectionElement.LinesColor));
-        selectionRangeSlider1.CurrentSelectionElement.Hits = points.Count;
-      }
-    }
-
-    private List<Line> GetSimilarMesh(IEnumerable<Line> lines, UnsafeBitmap bitmap, IColorSpace colorSpace, byte sens)
-    {
       var similarMesh = new List<Line>();
-      
-      Bitmap.Lock();
-      foreach (var line in lines)
+      var clonedBuffer = new UnsafeBitmap((Bitmap)Bitmap.Bitmap.Clone());
+
+      foreach (var color in colors)
       {
         var searchLine = new Line();
-        foreach (var point in line.Points)
-        {
-          if (colorSpace.ColorSimilar(point, bitmap, sens))
+
+        clonedBuffer.Lock();
+
+        foreach (var line in lines) {
+          foreach (var point in line.Points)
           {
-            if (!similarMesh.Contains(searchLine))
-            {
-              similarMesh.Add(searchLine);
+             if (color.ColorSimilar(point, clonedBuffer, 100)) {
+                 if (!similarMesh.Contains(searchLine)) {
+                 similarMesh.Add(searchLine);
+             }
+             if (similarMesh.Contains(searchLine))
+                          similarMesh[similarMesh.IndexOf(searchLine)].Points.Add(point);
             }
-            if (similarMesh.Contains(searchLine))
-              similarMesh[similarMesh.IndexOf(searchLine)].Points.Add(point);
           }
         }
+
+        clonedBuffer.Unlock();
       }
-      Bitmap.Unlock();
+
       return similarMesh;
     }
 
@@ -339,15 +327,34 @@ namespace MeshCollision
 
     private void buttonDraw_Click(object sender, EventArgs e)
     {
-      var element = selectionRangeSlider1.CurrentSelectionElement;
-      var colors = SetColors(element, element.SelectedMin, element.SelectedMax);
-        // SetHslColor(element, element.SelectedMin, element.SelectedMax);
+      Draw();
+    }
+    
+    public void Draw() {
+      var buffer = Bitmap.Bitmap;
 
-      var image = Bitmap.Bitmap;
+      Task.Factory.StartNew(() =>
+      {
+        var element = selectionRangeSlider1.CurrentSelectionElement;
+        var colors = SetColors(element, element.SelectedMin, element.SelectedMax);
 
-      DrawWithRanges(Graphics.FromImage(image), colors);
+        var hitLines = GetHitLines(colors);
+        var brush = new SolidBrush(selectionRangeSlider1.CurrentSelectionElement.LinesColor);
 
-      pictureBox1.Image = image;
+        using (var g = Graphics.FromImage(buffer)) {
+            foreach (var line in hitLines) 
+          {
+            foreach (var point in line.Points)
+            {
+              g.FillRectangle(brush, point.X, point.Y, 1, 1);
+            }
+          }
+        }
+        pictureBox1.Invoke(new Action(() =>
+        {
+          pictureBox1.Image = buffer;
+        }));
+      });
     }
   }
 }
