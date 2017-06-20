@@ -41,11 +41,8 @@ namespace MeshCollision
       }
     }
     int selectedMax = 0;
-    private int Width = 0;
-    private int Height = 0;
-    public SelectionElement(int Width, int Height, int m_max, int m_min, Color linesColor) {
-      this.Width = Width;
-      this.Height = Height;
+
+    public SelectionElement(int m_max, int m_min, Color linesColor) {
       LinesColor = linesColor;
 
       selectedMax = m_max;

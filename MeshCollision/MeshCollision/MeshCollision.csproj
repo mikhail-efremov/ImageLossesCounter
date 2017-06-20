@@ -49,7 +49,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CoincidenceAnalyth.cs" />
     <Compile Include="ColorSpaces\HslColorSpace.cs" />
     <Compile Include="ColorSpaces\IColorSpace.cs" />
     <Compile Include="ColorSpaces\RgbColorSpace.cs" />
@@ -68,7 +67,6 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="SelectionElement.cs" />
-    <Compile Include="StaticMethods.cs" />
     <Compile Include="UnsafeBitmap.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>

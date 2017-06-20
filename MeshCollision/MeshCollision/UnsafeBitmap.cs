@@ -153,11 +153,4 @@ namespace MeshCollision
       get { return _locked; }
     }
   }
-
-  public struct PixelData
-  {
-    public byte blue;
-    public byte green;
-    public byte red;
-  }
 }

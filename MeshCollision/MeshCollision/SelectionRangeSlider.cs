@@ -95,7 +95,7 @@ namespace MeshCollision
         SelectionRangeSlider_RightMouseMove(selectionElement, e);
     }
 
-    void SelectionRangeSlider_LeftMouseMove(object sender, MouseEventArgs e) {
+    private void SelectionRangeSlider_LeftMouseMove(object sender, MouseEventArgs e) {
       if (e.Button != MouseButtons.Left)
         return;
       var slider = (SelectionElement)sender;
@@ -119,12 +119,13 @@ namespace MeshCollision
     }
 
     private bool CanDraw(int pointedValue, SelectionElement selectionElement) {
-      if (pointedValue < selectionElement.Min || pointedValue > selectionElement.Max) return false;
+      if (pointedValue < selectionElement.Min || pointedValue > selectionElement.Max)
+        return false;
       return Sliders.Where(s => pointedValue >= s.SelectedMin && pointedValue <= s.SelectedMax)
         .All(s => s == selectionElement);
     }
 
-    void SelectionRangeSlider_RightMouseMove(object sender, MouseEventArgs e)
+    private void SelectionRangeSlider_RightMouseMove(object sender, MouseEventArgs e)
     {
       SelectElement((SelectionElement)sender);
     }

@@ -147,14 +147,14 @@ namespace MeshCollision
 			}
 			heightIndent = bitmap.Height / (float)linesCount;
 
-			List<Line> lines = new List<Line>();
+			var lines = new List<Line>();
 
 			//horizontal
 			for (int index = 0; index < linesCount; index++) {
-				Point xpt = new Point(0, (int)Math.Round(index * heightIndent));
-				Point ypt = new Point(bitmap.Width, (int)Math.Round(heightIndent * index));
+				var xpt = new Point(0, (int)Math.Round(index * heightIndent));
+				var ypt = new Point(bitmap.Width, (int)Math.Round(heightIndent * index));
 
-				Line line = new Line(xpt, ypt, bitmap.Width);
+				var line = new Line(xpt, ypt, bitmap.Width);
 				lines.Add(line);
 			}
 

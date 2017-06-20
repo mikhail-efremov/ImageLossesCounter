@@ -2,9 +2,6 @@
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
-using System.Linq;
-using System.Resources;
-using System.Threading;
 using System.Threading.Tasks;
 using MeshCollision.ColorSpaces;
 
@@ -125,21 +122,6 @@ namespace MeshCollision
       hslCointeinerPictureBox.Image = image;
     }
 
-    private  void DrawLines(IEnumerable<Line> lines, Graphics graphics, Brush brush)
-    {
-      foreach (var line in lines)
-      {
-        DrawLines(line.Points, graphics, brush);
-      }
-    }
-
-    private  void DrawLines(IEnumerable<Point> points, Graphics graphics, Brush brush)
-    {
-      foreach (var point in points) {
-        graphics.FillRectangle(brush, point.X, point.Y, 1, 1);
-      }
-    }
-
     private void buttonLoadImage_Click(object sender, EventArgs e)
     {
       LoadImage();
@@ -164,7 +146,7 @@ namespace MeshCollision
             mMax = sli.SelectedMin - 1;
           }
       }
-      var slide = new SelectionElement(slider.Width, slider.Height, mMax, mMin, colorGetPictureBox.BackColor);
+      var slide = new SelectionElement(mMax, mMin, colorGetPictureBox.BackColor);
       slider.AddSelectionElement(slide);
 
       slide.SelectionChanged += OnSlideSelectionChanged;
@@ -332,7 +314,7 @@ namespace MeshCollision
     
     public void Draw() {
       var buffer = Bitmap.Bitmap;
-
+      
       Task.Factory.StartNew(() =>
       {
         var element = selectionRangeSlider1.CurrentSelectionElement;
