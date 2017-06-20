@@ -9,94 +9,47 @@ namespace MeshCollision
 {
   public partial class Form1 : Form
   {
-    public static UnsafeBitmap Bitmap;
-    private static int _linesCount = 15;
+    private ImageAnalyzer _imageAnalyzer;
 
     public Form1()
     {
       InitializeComponent();
-      LoadImage();
+      
       colorGetPictureBox.BackColor = Color.Black;
-
+      
       sValueTrackBar.Value = 1000;
       lValueTrackBar.Value = 500;
+
+      UploadImage();
     }
-
-    private void LoadImage()
-    {
-      Image image = UploadImage();
-			
-			if (image == null)
-        return;
-
-      Bitmap = new UnsafeBitmap(new Bitmap(image));
-
-      Bitmap.Unlock();
-      pictureBox1.Image = Bitmap.Bitmap;
-    }
-
-    private void InvalidateImage()
-    {
-      if (Bitmap == null)
-        return;
-      pictureBox1.Invalidate();
-    }
-
-    public Bitmap UploadImage()
-    {
+    
+    private bool UploadImage() {
       var open = new OpenFileDialog
       {
         Filter = @"Image Files(*.jpg; *.jpeg; *.gif; *.bmp)|*.jpg; *.jpeg; *.gif; *.bmp"
       };
 
-      return open.ShowDialog() == DialogResult.OK ? new Bitmap(open.FileName) : null;
+      var image = open.ShowDialog() == DialogResult.OK ? new Bitmap(open.FileName) : null;
+
+      if (image == null)
+        return false;
+      
+      _imageAnalyzer = new ImageAnalyzer(image);
+      pictureBox1.Image = image;
+      return true;
+    }
+
+    private void InvalidateImage()
+    {
+      if (pictureBox1.Image == null)
+        return;
+      pictureBox1.Invalidate();
     }
     
     private void pictureBox1_Paint(object sender, PaintEventArgs e)
     {
       PaintHslCointeinerPictureBox();
       InvalidateImage();
-    }
-
-    private List<Line> GetHitLines(List<IColorSpace> colors)
-    {
-      if (colors == null || colors.Count == 0) {
-        selectionRangeSlider1.CurrentSelectionElement.Hits = 0;
-
-        return new List<Line>();
-      }
-
-      var lines = MeshCollideObject.GetRawMesh(Bitmap.Bitmap, _linesCount);
-      if (selectionRangeSlider1.CurrentSelectionElement != null)
-        selectionRangeSlider1.CurrentSelectionElement.Hits = 0;
-
-
-      var similarMesh = new List<Line>();
-      var clonedBuffer = new UnsafeBitmap((Bitmap)Bitmap.Bitmap.Clone());
-
-      foreach (var color in colors)
-      {
-        var searchLine = new Line();
-
-        clonedBuffer.Lock();
-
-        foreach (var line in lines) {
-          foreach (var point in line.Points)
-          {
-             if (color.ColorSimilar(point, clonedBuffer, 100)) {
-                 if (!similarMesh.Contains(searchLine)) {
-                 similarMesh.Add(searchLine);
-             }
-             if (similarMesh.Contains(searchLine))
-                          similarMesh[similarMesh.IndexOf(searchLine)].Points.Add(point);
-            }
-          }
-        }
-
-        clonedBuffer.Unlock();
-      }
-
-      return similarMesh;
     }
 
     private void PaintHslCointeinerPictureBox() 
@@ -124,7 +77,7 @@ namespace MeshCollision
 
     private void buttonLoadImage_Click(object sender, EventArgs e)
     {
-      LoadImage();
+      UploadImage();
       InvalidateImage();
     }
 
@@ -171,7 +124,8 @@ namespace MeshCollision
       selectionRangeSlider.Invalidate();
     }
 
-    private void OnSliderElementSelected(object sender, EventArgs eventArgs) {
+    private void OnSliderElementSelected(object sender, EventArgs eventArgs) 
+    {
       var element = (SelectionElement)sender;
       colorGetPictureBox.BackColor = element.LinesColor;
       sValueTrackBar.Value = element.SValue1000;
@@ -222,78 +176,7 @@ namespace MeshCollision
       selectionRangeSlider1.CurrentSelectionElement.LValue1000 = lValueTrackBar.Value;
       OnSlideSelectionChanged(selectionRangeSlider1.CurrentSelectionElement, null);
     }
-
-    private static bool _firstClick = true;
-    private static MouseEventArgs _firstClickData = null;
-    private void pictureBox1_Click(object sender, EventArgs e)
-    {
-      if (_firstClick)
-      {
-        _firstClickData = (MouseEventArgs) e;
-        _firstClick = false;
-        return;
-      }
-      if (_firstClickData == null)
-        return;
-      var secondClickData = (MouseEventArgs) e;
-
-      Bitmap.Lock();
-      var firstPixel = Bitmap.GetPixel(_firstClickData.X, _firstClickData.Y);
-      var secondPixel = Bitmap.GetPixel(secondClickData.X, secondClickData.Y);
-      Bitmap.Unlock();
-
-      var firstHsl = HslColorSpace.FromRGB(firstPixel.R, firstPixel.G, firstPixel.B);
-      var secondHsl = HslColorSpace.FromRGB(secondPixel.R, secondPixel.G, secondPixel.B);
-      
-      var maxH = firstHsl.H > secondHsl.H ? firstHsl.H : secondHsl.H;
-      var minH = firstHsl.H < secondHsl.H ? firstHsl.H : secondHsl.H;
-
-      DrawMesh(selectionRangeSlider1, (int)minH, (int)maxH);
-    }
-
-    private List<IColorSpace> SetColors(SelectionElement element, int min, int max)
-    {
-      var colors = new List<IColorSpace>();
-
-      if (selectionRangeSlider1.Sliders.Count < 1)
-        return null;
-
-      _firstClick = true;
-
-      for (; min < max; min++) {
-        colors.Add(new RgbColorSpace(
-          HslColorSpace.ColorFromHsl((double)min / element.Max, element.SValue1, element.LValue1)));
-      }
-
-      return colors;
-    }
-
-    private List<IColorSpace> SetHslColor(SelectionElement element, int min, int max)
-    {
-      var colors = new List<IColorSpace>();
-
-      if (selectionRangeSlider1.Sliders.Count < 1)
-        return null;
-
-      _firstClick = true;
-
-      for (; min < max; min++) {
-        colors.Add(new HslColorSpace((float)min / element.Max, (float)element.SValue1, (float)element.LValue1));
-      }
-
-      return colors;
-    }
-
-    private void buttonGetLinesCount_Click(object sender, EventArgs e)
-    {
-      var count = 0;
-      if (int.TryParse(linesCountTextBox.Text, out count))
-      {
-        _linesCount = count;
-        selectionRangeSlider1.CurrentSelectionElement.LinesCount = count;
-      }
-    }
-
+    
     private void colorGetPictureBox_Click(object sender, EventArgs e) {
       var form = ActiveForm;
       if (form == null) return;
@@ -309,34 +192,14 @@ namespace MeshCollision
 
     private void buttonDraw_Click(object sender, EventArgs e)
     {
-      Draw();
+      AnalizeImageAsync();
     }
-    
-    public void Draw() {
-      var buffer = Bitmap.Bitmap;
-      
-      Task.Factory.StartNew(() =>
-      {
-        var element = selectionRangeSlider1.CurrentSelectionElement;
-        var colors = SetColors(element, element.SelectedMin, element.SelectedMax);
 
-        var hitLines = GetHitLines(colors);
-        var brush = new SolidBrush(selectionRangeSlider1.CurrentSelectionElement.LinesColor);
-
-        using (var g = Graphics.FromImage(buffer)) {
-            foreach (var line in hitLines) 
-          {
-            foreach (var point in line.Points)
-            {
-              g.FillRectangle(brush, point.X, point.Y, 1, 1);
-            }
-          }
-        }
-        pictureBox1.Invoke(new Action(() =>
-        {
-          pictureBox1.Image = buffer;
-        }));
-      });
+    private async void AnalizeImageAsync() 
+    {
+      var analizedImage = await _imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement);
+      if (analizedImage != null)
+        pictureBox1.Image = analizedImage;
     }
   }
 }

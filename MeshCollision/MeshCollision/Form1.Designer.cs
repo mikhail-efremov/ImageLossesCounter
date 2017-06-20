@@ -188,7 +188,6 @@
       this.buttonGetLinesCount.TabIndex = 26;
       this.buttonGetLinesCount.Text = "S";
       this.buttonGetLinesCount.UseVisualStyleBackColor = true;
-      this.buttonGetLinesCount.Click += new System.EventHandler(this.buttonGetLinesCount_Click);
       // 
       // linesColorInfoLabel
       // 

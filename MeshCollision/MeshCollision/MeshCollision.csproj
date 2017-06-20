@@ -59,6 +59,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="ImageAnalyzer.cs" />
     <Compile Include="Line.cs" />
     <Compile Include="MeshCollideObject.cs" />
     <Compile Include="Program.cs" />

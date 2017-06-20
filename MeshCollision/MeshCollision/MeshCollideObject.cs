@@ -66,7 +66,7 @@ namespace MeshCollision
       {
         var form = Form1.ActiveForm;
         form.Hide();
-        
+        /*
         var newForm = new Form();
 
         var pic = new PictureBox();
@@ -87,7 +87,7 @@ namespace MeshCollision
         };
         newForm.Controls.Add(pic);
         newForm.ShowDialog();
-
+        */
         form.Show();
       };
 
