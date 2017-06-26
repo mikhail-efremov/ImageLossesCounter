@@ -8,6 +8,7 @@ namespace MeshCollision
   public class ImageAnalyzer
   {
     public UnsafeBitmap Bitmap;
+    private List<Line> _chasherRawMesh = new List<Line>(); 
 
     private static readonly int _linesCount = 15;
 
@@ -23,7 +24,7 @@ namespace MeshCollision
         return new List<Line>();
       }
 
-      var lines = MeshCollideObject.GetRawMesh(Bitmap.Bitmap, _linesCount);
+      var rawMesh = MeshCollideObject.GetRawMesh(Bitmap.Bitmap, _linesCount);
       
       var similarMesh = new List<Line>();
       var clonedBuffer = new UnsafeBitmap((Bitmap)Bitmap.Bitmap.Clone());
@@ -33,7 +34,7 @@ namespace MeshCollision
 
         clonedBuffer.Lock();
 
-        foreach (var line in lines) {
+        foreach (var line in rawMesh) {
           foreach (var point in line.Points) {
             if (color.ColorSimilar(point, clonedBuffer, 100)) {
               if (!similarMesh.Contains(searchLine)) {
@@ -48,24 +49,56 @@ namespace MeshCollision
         clonedBuffer.Unlock();
       }
 
+      _chasherRawMesh = rawMesh;
       return similarMesh;
     }
-    
-    public Task<Bitmap> Analize(SelectionElement element) {
+
+    public Task<Bitmap> Analize(SelectionElement element)
+    {
       var buffer = Bitmap.Bitmap;
 
       return Task.Factory.StartNew(() =>
       {
+        var points = new List<Point>();
+
         var colors = SetColors(element, element.SelectedMin, element.SelectedMax);
 
         var hitLines = GetHitLines(colors);
         var brush = new SolidBrush(element.LinesColor);
 
-        using (var g = Graphics.FromImage(buffer)) {
-          foreach (var line in hitLines) {
-            foreach (var point in line.Points) {
-              g.FillRectangle(brush, point.X, point.Y, 1, 1);
+        using (var g = Graphics.FromImage(buffer))
+        {
+          foreach (var line in hitLines)
+          {
+            foreach (var point in line.Points)
+            {
+              if (!points.Contains(point))
+              {
+                points.Add(point);
+                g.FillRectangle(brush, point.X, point.Y, 1, 1);
+              }
             }
+          }
+        }
+
+        var emptyList = new List<Point>();
+
+        foreach (var line in _chasherRawMesh)
+        {
+          foreach (var p in line.Points)
+          {
+            if (!points.Contains(p))
+            {
+              emptyList.Add(p);
+            }
+          }
+        }
+
+        using (var g = Graphics.FromImage(buffer))
+        {
+          foreach (var point in emptyList)
+          {
+            g.FillRectangle(Brushes.Red, point.X, point.Y, 1, 1);
           }
         }
         return buffer;
