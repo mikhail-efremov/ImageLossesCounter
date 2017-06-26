@@ -19,7 +19,7 @@ namespace MeshCollision.ColorSpaces
     }
 
     public override string ToString() {
-      return $"H:{H};S:{S};L:{L}";
+      return string.Format("H:{0};S:{1};L:{2}", H, S, L);
     }
 
     public static Color ColorFromHsl(double h, double s, double l)

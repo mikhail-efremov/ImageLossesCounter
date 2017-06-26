@@ -26,7 +26,8 @@ namespace MeshCollision
       set
       {
         selectedMin = value;
-        SelectionChanged?.Invoke(this, null);
+        if(SelectionChanged != null)
+          SelectionChanged(this, null);
       }
     }
     int selectedMin = 0;
@@ -37,7 +38,8 @@ namespace MeshCollision
       set
       {
         selectedMax = value;
-        SelectionChanged?.Invoke(this, null);
+        if (SelectionChanged != null)
+          SelectionChanged(this, null);
       }
     }
     int selectedMax = 0;
@@ -49,13 +51,22 @@ namespace MeshCollision
       selectedMin = m_min;
     }
 
-    public int LinesCount { get; set; } = 0;
+    public int LinesCount { get; set; }
     public Color LinesColor { get; set; }
-    public int SValue1000 { get; set; } = 1000;
-    public int LValue1000 { get; set; } = 500;
-    public double SValue1 => SValue1000 / 1000d;
-    public double LValue1 => LValue1000 / 1000d;
-    public int Hits { get; set; } = 0;
+
+    private int sValue1000 = 1000;
+    public int SValue1000 {
+      get { return sValue1000; }
+      set { sValue1000 = value; } }
+
+    private int lValue1000 = 500;
+    public int LValue1000 { 
+      get { return lValue1000; } 
+      set { lValue1000 = value; } }
+
+    public double SValue1 {get { return SValue1000 / 1000d; } }
+    public double LValue1 {get { return LValue1000 / 1000d; } }
+    public int Hits { get; set; }
 
     [Description("Fired when SelectedMin or SelectedMax changes.")]
     public event EventHandler SelectionChanged;
@@ -63,7 +74,8 @@ namespace MeshCollision
 
     public void SelectElement()
     {
-      ElementSelected?.Invoke(this, null);
+      if(ElementSelected != null)
+        ElementSelected(this, null);
     }
   }
 }

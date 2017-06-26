@@ -8,8 +8,9 @@ namespace MeshCollision
   {
     public List<Point> Points;
 
-    public Point FirstPoint => Points[0];
-    public Point LastPoint => Points[Points.Count - 1];
+    public Point FirstPoint { get { return Points[0]; } }
+
+    public Point LastPoint { get { return Points[Points.Count - 1]; } }
 
     public Line() 
 		{
@@ -22,7 +23,8 @@ namespace MeshCollision
     }
 
 		public override string ToString() {
-			return $"[{FirstPoint.X}:{FirstPoint.Y}] [{LastPoint.X}:{LastPoint.Y}] Count:{Points.Count}";
+			return string.Format("[{0}:{1}] [{2}:{3}] Count:{4}", 
+        FirstPoint.X, FirstPoint.Y, LastPoint.X, LastPoint.Y, Points.Count);
 		}
 
     private List<Point> ConstructLine(Point pointA, Point pointB, int count)

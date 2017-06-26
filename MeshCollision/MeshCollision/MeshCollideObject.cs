@@ -40,7 +40,7 @@ namespace MeshCollision
 		}
 
     private Button changeColorButton = new Button();
-    public Button ChangeColorButton => changeColorButton;
+    public Button ChangeColorButton { get { return changeColorButton; } }
 
 	  private PictureBox searchingColorPictureBox = new PictureBox();
 		public Color SearchingColor {

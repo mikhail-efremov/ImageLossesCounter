@@ -4,9 +4,9 @@ namespace MeshCollision.ColorSpaces
 {
   public class RgbColorSpace : IColorSpace
   {
-    public byte R => color.R;
-    public byte G => color.G;
-    public byte B => color.B;
+    public byte R {get {return color.R;}}
+    public byte G {get {return color.G;}}
+    public byte B { get { return color.B; } }
 
     private Color color;
 

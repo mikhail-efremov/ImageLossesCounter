@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using MeshCollision.ColorSpaces;
 
 namespace MeshCollision
@@ -10,6 +8,8 @@ namespace MeshCollision
   public partial class Form1 : Form
   {
     private ImageAnalyzer _imageAnalyzer;
+
+    private Bitmap _initialBitmap;
 
     public Form1()
     {
@@ -33,7 +33,11 @@ namespace MeshCollision
 
       if (image == null)
         return false;
-      
+
+      var cloneRect = new Rectangle(0, 0, image.Width, image.Height);
+      var format = image.PixelFormat;
+      _initialBitmap = image.Clone(cloneRect, format);
+
       _imageAnalyzer = new ImageAnalyzer(image);
       pictureBox1.Image = image;
       return true;
@@ -195,8 +199,11 @@ namespace MeshCollision
       AnalizeImageAsync();
     }
 
-    private async void AnalizeImageAsync() 
+    private async void AnalizeImageAsync()
     {
+      pictureBox1.Image = _initialBitmap;
+      _imageAnalyzer = new ImageAnalyzer(_initialBitmap);
+
       var analizedImage = await _imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement);
       if (analizedImage != null)
         pictureBox1.Image = analizedImage;
