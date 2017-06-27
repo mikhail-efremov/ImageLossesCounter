@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Linq;
 using System.Threading.Tasks;
 using MeshCollision.ColorSpaces;
 
@@ -96,11 +99,31 @@ namespace MeshCollision
 
         using (var g = Graphics.FromImage(buffer))
         {
-          foreach (var point in emptyList)
+          var f = emptyList[0];
+          var firs = emptyList.OrderBy(x => x.GetDistance(f)).ToList().GetRange(0, 100);
+
+          g.DrawCurve(Pens.Red, firs.ToArray());
+
+          foreach (var point in firs)
           {
             g.FillRectangle(Brushes.Red, point.X, point.Y, 1, 1);
           }
         }
+
+        using (var g = Graphics.FromImage(buffer))
+        {
+          g.SmoothingMode = SmoothingMode.AntiAlias;
+
+          // Draw the points.
+          foreach (var point in emptyList)
+            g.FillEllipse(Brushes.Black,
+              point.X - 3, point.Y - 3, 5, 5);
+          if (emptyList.Count < 2) return buffer;
+
+          // Draw the curve.
+          //   g.DrawCurve(Pens.Red, emptyList.ToArray());
+        }
+
         return buffer;
       });
     }
@@ -125,6 +148,15 @@ namespace MeshCollision
       }
 
       return colors;
+    }
+  }
+
+
+  public static class PointExt
+  {
+    public static Decimal GetDistance(this Point p1, Point p2)
+    {
+      return Convert.ToDecimal(Math.Sqrt(Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2)));
     }
   }
 }
