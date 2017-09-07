@@ -204,7 +204,7 @@ namespace MeshCollision
       pictureBox1.Image = _initialBitmap;
       _imageAnalyzer = new ImageAnalyzer(_initialBitmap);
 
-      var analizedImage = await _imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement);
+      var analizedImage = await _imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement, inProgressLabel);
       if (analizedImage != null)
         pictureBox1.Image = analizedImage;
     }

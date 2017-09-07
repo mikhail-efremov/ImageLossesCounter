@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using MeshCollision.ColorSpaces;
 
 namespace MeshCollision
@@ -13,13 +13,13 @@ namespace MeshCollision
     public UnsafeBitmap Bitmap;
     private List<Line> _chasherRawMesh = new List<Line>(); 
 
-    private static readonly int _linesCount = 15;
+    private static readonly int _linesCount = 45;
 
     public ImageAnalyzer(Image image)
     {
       Bitmap = new UnsafeBitmap(new Bitmap(image));
 
-      Bitmap.Unlock();//??
+      Bitmap.Unlock();
     }
 
     private List<Line> GetHitLines(List<IColorSpace> colors) {
@@ -32,10 +32,11 @@ namespace MeshCollision
       var similarMesh = new List<Line>();
       var clonedBuffer = new UnsafeBitmap((Bitmap)Bitmap.Bitmap.Clone());
 
-      foreach (var color in colors) {
-        var searchLine = new Line();
+      clonedBuffer.Lock();
 
-        clonedBuffer.Lock();
+      Parallel.ForEach(colors, color =>
+      {
+        var searchLine = new Line();
 
         foreach (var line in rawMesh) {
           foreach (var point in line.Points) {
@@ -48,17 +49,15 @@ namespace MeshCollision
             }
           }
         }
-
-        clonedBuffer.Unlock();
-      }
-
+      });
       _chasherRawMesh = rawMesh;
       return similarMesh;
     }
 
-    public Task<Bitmap> Analize(SelectionElement element)
+    public Task<Bitmap> Analize(SelectionElement element, Label inProgressLabel)
     {
       var buffer = Bitmap.Bitmap;
+      inProgressLabel.Text = "in progress";
 
       return Task.Factory.StartNew(() =>
       {
@@ -67,9 +66,9 @@ namespace MeshCollision
         var colors = SetColors(element, element.SelectedMin, element.SelectedMax);
 
         var hitLines = GetHitLines(colors);
-        var brush = new SolidBrush(element.LinesColor);
+     //   var brush = new SolidBrush(element.LinesColor);
 
-        using (var g = Graphics.FromImage(buffer))
+   //     using (var g = Graphics.FromImage(buffer))
         {
           foreach (var line in hitLines)
           {
@@ -78,7 +77,7 @@ namespace MeshCollision
               if (!points.Contains(point))
               {
                 points.Add(point);
-                g.FillRectangle(brush, point.X, point.Y, 1, 1);
+             //   g.FillRectangle(brush, point.X, point.Y, 1, 1);
               }
             }
           }
@@ -99,30 +98,17 @@ namespace MeshCollision
 
         using (var g = Graphics.FromImage(buffer))
         {
-          var f = emptyList[0];
-          var firs = emptyList.OrderBy(x => x.GetDistance(f)).ToList().GetRange(0, 100);
-
-          g.DrawCurve(Pens.Red, firs.ToArray());
-
-          foreach (var point in firs)
-          {
-            g.FillRectangle(Brushes.Red, point.X, point.Y, 1, 1);
-          }
-        }
-
-        using (var g = Graphics.FromImage(buffer))
-        {
           g.SmoothingMode = SmoothingMode.AntiAlias;
 
           // Draw the points.
           foreach (var point in emptyList)
             g.FillEllipse(Brushes.Black,
-              point.X - 3, point.Y - 3, 5, 5);
-          if (emptyList.Count < 2) return buffer;
-
-          // Draw the curve.
-          //   g.DrawCurve(Pens.Red, emptyList.ToArray());
+              point.X, point.Y, 6, 6);
+          if (emptyList.Count < 2)
+            return buffer;
         }
+
+        inProgressLabel.Invoke((MethodInvoker)(() => inProgressLabel.Text = "no progress"));
 
         return buffer;
       });

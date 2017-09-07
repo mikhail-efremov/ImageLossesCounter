@@ -34,3 +34,12 @@ C:\Users\m.yefremov\Documents\ImageLossesCounter\MeshCollision\MeshCollision\bin
 C:\Users\m.yefremov\Documents\ImageLossesCounter\MeshCollision\MeshCollision\bin\Debug\MeshCollision.pdb
 C:\Users\m.yefremov\Documents\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.exe
 C:\Users\m.yefremov\Documents\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.pdb
+E:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\bin\Debug\MeshCollision.exe.config
+E:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\bin\Debug\MeshCollision.exe
+E:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\bin\Debug\MeshCollision.pdb
+E:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.csprojResolveAssemblyReference.cache
+E:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.Form1.resources
+E:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.Properties.Resources.resources
+E:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.csproj.GenerateResource.Cache
+E:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.exe
+E:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.pdb

@@ -48,6 +48,7 @@
       this.hitsTextBox = new System.Windows.Forms.TextBox();
       this.selectionRangeSlider1 = new MeshCollision.SelectionRangeSlider();
       this.buttonDraw = new System.Windows.Forms.Button();
+      this.inProgressLabel = new System.Windows.Forms.Label();
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.maxPictureBox)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.minPictureBox)).BeginInit();
@@ -246,11 +247,21 @@
       this.buttonDraw.UseVisualStyleBackColor = true;
       this.buttonDraw.Click += new System.EventHandler(this.buttonDraw_Click);
       // 
+      // inProgressLabel
+      // 
+      this.inProgressLabel.AutoSize = true;
+      this.inProgressLabel.Location = new System.Drawing.Point(269, 316);
+      this.inProgressLabel.Name = "inProgressLabel";
+      this.inProgressLabel.Size = new System.Drawing.Size(62, 13);
+      this.inProgressLabel.TabIndex = 32;
+      this.inProgressLabel.Text = "no progress";
+      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(728, 468);
+      this.Controls.Add(this.inProgressLabel);
       this.Controls.Add(this.buttonDraw);
       this.Controls.Add(this.hitsTextBox);
       this.Controls.Add(this.hitsInfoLabel);
@@ -306,6 +317,7 @@
     private System.Windows.Forms.Label hitsInfoLabel;
     private System.Windows.Forms.TextBox hitsTextBox;
     private System.Windows.Forms.Button buttonDraw;
+    private System.Windows.Forms.Label inProgressLabel;
   }
 }
 
