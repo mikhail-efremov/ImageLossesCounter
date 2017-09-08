@@ -204,9 +204,16 @@ namespace MeshCollision
       pictureBox1.Image = _initialBitmap;
       _imageAnalyzer = new ImageAnalyzer(_initialBitmap);
 
-      var analizedImage = await _imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement, inProgressLabel);
-      if (analizedImage != null)
-        pictureBox1.Image = analizedImage;
+      var analizedResult = await _imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement, inProgressLabel);
+      if (analizedResult.Bitmap != null)
+      {
+        using (var g = Graphics.FromImage(analizedResult.Bitmap)) {
+          // Draw the points.
+          foreach (var point in analizedResult.Points)
+            g.FillEllipse(Brushes.Black, point.X, point.Y, 5, 5);
+        }
+        pictureBox1.Image = analizedResult.Bitmap;
+      }
     }
   }
 }
