@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-      this.pictureBox1 = new System.Windows.Forms.PictureBox();
+      this.analythPictureBox = new System.Windows.Forms.PictureBox();
       this.buttonLoadImage = new System.Windows.Forms.Button();
       this.colorDialog1 = new System.Windows.Forms.ColorDialog();
       this.maxPictureBox = new System.Windows.Forms.PictureBox();
@@ -49,26 +49,28 @@
       this.selectionRangeSlider1 = new MeshCollision.SelectionRangeSlider();
       this.buttonDraw = new System.Windows.Forms.Button();
       this.inProgressLabel = new System.Windows.Forms.Label();
-      ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+      this.examplePictureBox = new System.Windows.Forms.PictureBox();
+      ((System.ComponentModel.ISupportInitialize)(this.analythPictureBox)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.maxPictureBox)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.minPictureBox)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.hslCointeinerPictureBox)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.sValueTrackBar)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.lValueTrackBar)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.colorGetPictureBox)).BeginInit();
+      ((System.ComponentModel.ISupportInitialize)(this.examplePictureBox)).BeginInit();
       this.SuspendLayout();
       // 
-      // pictureBox1
+      // analythPictureBox
       // 
-      this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+      this.analythPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-      this.pictureBox1.Location = new System.Drawing.Point(12, 12);
-      this.pictureBox1.Name = "pictureBox1";
-      this.pictureBox1.Size = new System.Drawing.Size(704, 293);
-      this.pictureBox1.TabIndex = 0;
-      this.pictureBox1.TabStop = false;
-      this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
+      this.analythPictureBox.Location = new System.Drawing.Point(361, 12);
+      this.analythPictureBox.Name = "analythPictureBox";
+      this.analythPictureBox.Size = new System.Drawing.Size(351, 293);
+      this.analythPictureBox.TabIndex = 0;
+      this.analythPictureBox.TabStop = false;
+      this.analythPictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
       // 
       // buttonLoadImage
       // 
@@ -249,6 +251,7 @@
       // 
       // inProgressLabel
       // 
+      this.inProgressLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
       this.inProgressLabel.AutoSize = true;
       this.inProgressLabel.Location = new System.Drawing.Point(269, 316);
       this.inProgressLabel.Name = "inProgressLabel";
@@ -256,11 +259,28 @@
       this.inProgressLabel.TabIndex = 32;
       this.inProgressLabel.Text = "no progress";
       // 
+      // examplePictureBox
+      // 
+      this.examplePictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+      this.examplePictureBox.Location = new System.Drawing.Point(11, 12);
+      this.examplePictureBox.Name = "examplePictureBox";
+      this.examplePictureBox.Size = new System.Drawing.Size(344, 293);
+      this.examplePictureBox.TabIndex = 33;
+      this.examplePictureBox.TabStop = false;
+      this.examplePictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.examplePictureBox_Paint);
+      this.examplePictureBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.examplePictureBox_MouseDown);
+      this.examplePictureBox.MouseLeave += new System.EventHandler(this.examplePictureBox_MouseLeave);
+      this.examplePictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.examplePictureBox_MouseMove);
+      this.examplePictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.examplePictureBox_MouseUp);
+      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(728, 468);
+      this.Controls.Add(this.examplePictureBox);
       this.Controls.Add(this.inProgressLabel);
       this.Controls.Add(this.buttonDraw);
       this.Controls.Add(this.hitsTextBox);
@@ -280,16 +300,17 @@
       this.Controls.Add(this.button1);
       this.Controls.Add(this.selectionRangeSlider1);
       this.Controls.Add(this.buttonLoadImage);
-      this.Controls.Add(this.pictureBox1);
+      this.Controls.Add(this.analythPictureBox);
       this.Name = "Form1";
       this.Text = "Form1";
-      ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.analythPictureBox)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.maxPictureBox)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.minPictureBox)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.hslCointeinerPictureBox)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.sValueTrackBar)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.lValueTrackBar)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.colorGetPictureBox)).EndInit();
+      ((System.ComponentModel.ISupportInitialize)(this.examplePictureBox)).EndInit();
       this.ResumeLayout(false);
       this.PerformLayout();
 
@@ -297,7 +318,7 @@
 
         #endregion
 
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox analythPictureBox;
         private System.Windows.Forms.Button buttonLoadImage;
         private System.Windows.Forms.ColorDialog colorDialog1;
     private SelectionRangeSlider selectionRangeSlider1;
@@ -318,6 +339,7 @@
     private System.Windows.Forms.TextBox hitsTextBox;
     private System.Windows.Forms.Button buttonDraw;
     private System.Windows.Forms.Label inProgressLabel;
+    private System.Windows.Forms.PictureBox examplePictureBox;
   }
 }
 

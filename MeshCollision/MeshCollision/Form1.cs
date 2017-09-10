@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using MeshCollision.ColorSpaces;
@@ -28,26 +29,32 @@ namespace MeshCollision
       {
         Filter = @"Image Files(*.jpg; *.jpeg; *.gif; *.bmp)|*.jpg; *.jpeg; *.gif; *.bmp"
       };
-
+      
       var image = open.ShowDialog() == DialogResult.OK ? new Bitmap(open.FileName) : null;
 
       if (image == null)
         return false;
+
+      var fileName = open.FileName;
 
       var cloneRect = new Rectangle(0, 0, image.Width, image.Height);
       var format = image.PixelFormat;
       _initialBitmap = image.Clone(cloneRect, format);
 
       _imageAnalyzer = new ImageAnalyzer(image);
-      pictureBox1.Image = image;
+
+      analythPictureBox.Image = image;
+      
+      var exampleImage = new Bitmap(fileName);
+      examplePictureBox.Image = exampleImage;
       return true;
     }
 
     private void InvalidateImage()
     {
-      if (pictureBox1.Image == null)
+      if (analythPictureBox.Image == null)
         return;
-      pictureBox1.Invalidate();
+      analythPictureBox.Invalidate();
     }
     
     private void pictureBox1_Paint(object sender, PaintEventArgs e)
@@ -201,7 +208,7 @@ namespace MeshCollision
 
     private async void AnalizeImageAsync()
     {
-      pictureBox1.Image = _initialBitmap;
+      analythPictureBox.Image = _initialBitmap;
       _imageAnalyzer = new ImageAnalyzer(_initialBitmap);
 
       var analizedResult = await _imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement, inProgressLabel);
@@ -212,8 +219,104 @@ namespace MeshCollision
           foreach (var point in analizedResult.Points)
             g.FillEllipse(Brushes.Black, point.X, point.Y, 5, 5);
         }
-        pictureBox1.Image = analizedResult.Bitmap;
+        analythPictureBox.Image = analizedResult.Bitmap;
       }
+    }
+
+    private List<Point> _etalonsPoints = new List<Point>();
+    private bool _inDrawProcess = false;
+
+    private void examplePictureBox_MouseDown(object sender, MouseEventArgs e)
+    {
+      _inDrawProcess = true;
+
+      var point = new Point(e.X, e.Y);
+
+      if (e.Button == MouseButtons.Right)
+      {
+        RemovePointAndInvalidate(point, examplePictureBox);
+        return;
+      }
+      
+      AddPointAndInvalidate(point, examplePictureBox);
+    }
+
+    private void examplePictureBox_Paint(object sender, PaintEventArgs e)
+    {
+      for (var i = 0; i < _etalonsPoints.Count; i++)
+      {
+        e.Graphics.FillRectangle(Brushes.Black, _etalonsPoints[i].X, _etalonsPoints[i].Y, 10, 10);
+      }
+    }
+
+    private void examplePictureBox_MouseMove(object sender, MouseEventArgs e)
+    {
+      if (!_inDrawProcess)
+        return;
+
+      var point = new Point(e.X, e.Y);
+
+      if (e.Button == MouseButtons.Right) {
+        RemovePointAndInvalidate(point, examplePictureBox);
+        return;
+      }
+
+      AddPointAndInvalidate(point, examplePictureBox);
+    }
+
+    private void examplePictureBox_MouseUp(object sender, MouseEventArgs e) {
+      if (!_inDrawProcess)
+        return;
+
+      var point = new Point(e.X, e.Y);
+
+      if (e.Button == MouseButtons.Right) {
+        RemovePointAndInvalidate(point, examplePictureBox);
+        return;
+      }
+
+      AddPointAndInvalidate(point, examplePictureBox);
+      _inDrawProcess = false;
+    }
+
+    private void examplePictureBox_MouseLeave(object sender, EventArgs e) {
+      _inDrawProcess = false;
+    }
+
+    private void AddPointAndInvalidate(Point point, PictureBox picture)
+    {
+      var rectangle = new Rectangle
+      {
+        Location = point,
+        Size = new Size(5, 5)
+      };
+      
+      for (var i = 0; i < examplePictureBox.Size.Height; i++)
+        for (var j = 0; j < examplePictureBox.Size.Width; j++) {
+          if (rectangle.Contains(new Point(j, i))) {
+            _etalonsPoints.Add(new Point(j, i));
+          }
+        }
+      
+      picture.Invalidate();
+    }
+
+    private void RemovePointAndInvalidate(Point point, PictureBox picture)
+    {
+      var rectangle = new Rectangle
+      {
+        Location = point,
+        Size = new Size(5, 5)
+      };
+
+      for (var i = 0; i < examplePictureBox.Size.Height; i++)
+        for (var j = 0; j < examplePictureBox.Size.Width; j++) {
+          if (rectangle.Contains(new Point(j, i))) {
+          _etalonsPoints.Remove(point);
+          }
+        }
+
+      picture.Invalidate();
     }
   }
 }
