@@ -353,14 +353,16 @@ namespace MeshCollision
 
       analyzed.RemoveAll(x => examples.Contains(x));
       var percent = analyzed.Count / ((float)_analyzedPoints.Count / 100);
-      analythToExampleLabel.Text = Math.Round(percent, 2) + "%";
 
       var examples1 = new List<Point>(_exampleImagePoints);
       var analyzed1 = new List<Point>(_analyzedPoints);
 
       examples1.RemoveAll(x => analyzed1.Contains(x));
       var percent1 = examples1.Count / ((float)_exampleImagePoints.Count / 100);
-      exampleToAnalythLabel.Text = Math.Round(percent1, 2) + "%";
+
+      var ne = (percent + percent1) / 2;
+
+      exampleToAnalythLabel.Text = Math.Round(ne, 2) + "%";
     }
   }
 }
