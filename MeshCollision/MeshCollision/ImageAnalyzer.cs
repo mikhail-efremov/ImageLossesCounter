@@ -16,9 +16,12 @@ namespace MeshCollision
   public class ImageAnalyzer
   {
     public UnsafeBitmap Bitmap;
-    
-    private static readonly int _linesCount = 70;
 
+    public readonly int LineWeight = 6;
+    public readonly int LineHeight = 6;
+
+    private static readonly int _linesCount = 60;
+    
     public ImageAnalyzer(Image image)
     {
       Bitmap = new UnsafeBitmap(new Bitmap(image));

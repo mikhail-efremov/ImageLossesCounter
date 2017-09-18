@@ -12,6 +12,12 @@ namespace MeshCollision
 
     private Bitmap _initialBitmap;
 
+
+    private readonly List<Point> _exampleImagePoints = new List<Point>();
+    private List<Point> _analyzedPoints = new List<Point>();
+
+    private bool _inDrawProcess;
+
     public Form1()
     {
       InitializeComponent();
@@ -43,9 +49,11 @@ namespace MeshCollision
 
       _imageAnalyzer = new ImageAnalyzer(image);
 
+      analythPictureBox.Size = image.Size;
       analythPictureBox.Image = image;
       
       var exampleImage = new Bitmap(fileName);
+      examplePictureBox.Size = exampleImage.Size;
       examplePictureBox.Image = exampleImage;
       return true;
     }
@@ -123,16 +131,6 @@ namespace MeshCollision
       
       var element = (SelectionElement) sender;
       SetMinMaxColorBoxes(element);
-    }
-
-    private void DrawMesh(SelectionRangeSlider selectionRangeSlider, int minH, int maxH)
-    {
-      var element = selectionRangeSlider.CurrentSelectionElement;
-
-      element.SelectedMin = minH;
-      element.SelectedMax = maxH;
-
-      selectionRangeSlider.Invalidate();
     }
 
     private void OnSliderElementSelected(object sender, EventArgs eventArgs) 
@@ -214,17 +212,50 @@ namespace MeshCollision
       var analizedResult = await _imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement, inProgressLabel);
       if (analizedResult.Bitmap != null)
       {
-        using (var g = Graphics.FromImage(analizedResult.Bitmap)) {
-          // Draw the points.
-          foreach (var point in analizedResult.Points)
-            g.FillEllipse(Brushes.Black, point.X, point.Y, 5, 5);
+        var hitPoints = new List<Point>();
+
+        foreach (var point in analizedResult.Points)
+        {
+          var rectangle = new Rectangle
+          {
+            Location = point,
+            Size = new Size(5, 5)
+          };
+
+          for (var x = 0; x < examplePictureBox.Size.Width; x++)
+            for (var y = 0; y < examplePictureBox.Size.Height; y++)
+            {
+            var p = new Point(x, y);
+
+            if (rectangle.Contains(p) && !hitPoints.Contains(p))
+            {
+              hitPoints.Add(p);
+            }
+          }
         }
-        analythPictureBox.Image = analizedResult.Bitmap;
+        
+        using (var g = Graphics.FromImage(analythPictureBox.Image))
+        {
+          foreach (var p in hitPoints)
+          {
+            g.FillRectangle(Brushes.Black, p.X, p.Y,
+              1, 1);
+          }
+        }
+
+        analizedResult.Points = hitPoints;
+        _analyzedPoints = hitPoints;
       }
     }
 
-    private List<Point> _etalonsPoints = new List<Point>();
-    private bool _inDrawProcess = false;
+    private void examplePictureBox_Paint(object sender, PaintEventArgs e)
+    {
+      for (var i = 0; i < _exampleImagePoints.Count; i++)
+      {
+        e.Graphics.FillRectangle(Brushes.Black,
+          _exampleImagePoints[i].X, _exampleImagePoints[i].Y, 1, 1);
+      }
+    }
 
     private void examplePictureBox_MouseDown(object sender, MouseEventArgs e)
     {
@@ -241,14 +272,6 @@ namespace MeshCollision
       AddPointAndInvalidate(point, examplePictureBox);
     }
 
-    private void examplePictureBox_Paint(object sender, PaintEventArgs e)
-    {
-      for (var i = 0; i < _etalonsPoints.Count; i++)
-      {
-        e.Graphics.FillRectangle(Brushes.Black, _etalonsPoints[i].X, _etalonsPoints[i].Y, 10, 10);
-      }
-    }
-
     private void examplePictureBox_MouseMove(object sender, MouseEventArgs e)
     {
       if (!_inDrawProcess)
@@ -258,10 +281,11 @@ namespace MeshCollision
 
       if (e.Button == MouseButtons.Right) {
         RemovePointAndInvalidate(point, examplePictureBox);
-        return;
       }
-
-      AddPointAndInvalidate(point, examplePictureBox);
+      else if(e.Button == MouseButtons.Left)
+      {
+        AddPointAndInvalidate(point, examplePictureBox);
+      }
     }
 
     private void examplePictureBox_MouseUp(object sender, MouseEventArgs e) {
@@ -292,9 +316,12 @@ namespace MeshCollision
       };
       
       for (var i = 0; i < examplePictureBox.Size.Height; i++)
-        for (var j = 0; j < examplePictureBox.Size.Width; j++) {
-          if (rectangle.Contains(new Point(j, i))) {
-            _etalonsPoints.Add(new Point(j, i));
+        for (var j = 0; j < examplePictureBox.Size.Width; j++)
+        {
+          var p = new Point(j, i);
+          if (rectangle.Contains(p) && !_exampleImagePoints.Contains(p))
+          {
+            _exampleImagePoints.Add(p);
           }
         }
       
@@ -312,11 +339,28 @@ namespace MeshCollision
       for (var i = 0; i < examplePictureBox.Size.Height; i++)
         for (var j = 0; j < examplePictureBox.Size.Width; j++) {
           if (rectangle.Contains(new Point(j, i))) {
-          _etalonsPoints.Remove(point);
+          _exampleImagePoints.Remove(new Point(j, i));
           }
         }
 
       picture.Invalidate();
+    }
+
+    private void compareImagesButton_Click(object sender, EventArgs e)
+    {
+      var examples = new List<Point>(_exampleImagePoints);
+      var analyzed = new List<Point>(_analyzedPoints);
+
+      analyzed.RemoveAll(x => examples.Contains(x));
+      var percent = analyzed.Count / ((float)_analyzedPoints.Count / 100);
+      analythToExampleLabel.Text = Math.Round(percent, 2) + "%";
+
+      var examples1 = new List<Point>(_exampleImagePoints);
+      var analyzed1 = new List<Point>(_analyzedPoints);
+
+      examples1.RemoveAll(x => analyzed1.Contains(x));
+      var percent1 = examples1.Count / ((float)_exampleImagePoints.Count / 100);
+      exampleToAnalythLabel.Text = Math.Round(percent1, 2) + "%";
     }
   }
 }

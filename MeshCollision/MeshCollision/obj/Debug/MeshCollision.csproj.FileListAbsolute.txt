@@ -43,3 +43,4 @@ E:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.P
 E:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.csproj.GenerateResource.Cache
 E:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.exe
 E:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.pdb
+C:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Debug\MeshCollision.csproj.CoreCompileInputs.cache
