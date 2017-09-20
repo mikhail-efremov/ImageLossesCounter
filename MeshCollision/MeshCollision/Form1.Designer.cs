@@ -208,7 +208,7 @@
       // colorGetPictureBox
       // 
       this.colorGetPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.colorGetPictureBox.Location = new System.Drawing.Point(110, 614);
+      this.colorGetPictureBox.Location = new System.Drawing.Point(115, 608);
       this.colorGetPictureBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.colorGetPictureBox.Name = "colorGetPictureBox";
       this.colorGetPictureBox.Size = new System.Drawing.Size(118, 31);

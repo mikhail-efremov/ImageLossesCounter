@@ -201,12 +201,17 @@ namespace MeshCollision
 
     private void buttonDraw_Click(object sender, EventArgs e)
     {
+      using (var g = Graphics.FromImage(analythPictureBox.Image))
+      {
+        g.DrawImage(_initialBitmap, 0, 0);
+      }
+
       AnalizeImageAsync();
     }
 
     private async void AnalizeImageAsync()
     {
-      analythPictureBox.Image = _initialBitmap;
+      analythPictureBox.Image = new Bitmap(_initialBitmap);
       _imageAnalyzer = new ImageAnalyzer(_initialBitmap);
 
       var analizedResult = await _imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement, inProgressLabel);
@@ -219,7 +224,7 @@ namespace MeshCollision
           var rectangle = new Rectangle
           {
             Location = point,
-            Size = new Size(5, 5)
+            Size = new Size(sizeOfPaint, sizeOfPaint)
           };
 
           for (var x = 0; x < examplePictureBox.Size.Width; x++)
@@ -233,12 +238,14 @@ namespace MeshCollision
             }
           }
         }
-        
+
+        var brush  = new SolidBrush(colorGetPictureBox.BackColor);
+
         using (var g = Graphics.FromImage(analythPictureBox.Image))
         {
           foreach (var p in hitPoints)
           {
-            g.FillRectangle(Brushes.Black, p.X, p.Y,
+            g.FillRectangle(brush, p.X, p.Y,
               1, 1);
           }
         }
@@ -250,9 +257,11 @@ namespace MeshCollision
 
     private void examplePictureBox_Paint(object sender, PaintEventArgs e)
     {
+      var brush = new SolidBrush(colorGetPictureBox.BackColor);
+
       for (var i = 0; i < _exampleImagePoints.Count; i++)
       {
-        e.Graphics.FillRectangle(Brushes.Black,
+        e.Graphics.FillRectangle(brush,
           _exampleImagePoints[i].X, _exampleImagePoints[i].Y, 1, 1);
       }
     }
@@ -312,7 +321,7 @@ namespace MeshCollision
       var rectangle = new Rectangle
       {
         Location = point,
-        Size = new Size(5, 5)
+        Size = new Size(sizeOfPaint, sizeOfPaint)
       };
       
       for (var i = 0; i < examplePictureBox.Size.Height; i++)
@@ -333,7 +342,7 @@ namespace MeshCollision
       var rectangle = new Rectangle
       {
         Location = point,
-        Size = new Size(5, 5)
+        Size = new Size(sizeOfPaint, sizeOfPaint)
       };
 
       for (var i = 0; i < examplePictureBox.Size.Height; i++)
@@ -364,5 +373,7 @@ namespace MeshCollision
 
       exampleToAnalythLabel.Text = Math.Round(ne, 2) + "%";
     }
+
+    private const int sizeOfPaint = 5;
   }
 }

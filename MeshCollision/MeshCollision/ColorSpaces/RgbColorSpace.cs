@@ -27,8 +27,7 @@ namespace MeshCollision.ColorSpaces
 
     public bool ColorSimilar(IColorSpace compareColorSpace, byte sens)
     {
-      var rgb = compareColorSpace as RgbColorSpace;
-      if (rgb == null)
+      if (!(compareColorSpace is RgbColorSpace rgb))
         return false;
 
       if (sens >= 255)
@@ -37,6 +36,18 @@ namespace MeshCollision.ColorSpaces
       if (R >= rgb.R - sens && R <= rgb.R + sens)
         if (G >= rgb.G - sens && G <= rgb.G + sens)
           if (B >= rgb.B - sens && B <= rgb.B + sens)
+            return true;
+      return false;
+    }
+
+    public bool ColorSimilar(RgbColorSpace rgb, byte sens)
+    {
+      if (sens >= 255)
+        return true;
+
+      if (R >= rgb.R /*- sens */&& R <= rgb.R + sens)
+        if (G >= rgb.G/* - sens */&& G <= rgb.G + sens)
+          if (B >= rgb.B/* - sens */&& B <= rgb.B + sens)
             return true;
       return false;
     }
