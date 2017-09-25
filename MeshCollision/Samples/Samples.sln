@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.15
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "0. Tutorials", "0. Tutorials", "{C7695817-57CC-484A-A0CF-29371453BDF6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3. Clustering", "3. Clustering", "{A1E30E03-998F-4023-B331-114F64497D99}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "3.1. Hard assignment", "Tutorials\3. Clustering\3.1. Hard assignment\3.1. Hard assignment.csproj", "{79B50218-56F3-42F1-B519-FC24EB7A93D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "3.2. Soft assignment", "Tutorials\3. Clustering\3.2. Soft assignment\3.2. Soft assignment.csproj", "{C4E36FCF-903D-4C76-ACE4-A8670C06AF84}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Mono|x86 = Mono|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{79B50218-56F3-42F1-B519-FC24EB7A93D0}.Debug|x86.ActiveCfg = Debug|x86
+		{79B50218-56F3-42F1-B519-FC24EB7A93D0}.Debug|x86.Build.0 = Debug|x86
+		{79B50218-56F3-42F1-B519-FC24EB7A93D0}.Mono|x86.ActiveCfg = Release|x86
+		{79B50218-56F3-42F1-B519-FC24EB7A93D0}.Mono|x86.Build.0 = Release|x86
+		{79B50218-56F3-42F1-B519-FC24EB7A93D0}.Release|x86.ActiveCfg = Release|x86
+		{79B50218-56F3-42F1-B519-FC24EB7A93D0}.Release|x86.Build.0 = Release|x86
+		{C4E36FCF-903D-4C76-ACE4-A8670C06AF84}.Debug|x86.ActiveCfg = Debug|x86
+		{C4E36FCF-903D-4C76-ACE4-A8670C06AF84}.Debug|x86.Build.0 = Debug|x86
+		{C4E36FCF-903D-4C76-ACE4-A8670C06AF84}.Mono|x86.ActiveCfg = Release|x86
+		{C4E36FCF-903D-4C76-ACE4-A8670C06AF84}.Mono|x86.Build.0 = Release|x86
+		{C4E36FCF-903D-4C76-ACE4-A8670C06AF84}.Release|x86.ActiveCfg = Release|x86
+		{C4E36FCF-903D-4C76-ACE4-A8670C06AF84}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A1E30E03-998F-4023-B331-114F64497D99} = {C7695817-57CC-484A-A0CF-29371453BDF6}
+		{79B50218-56F3-42F1-B519-FC24EB7A93D0} = {A1E30E03-998F-4023-B331-114F64497D99}
+		{C4E36FCF-903D-4C76-ACE4-A8670C06AF84} = {A1E30E03-998F-4023-B331-114F64497D99}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F84E0C68-7136-4D7D-991D-39902FDE997F}
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = Accord.NET.vsmdi
+	EndGlobalSection
+EndGlobal

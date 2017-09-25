@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace MeshCollision
@@ -13,10 +11,15 @@ namespace MeshCollision
         /// </summary>
         [STAThread]
         static void Main()
-        {
-            Application.EnableVisualStyles();
+    {
+      AllocConsole();
+      Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
         }
-    }
+
+      [DllImport("kernel32.dll", SetLastError = true)]
+      [return: MarshalAs(UnmanagedType.Bool)]
+      static extern bool AllocConsole();
+  }
 }

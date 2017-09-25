@@ -116,54 +116,54 @@ namespace MeshCollision
 		}
 
 		private void DetectionColorPictureBox_Click(object sender, EventArgs e) {
-			var form = Form1.ActiveForm;
+			var form = Form.ActiveForm;
 			form.Hide();
-			ColorDialog cd = new ColorDialog();
+			var cd = new ColorDialog();
 			cd.ShowDialog();
 			searchingColorPictureBox.BackColor = cd.Color;
 			form.Show();
 		}
 
 		private void MeshColorPictureBox_Click(object sender, EventArgs e) {
-			var form = Form1.ActiveForm;
+			var form = Form.ActiveForm;
 			form.Hide();
-			ColorDialog cd = new ColorDialog();
+			var cd = new ColorDialog();
 			cd.ShowDialog();
 			meshColorPictureBox.BackColor = cd.Color;
 			form.Show();
 		}
 
-		public static List<Line> GetRawMesh(Bitmap bitmap, int linesCount) {
-			float weightIndent = 0;
-			float heightIndent = 0;
-
-			if (linesCount >= bitmap.Width) {
-				linesCount = bitmap.Width;
-			}
-			weightIndent = bitmap.Width / (float)linesCount;
-
-			if (linesCount >= bitmap.Height) {
-				linesCount = bitmap.Height;
-			}
-			heightIndent = bitmap.Height / (float)linesCount;
-
+		public static List<Line> GetRawMesh(Bitmap bitmap, float indent)
+		{
+			var weightIndent = indent;
+			var heightIndent = indent;
+      
+      var	widthLinesCount = bitmap.Width / weightIndent;      
+      var	heightLinesCount = bitmap.Height / heightIndent;
+      
 			var lines = new List<Line>();
 
 			//horizontal
-			for (int index = 0; index < linesCount; index++) {
-				var xpt = new Point(0, (int)Math.Round(index * heightIndent));
-				var ypt = new Point(bitmap.Width, (int)Math.Round(heightIndent * index));
+			for (var index = 0; index < heightLinesCount; index++)
+			{
+			  var coordinate = (int)Math.Round(index * heightIndent);
+
+			  var xpt = new Point(0, coordinate);
+        var ypt = new Point(bitmap.Width, coordinate);
 
 				var line = new Line(xpt, ypt, bitmap.Width);
 				lines.Add(line);
 			}
 
 			//vertical
-			for (var index = 0; index < linesCount; index++) {
-				Point xpt = new Point((int)Math.Round(index * weightIndent), 0);
-				Point ypt = new Point((int)Math.Round(index * weightIndent), bitmap.Height);
+			for (var index = 0; index < widthLinesCount; index++)
+			{
+			  var coordinate = (int)Math.Round(index * weightIndent);
 
-				Line line = new Line(xpt, ypt, bitmap.Height);
+				var xpt = new Point(coordinate, 0);
+				var ypt = new Point(coordinate, bitmap.Height);
+
+				var line = new Line(xpt, ypt, bitmap.Height);
 				lines.Add(line);
 			}
 

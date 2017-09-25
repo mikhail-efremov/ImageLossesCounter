@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using MeshCollision.ColorSpaces;
+using Newtonsoft.Json;
+using Tutorials.Clustering.Hard;
 
 namespace MeshCollision
 {
@@ -228,8 +230,8 @@ namespace MeshCollision
           };
 
           for (var x = 0; x < examplePictureBox.Size.Width; x++)
-            for (var y = 0; y < examplePictureBox.Size.Height; y++)
-            {
+          for (var y = 0; y < examplePictureBox.Size.Height; y++)
+          {
             var p = new Point(x, y);
 
             if (rectangle.Contains(p) && !hitPoints.Contains(p))
@@ -239,7 +241,7 @@ namespace MeshCollision
           }
         }
 
-        var brush  = new SolidBrush(colorGetPictureBox.BackColor);
+        var brush = new SolidBrush(colorGetPictureBox.BackColor);
 
         using (var g = Graphics.FromImage(analythPictureBox.Image))
         {
@@ -252,6 +254,76 @@ namespace MeshCollision
 
         analizedResult.Points = hitPoints;
         _analyzedPoints = hitPoints;
+
+        Clastering.Start(_analyzedPoints);
+
+        return;
+        var clasteringData = KMeansDemo.Start(hitPoints);
+
+        var pdata = JsonConvert.SerializeObject(clasteringData.Data);
+        var rap = JsonConvert.SerializeObject(_analyzedPoints);
+
+
+
+        var data = clasteringData.Data;
+        var decimals = clasteringData.Decimals;
+        var clustering = clasteringData.Clustering;
+
+        var colors = new[] {
+          Brushes.Red,
+          Brushes.Blue,
+          Brushes.Orchid,
+          Brushes.White,
+          Brushes.Aqua,
+          Brushes.Black,
+          Brushes.Brown,
+          Brushes.Chocolate,
+          Brushes.DarkCyan,
+          Brushes.DarkOliveGreen,
+          Brushes.DarkSeaGreen,
+          Brushes.Fuchsia,
+          Brushes.LightSkyBlue,
+          Brushes.OrangeRed,
+          Brushes.Peru,
+          Brushes.PaleTurquoise,
+          Brushes.GreenYellow,
+          Brushes.LightSlateGray,
+          Brushes.Yellow,
+          Brushes.IndianRed,
+          Brushes.Maroon,
+          Brushes.LemonChiffon,
+          Brushes.Navy,
+          Brushes.Plum,
+          Brushes.SaddleBrown,
+          Brushes.Silver
+        };
+
+        using (var g = Graphics.FromImage(analythPictureBox.Image))
+        {
+          for (int d = 0; d < data.Length; d++)
+          {
+            g.FillRectangle(colors[clustering[d]], (int)Math.Round(data[d][0]),
+              (int)Math.Round(data[d][1]), 2, 2);
+          }
+          /*
+          for (var k = 0; k < numClusters; ++k)
+          {
+            for (var i = 0; i < data.Length; ++i)
+            {
+              var clusterID = clustering[i];
+              if (clusterID != k) continue;
+
+              for (var j = 0; j < data[i].Length; ++j)
+              {
+                if (data[i][j] >= 0.0) Console.Write(" ");
+
+                g.FillRectangle(colors[k], data[i][0], data[i][1], 3, 3);
+                Console.Write(data[i][j].ToString("F" + decimals) + " ");
+              }
+              Console.WriteLine("");
+            }
+          }*/
+        }
       }
     }
 
@@ -374,6 +446,6 @@ namespace MeshCollision
       exampleToAnalythLabel.Text = Math.Round(ne, 2) + "%";
     }
 
-    private const int sizeOfPaint = 5;
+    private const int sizeOfPaint = 1;
   }
 }

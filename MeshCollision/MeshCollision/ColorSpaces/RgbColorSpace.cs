@@ -4,25 +4,25 @@ namespace MeshCollision.ColorSpaces
 {
   public class RgbColorSpace : IColorSpace
   {
-    public byte R {get {return color.R;}}
-    public byte G {get {return color.G;}}
-    public byte B { get { return color.B; } }
+    public byte R => _color.R;
+    public byte G => _color.G;
+    public byte B => _color.B;
 
-    private Color color;
+    private Color _color;
 
     public RgbColorSpace()
     {
-      color = new Color();
+      _color = new Color();
     }
 
     public RgbColorSpace(byte r, byte g, byte b)
     {
-      color = Color.FromArgb(r, g, b);
+      _color = Color.FromArgb(r, g, b);
     }
 
     public RgbColorSpace(Color color)
     {
-      this.color = color;
+      this._color = color;
     }
 
     public bool ColorSimilar(IColorSpace compareColorSpace, byte sens)
@@ -45,9 +45,9 @@ namespace MeshCollision.ColorSpaces
       if (sens >= 255)
         return true;
 
-      if (R >= rgb.R /*- sens */&& R <= rgb.R + sens)
-        if (G >= rgb.G/* - sens */&& G <= rgb.G + sens)
-          if (B >= rgb.B/* - sens */&& B <= rgb.B + sens)
+      if (R >= rgb.R - sens && R <= rgb.R + sens)
+        if (G >= rgb.G - sens && G <= rgb.G + sens)
+          if (B >= rgb.B - sens && B <= rgb.B + sens)
             return true;
       return false;
     }

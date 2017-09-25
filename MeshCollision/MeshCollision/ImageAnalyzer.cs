@@ -20,7 +20,7 @@ namespace MeshCollision
     public readonly int LineWeight = 6;
     public readonly int LineHeight = 6;
 
-    private static readonly int _linesCount = 60;
+    private static readonly float _indent = 10;
     
     public ImageAnalyzer(Image image)
     {
@@ -34,7 +34,7 @@ namespace MeshCollision
         return new List<Line>();
       }
 
-      var rawMesh = MeshCollideObject.GetRawMesh(Bitmap.Bitmap, _linesCount);
+      var rawMesh = MeshCollideObject.GetRawMesh(Bitmap.Bitmap, _indent);
       
       var similarMesh = new List<Line>();
       var clonedBuffer = new UnsafeBitmap((Bitmap)Bitmap.Bitmap.Clone());
