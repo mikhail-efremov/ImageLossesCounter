@@ -66,6 +66,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Geometry.cs" />
     <Compile Include="ImageAnalyzer.cs" />
     <Compile Include="KMeansDemo.cs" />
     <Compile Include="Line.cs" />

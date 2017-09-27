@@ -1,94 +1,80 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using Accord.Controls;
 using Accord.MachineLearning;
 using Accord.Math.Distances;
 using Accord.Statistics.Distributions.DensityKernels;
-using Accord;
-using System;
 
-namespace Tutorials.Clustering.Hard
+namespace utorials.Clustering.Hard
 {
-
-    public class Clastering
+  public class Clastering
+  {
+    public static int[] StartKMeans(List<Point> points, int clastersCount)
     {
-      public static void Start(List<System.Drawing.Point> points)
-      {
-      var ints = new double[points.Count][];
-        for (var i = 0; i < points.Count; i++)
-        {
-          ints[i] = new[] { (double)points[i].X, (double)points[i].Y };
-        }
+      var p = ConvertPoints(points);
 
-        Start(ints);
+      return Kmeans(p, clastersCount, false);
     }
 
-    public static void Start(double[][] inputs)
-        {
-            // In the previous chapters, we have seen how the many models in the Accord.NET Framework 
-            // could be used used to solve classification and regression problems. A common aspect in
-            // these kinds of problems is that our target output data is always available: be it a set
-            // of class labels in the case of classification, or a set of real values in the case of
-            // regression. However, there is a different family of problems in which neither of those
-            // are available: clustering.
+    public static int[] StartBinarySplit(List<Point> points, int clustersCount)
+    {
+      var p = ConvertPoints(points);
 
-            // In a clustering problem, we would like to extract some useful information about a data
-            // set without having exact knowledge about it. A typical application for clustering is in
-            // user profiling: let's say we would like to discover groups of users who behave in similar
-            // ways when interacting with a system. If we had a database with details on user interaction,
-            // we could use a clustering algorithm to "cluster" (group) together people that behave in
-            // the same way.
+      return BinarySplit(p, clustersCount, false);
+    }
 
-        //    DataTable table = new ExcelReader("examples.xls").GetWorksheet("Scholkopf");
+    private static double[][] ConvertPoints(List<Point> points)
+    {
+      var ints = new double[points.Count][];
+      for (var i = 0; i < points.Count; i++)
+      {
+        ints[i] = new[] { points[i].X, (double)points[i].Y };
+      }
+      return ints;
+    }
 
-        //    double[][] inputs = table.ToJagged().GetColumns(0, 1);
+    private static void Start(double[][] inputs)
+    {
+      ScatterplotBox.Show("Three groups", inputs).Hold();
 
-            // Plot the data
-            ScatterplotBox.Show("Three groups", inputs).Hold();
+      Kmeans(inputs, 1, false);
+      BinarySplit(inputs, 1, false);
+    }
 
+    public static int[] Kmeans(double[][] inputs, int clustersCount, bool protGrapth)
+    {
+      var kmeans = new KMeans(k: clustersCount)
+      {
+        Distance = new SquareEuclidean(),
+        MaxIterations = 1000        
+      };
 
-            kmeans(inputs);
+      var model = kmeans.Learn(inputs);
 
-            binarySplit(inputs);
+      var prediction = model.Decide(inputs);
 
-            meanShift(inputs);
-        }
+      if (protGrapth)
+        ScatterplotBox.Show("KMeans's answer", inputs, prediction).Hold();
 
-        private static void kmeans(double[][] inputs)
-        {
-            // Create a 3-Means algorithm
-            var kmeans = new KMeans(k: 25)
-            {
-                Distance = new SquareEuclidean(),
-                MaxIterations = 1000
-            };
+      return prediction;
+    }
 
-            // Use it to learn a data model
-            var model = kmeans.Learn(inputs);
+    private static int[] BinarySplit(double[][] inputs, int clustersCount, bool protGrath)
+    {
+      var binarySplit = new BinarySplit(k: clustersCount)
+      {
+        Distance = new SquareEuclidean(),
+        MaxIterations = 1000
+      };
 
-            // Use the model to group new instances
-            int[] prediction = model.Decide(inputs);
+      var model = binarySplit.Learn(inputs);
 
-            // Plot the results
-            ScatterplotBox.Show("KMeans's answer", inputs, prediction).Hold();
-        }
+      var prediction = model.Decide(inputs);
 
-        private static void binarySplit(double[][] inputs)
-        {
-            // Create a binary-split algorithm
-            var binarySplit = new BinarySplit(k: 25)
-            {
-                Distance = new SquareEuclidean(),
-                MaxIterations = 1000
-            };
+      if (protGrath)
+        ScatterplotBox.Show("Binary Split's answer", inputs, prediction).Hold();
 
-            // Use it to learn a data model
-            var model = binarySplit.Learn(inputs);
-
-            // Use the model to group new instances
-            int[] prediction = model.Decide(inputs);
-
-            // Plot the results
-            ScatterplotBox.Show("Binary Split's answer", inputs, prediction).Hold();
+      return prediction;
         }
 
         private static void meanShift(double[][] inputs)

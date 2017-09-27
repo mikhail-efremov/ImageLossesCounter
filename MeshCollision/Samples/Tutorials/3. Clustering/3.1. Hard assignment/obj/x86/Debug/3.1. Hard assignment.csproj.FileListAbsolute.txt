@@ -87,3 +87,4 @@ C:\Repo\ImageLossesCounter\MeshCollision\Samples\Tutorials\3. Clustering\3.1. Ha
 C:\Repo\ImageLossesCounter\MeshCollision\Samples\Tutorials\3. Clustering\3.1. Hard assignment\bin\x86\Debug\zh-cn\ZedGraph.resources.dll
 C:\Repo\ImageLossesCounter\MeshCollision\Samples\Tutorials\3. Clustering\3.1. Hard assignment\bin\x86\Debug\zh-tw\ZedGraph.resources.dll
 C:\Repo\ImageLossesCounter\MeshCollision\Samples\Tutorials\3. Clustering\3.1. Hard assignment\obj\x86\Debug\utorials.Clustering.Hard.dll
+C:\Repo\ImageLossesCounter\MeshCollision\Samples\Tutorials\3. Clustering\3.1. Hard assignment\obj\x86\Debug\3.1. Hard assignment.csprojResolveAssemblyReference.cache

@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using howto_convex_hull;
 using MeshCollision.ColorSpaces;
 using Newtonsoft.Json;
-using Tutorials.Clustering.Hard;
+using utorials.Clustering.Hard;
 
 namespace MeshCollision
 {
@@ -71,6 +72,8 @@ namespace MeshCollision
     {
       PaintHslCointeinerPictureBox();
       InvalidateImage();
+
+      PaintExampleImage(sender, e);
     }
 
     private void PaintHslCointeinerPictureBox() 
@@ -255,74 +258,87 @@ namespace MeshCollision
         analizedResult.Points = hitPoints;
         _analyzedPoints = hitPoints;
 
-        Clastering.Start(_analyzedPoints);
+        var clastersCount = 20;
 
-        return;
-        var clasteringData = KMeansDemo.Start(hitPoints);
+        var clatered = Clastering.StartBinarySplit(_analyzedPoints, clastersCount);
+          // Clastering.StartKMeans(_analyzedPoints, clastersCount);
 
-        var pdata = JsonConvert.SerializeObject(clasteringData.Data);
-        var rap = JsonConvert.SerializeObject(_analyzedPoints);
+        var clasters = new List<Point>[clastersCount];
 
+        for (var i = 0; i < clasters.Length; i++)
+        {
+          clasters[i] = new List<Point>();
+        }
 
+        for (var i = 0; i < _analyzedPoints.Count; i++)
+        {
+          var c = clatered[i];
 
-        var data = clasteringData.Data;
-        var decimals = clasteringData.Decimals;
-        var clustering = clasteringData.Clustering;
-
-        var colors = new[] {
-          Brushes.Red,
-          Brushes.Blue,
-          Brushes.Orchid,
-          Brushes.White,
-          Brushes.Aqua,
-          Brushes.Black,
-          Brushes.Brown,
-          Brushes.Chocolate,
-          Brushes.DarkCyan,
-          Brushes.DarkOliveGreen,
-          Brushes.DarkSeaGreen,
-          Brushes.Fuchsia,
-          Brushes.LightSkyBlue,
-          Brushes.OrangeRed,
-          Brushes.Peru,
-          Brushes.PaleTurquoise,
-          Brushes.GreenYellow,
-          Brushes.LightSlateGray,
-          Brushes.Yellow,
-          Brushes.IndianRed,
-          Brushes.Maroon,
-          Brushes.LemonChiffon,
-          Brushes.Navy,
-          Brushes.Plum,
-          Brushes.SaddleBrown,
-          Brushes.Silver
-        };
+          clasters[c].Add(_analyzedPoints[i]);
+        }
 
         using (var g = Graphics.FromImage(analythPictureBox.Image))
         {
-          for (int d = 0; d < data.Length; d++)
+          for (var cl = 0; cl < clasters.Length; cl++)
           {
-            g.FillRectangle(colors[clustering[d]], (int)Math.Round(data[d][0]),
-              (int)Math.Round(data[d][1]), 2, 2);
-          }
-          /*
-          for (var k = 0; k < numClusters; ++k)
-          {
-            for (var i = 0; i < data.Length; ++i)
+             var color = Color.FromArgb(cl * 10, cl * 10, cl * 10);
+
+            var solidBrush = new SolidBrush(color);
+            foreach (var claster in clasters[cl])
             {
-              var clusterID = clustering[i];
-              if (clusterID != k) continue;
-
-              for (var j = 0; j < data[i].Length; ++j)
-              {
-                if (data[i][j] >= 0.0) Console.Write(" ");
-
-                g.FillRectangle(colors[k], data[i][0], data[i][1], 3, 3);
-                Console.Write(data[i][j].ToString("F" + decimals) + " ");
-              }
-              Console.WriteLine("");
+              g.FillRectangle(solidBrush, claster.X, claster.Y, 1, 1);
             }
-          }*/
+          }
+        }
+        array_Points = clasters;
+        analythPictureBox.Invalidate();
+        Console.Write("");
+      }
+    }
+
+    private List<Point>[] array_Points = {};
+
+    //минимальные выпуклые оболочки
+    private void PaintExampleImage(object sender, PaintEventArgs e)
+    {
+      foreach (var m_Points in array_Points) {
+        foreach (Point pt in m_Points)
+        {
+        //  e.Graphics.FillEllipse(Brushes.Cyan, pt.X - 3, pt.Y - 3, 7, 7);
+        }
+
+        List<Point> hull = null;
+        if (m_Points.Count >= 3)
+        {
+          // Get the convex hull.
+          hull = Geometry.MakeConvexHull(m_Points);
+
+          // Draw.
+          // Fill the non-culled points.
+          foreach (Point pt in Geometry.g_NonCulledPoints)
+          {
+         //   e.Graphics.FillEllipse(Brushes.White, pt.X - 3, pt.Y - 3, 7, 7);
+          }
+        }
+
+        // Draw all of the points.
+        foreach (Point pt in m_Points)
+        {
+        //  e.Graphics.DrawEllipse(Pens.Black, pt.X - 3, pt.Y - 3, 7, 7);
+        }
+
+        if (m_Points.Count >= 3)
+        {
+          // Draw the MinMax quadrilateral.
+          e.Graphics.DrawPolygon(Pens.Red, Geometry.g_MinMaxCorners);
+
+          // Draw the culling box.
+      //    e.Graphics.DrawRectangle(Pens.Orange, Geometry.g_MinMaxBox);
+
+          // Draw the convex hull.
+          Point[] hull_points = new Point[hull.Count];
+          hull.CopyTo(hull_points);
+          e.Graphics.DrawPolygon(Pens.Blue, hull_points);
         }
       }
     }

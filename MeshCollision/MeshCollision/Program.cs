@@ -12,14 +12,14 @@ namespace MeshCollision
         [STAThread]
         static void Main()
     {
-      AllocConsole();
+   //   AllocConsole();
       Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
         }
 
-      [DllImport("kernel32.dll", SetLastError = true)]
-      [return: MarshalAs(UnmanagedType.Bool)]
-      static extern bool AllocConsole();
+   //   [DllImport("kernel32.dll", SetLastError = true)]
+   //   [return: MarshalAs(UnmanagedType.Bool)]
+   //   static extern bool AllocConsole();
   }
 }
