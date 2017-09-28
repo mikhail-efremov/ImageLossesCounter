@@ -79,6 +79,7 @@ namespace MeshCollision
         var hitLines = GetHitLines(colors);
         foreach (var line in hitLines)
         {
+          if(line == null) continue;
           foreach (var point in line.Points)
           {
             if (!points.Contains(point))

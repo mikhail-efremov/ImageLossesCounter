@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using howto_convex_hull;
+using MeshCollision.Clustering;
 using MeshCollision.ColorSpaces;
 using Newtonsoft.Json;
 using utorials.Clustering.Hard;
@@ -260,6 +262,11 @@ namespace MeshCollision
 
         var clastersCount = 20;
 
+        array_Points = SimpleClustering.GetCluesters(_analyzedPoints, 7); 
+          //QtClustering.Start(_analyzedPoints, 30);
+
+        analythPictureBox.Invalidate();
+        return;
         var clatered = Clastering.StartBinarySplit(_analyzedPoints, clastersCount);
           // Clastering.StartKMeans(_analyzedPoints, clastersCount);
 
@@ -290,19 +297,23 @@ namespace MeshCollision
             }
           }
         }
-        array_Points = clasters;
+ //       array_Points = clasters;
         analythPictureBox.Invalidate();
         Console.Write("");
       }
     }
 
-    private List<Point>[] array_Points = {};
+    private List<HashSet<Point>> array_Points = new List<HashSet<Point>>();
 
     //минимальные выпуклые оболочки
     private void PaintExampleImage(object sender, PaintEventArgs e)
     {
-      foreach (var m_Points in array_Points) {
-        foreach (Point pt in m_Points)
+      foreach (var m_Points in array_Points)
+      {
+        if (m_Points.Count < 25)
+          continue;
+
+        foreach (var pt in m_Points)
         {
         //  e.Graphics.FillEllipse(Brushes.Cyan, pt.X - 3, pt.Y - 3, 7, 7);
         }
@@ -311,7 +322,7 @@ namespace MeshCollision
         if (m_Points.Count >= 3)
         {
           // Get the convex hull.
-          hull = Geometry.MakeConvexHull(m_Points);
+          hull = Geometry.MakeConvexHull(m_Points.ToList());
 
           // Draw.
           // Fill the non-culled points.
@@ -330,15 +341,15 @@ namespace MeshCollision
         if (m_Points.Count >= 3)
         {
           // Draw the MinMax quadrilateral.
-          e.Graphics.DrawPolygon(Pens.Red, Geometry.g_MinMaxCorners);
+       //   e.Graphics.DrawPolygon(Pens.Red, Geometry.g_MinMaxCorners);
 
           // Draw the culling box.
       //    e.Graphics.DrawRectangle(Pens.Orange, Geometry.g_MinMaxBox);
 
           // Draw the convex hull.
-          Point[] hull_points = new Point[hull.Count];
+          var hull_points = new Point[hull.Count];
           hull.CopyTo(hull_points);
-          e.Graphics.DrawPolygon(Pens.Blue, hull_points);
+          e.Graphics.DrawPolygon(Pens.Red, hull_points); //Pens.Blue, hull_points);
         }
       }
     }

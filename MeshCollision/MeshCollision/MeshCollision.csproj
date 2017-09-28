@@ -56,6 +56,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Clustering\QtCluctering.cs" />
+    <Compile Include="Clustering\SimpleClustering.cs" />
     <Compile Include="ColorSpaces\HslColorSpace.cs" />
     <Compile Include="ColorSpaces\IColorSpace.cs" />
     <Compile Include="ColorSpaces\RgbColorSpace.cs" />
