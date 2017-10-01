@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using howto_convex_hull;
@@ -245,7 +247,8 @@ namespace MeshCollision
             }
           }
         }
-
+#warning DRAW POINT IN THS POSITION
+        /*
         var brush = new SolidBrush(colorGetPictureBox.BackColor);
 
         using (var g = Graphics.FromImage(analythPictureBox.Image))
@@ -256,50 +259,13 @@ namespace MeshCollision
               1, 1);
           }
         }
-
+        */
         analizedResult.Points = hitPoints;
         _analyzedPoints = hitPoints;
 
-        var clastersCount = 20;
-
-        array_Points = SimpleClustering.GetCluesters(_analyzedPoints, 7); 
-          //QtClustering.Start(_analyzedPoints, 30);
+        array_Points = SimpleClustering.GetCluesters(_analyzedPoints, 3);//7
 
         analythPictureBox.Invalidate();
-        return;
-        var clatered = Clastering.StartBinarySplit(_analyzedPoints, clastersCount);
-          // Clastering.StartKMeans(_analyzedPoints, clastersCount);
-
-        var clasters = new List<Point>[clastersCount];
-
-        for (var i = 0; i < clasters.Length; i++)
-        {
-          clasters[i] = new List<Point>();
-        }
-
-        for (var i = 0; i < _analyzedPoints.Count; i++)
-        {
-          var c = clatered[i];
-
-          clasters[c].Add(_analyzedPoints[i]);
-        }
-
-        using (var g = Graphics.FromImage(analythPictureBox.Image))
-        {
-          for (var cl = 0; cl < clasters.Length; cl++)
-          {
-             var color = Color.FromArgb(cl * 10, cl * 10, cl * 10);
-
-            var solidBrush = new SolidBrush(color);
-            foreach (var claster in clasters[cl])
-            {
-              g.FillRectangle(solidBrush, claster.X, claster.Y, 1, 1);
-            }
-          }
-        }
- //       array_Points = clasters;
-        analythPictureBox.Invalidate();
-        Console.Write("");
       }
     }
 
@@ -308,6 +274,8 @@ namespace MeshCollision
     //минимальные выпуклые оболочки
     private void PaintExampleImage(object sender, PaintEventArgs e)
     {
+      var angles = new List<string>();
+
       foreach (var m_Points in array_Points)
       {
         if (m_Points.Count < 25)
@@ -315,7 +283,7 @@ namespace MeshCollision
 
         foreach (var pt in m_Points)
         {
-        //  e.Graphics.FillEllipse(Brushes.Cyan, pt.X - 3, pt.Y - 3, 7, 7);
+          //  e.Graphics.FillEllipse(Brushes.Cyan, pt.X - 3, pt.Y - 3, 7, 7);
         }
 
         List<Point> hull = null;
@@ -328,30 +296,99 @@ namespace MeshCollision
           // Fill the non-culled points.
           foreach (Point pt in Geometry.g_NonCulledPoints)
           {
-         //   e.Graphics.FillEllipse(Brushes.White, pt.X - 3, pt.Y - 3, 7, 7);
+            //   e.Graphics.FillEllipse(Brushes.White, pt.X - 3, pt.Y - 3, 7, 7);
           }
         }
 
         // Draw all of the points.
         foreach (Point pt in m_Points)
         {
-        //  e.Graphics.DrawEllipse(Pens.Black, pt.X - 3, pt.Y - 3, 7, 7);
+          //  e.Graphics.DrawEllipse(Pens.Black, pt.X - 3, pt.Y - 3, 7, 7);
         }
 
         if (m_Points.Count >= 3)
         {
           // Draw the MinMax quadrilateral.
-       //   e.Graphics.DrawPolygon(Pens.Red, Geometry.g_MinMaxCorners);
+          //   e.Graphics.DrawPolygon(Pens.Red, Geometry.g_MinMaxCorners);
 
           // Draw the culling box.
-      //    e.Graphics.DrawRectangle(Pens.Orange, Geometry.g_MinMaxBox);
+          //    e.Graphics.DrawRectangle(Pens.Orange, Geometry.g_MinMaxBox);
 
           // Draw the convex hull.
-          var hull_points = new Point[hull.Count];
-          hull.CopyTo(hull_points);
-          e.Graphics.DrawPolygon(Pens.Red, hull_points); //Pens.Blue, hull_points);
+          if (hull == null)
+            continue;
+
+          var hullPoints = new Point[hull.Count];
+          hull.CopyTo(hullPoints);
+          e.Graphics.DrawPolygon(Pens.Red, hullPoints); //Pens.Blue, hull_points);
+
+
+          //find remoted points in figure
+          var firstPoint = new Point();
+          var secondPoint = new Point();
+          var distance = 0;
+
+          foreach (var targetP in hullPoints)
+          {
+            for (var hullIndex = 0; hullIndex < hullPoints.Length; hullIndex++)
+            {
+              var distBetweetPoints = targetP.DistanceSquared(hullPoints[hullIndex]);
+
+              if (distBetweetPoints > distance)
+              {
+                distance = distBetweetPoints;
+                firstPoint = targetP;
+                secondPoint = hullPoints[hullIndex];
+              }
+            }
+          }
+
+          var angle = AngleBetweenLineAndHorisontalAxis(firstPoint, secondPoint);
+          angles.Add(angle.ToString(CultureInfo.InvariantCulture));
+         
+
+          var stringPoint = new Point((firstPoint.X + secondPoint.X) / 2,
+            (firstPoint.Y + secondPoint.Y) / 2);
+          e.Graphics.DrawString(Math.Round(angle).ToString(CultureInfo.InvariantCulture) + "°", 
+            DefaultFont, Brushes.Blue, stringPoint);
+
+          e.Graphics.DrawLine(Pens.Blue, firstPoint, secondPoint);
         }
       }
+      if (angles.Count > 0 && !writed)
+      {
+        writed = true;        
+        DrawToFIle(angles);
+      }
+    }
+
+    private bool writed = false;
+    private void DrawToFIle(List<string> values)
+    {
+      var path = "angles.txt";
+
+      using (var w = File.AppendText(path))
+      {
+        for (var index = 0; index < values.Count; index++)
+        {
+          var s = values[index];
+          w.WriteLine($"{index}: {s}");
+        }
+      }
+    }
+
+    private double AngleBetweenLineAndHorisontalAxis(Point p1, Point p2)
+    {
+      var p3 = new Point(0, 0);
+      var p4 = new Point(100, 0);
+
+      var angle1 = (float)Math.Atan2(p2.Y - p1.Y, p1.X - p2.X);
+      var angle2 = (float)Math.Atan2(p4.Y - p3.Y, p3.X - p4.X);
+      var calculatedAngle = (angle1 - angle2) * (float)(180.0 / Math.PI);
+      if (calculatedAngle < 0)
+        calculatedAngle += 360;
+
+      return calculatedAngle - 180;//
     }
 
     private void examplePictureBox_Paint(object sender, PaintEventArgs e)
