@@ -66,7 +66,7 @@ namespace howto_convex_hull
     // trapezoid defined by the vertices with smallest and
     // largest X and Y coordinates.
     // Return the points that are not culled.
-    private static List<Point> HullCull(List<Point> points)
+    public static List<Point> HullCull(List<Point> points)
     {
       // Find a culling box.
       Rectangle culling_box = GetMinMaxBox(points);
@@ -122,13 +122,13 @@ namespace howto_convex_hull
       {
         // Find the point with smallest AngleValue
         // from the last point.
-        int X = hull[hull.Count - 1].X;
-        int Y = hull[hull.Count - 1].Y;
+        var X = hull[hull.Count - 1].X;
+        var Y = hull[hull.Count - 1].Y;
         best_pt = points[0];
         float best_angle = 3600;
 
         // Search the rest of the points.
-        foreach (Point pt in points)
+        foreach (var pt in points)
         {
           float test_angle = AngleValue(X, Y, pt.X, pt.Y);
           if ((test_angle >= sweep_angle) &&
@@ -141,7 +141,7 @@ namespace howto_convex_hull
 
         // See if the first point is better.
         // If so, we are done.
-        float first_angle = AngleValue(X, Y, hull[0].X, hull[0].Y);
+        var first_angle = AngleValue(X, Y, hull[0].X, hull[0].Y);
         if ((first_angle >= sweep_angle) &&
             (best_angle >= first_angle))
         {

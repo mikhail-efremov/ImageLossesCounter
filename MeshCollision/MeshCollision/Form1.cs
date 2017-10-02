@@ -301,11 +301,71 @@ namespace MeshCollision
         }
 
         // Draw all of the points.
-        foreach (Point pt in m_Points)
+        foreach (var pt in m_Points)
         {
-          //  e.Graphics.DrawEllipse(Pens.Black, pt.X - 3, pt.Y - 3, 7, 7);
+ //           e.Graphics.DrawEllipse(Pens.Red, pt.X, pt.Y, 1, 1);
         }
 
+        var xes = m_Points.GroupBy(val => val.X).ToList();
+        var yes = m_Points.GroupBy(val => val.Y).ToList();
+
+        var points = new List<Point>();
+
+        foreach (var x in xes)
+        {
+          var max = x.Max(val => val.Y);
+          var min = x.Min(val => val.Y);
+
+          if(max == min)
+            continue;
+          
+          var mozhno = true;
+          foreach (var p in points)
+          {
+            if (p.Y == min || p.Y == max)
+            {
+              mozhno = false;
+              break;
+            }
+          }
+          if (!mozhno)
+            continue;
+
+          points.Add(new Point(x.Key, min));
+          points.Add(new Point(x.Key, max));
+        }
+        foreach (var y in yes)
+        {
+          var min = y.Min(val => val.X);
+          var max = y.Max(val => val.X);
+
+          if(min == max)
+            continue;
+
+          var mozhno = true;
+          foreach (var p in points)
+          {
+            if (p.X == min || p.X == max)
+            {
+              mozhno = false;
+              break;
+            }
+          }
+          if(!mozhno)
+            continue;
+
+          points.Add(new Point(min, y.Key));
+          points.Add(new Point(max, y.Key));
+        }
+        
+        foreach (var pt in points)
+        {
+
+            e.Graphics.DrawEllipse(Pens.Black, pt.X, pt.Y, 2, 2);
+        }
+
+        //e.Graphics.DrawPolygon(Pens.Red, hu);
+        
         if (m_Points.Count >= 3)
         {
           // Draw the MinMax quadrilateral.
