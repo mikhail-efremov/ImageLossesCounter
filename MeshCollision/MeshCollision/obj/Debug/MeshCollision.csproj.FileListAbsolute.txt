@@ -79,3 +79,7 @@ C:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\bin\Debug\sv\ZedGraph.res
 C:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\bin\Debug\tr\ZedGraph.resources.dll
 C:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\bin\Debug\zh-cn\ZedGraph.resources.dll
 C:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\bin\Debug\zh-tw\ZedGraph.resources.dll
+C:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\bin\Debug\ConcaveHull.dll
+C:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\bin\Debug\ConcaveHull.pdb
+C:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\bin\Debug\nAlpha.dll
+C:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\bin\Debug\nAlpha.pdb

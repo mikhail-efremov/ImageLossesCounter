@@ -10,6 +10,7 @@ using MeshCollision.Clustering;
 using MeshCollision.ColorSpaces;
 using Newtonsoft.Json;
 using utorials.Clustering.Hard;
+using nAlpha;
 
 namespace MeshCollision
 {
@@ -309,7 +310,7 @@ namespace MeshCollision
         var xes = m_Points.GroupBy(val => val.X).ToList();
         var yes = m_Points.GroupBy(val => val.Y).ToList();
 
-        var points = new List<Point>();
+        var points = new HashSet<Point>();
 
         foreach (var x in xes)
         {
@@ -361,10 +362,16 @@ namespace MeshCollision
         foreach (var pt in points)
         {
 
-            e.Graphics.DrawEllipse(Pens.Black, pt.X, pt.Y, 2, 2);
+            e.Graphics.DrawEllipse(Pens.Black, pt.X, pt.Y, 1, 1);
         }
 
-        //e.Graphics.DrawPolygon(Pens.Red, hu);
+        GetAlphaShapeCalculator(points.ToList(), e.Graphics);
+
+ //       var s = ConcaveHull.Calc(points.ToList(), 3).ToArray();
+
+        //     e.Graphics.DrawPolygon(Pens.Red, s); //Pens.Blue, hull_points);
+
+        //     e.Graphics.DrawPolygon(Pens.Red, points.ToArray());
         
         if (m_Points.Count >= 3)
         {
@@ -380,7 +387,7 @@ namespace MeshCollision
 
           var hullPoints = new Point[hull.Count];
           hull.CopyTo(hullPoints);
-          e.Graphics.DrawPolygon(Pens.Red, hullPoints); //Pens.Blue, hull_points);
+#warning e.Graphics.DrawPolygon(Pens.Red, hullPoints); //Pens.Blue, hull_points);
 
 
           //find remoted points in figure
@@ -410,9 +417,9 @@ namespace MeshCollision
           var stringPoint = new Point((firstPoint.X + secondPoint.X) / 2,
             (firstPoint.Y + secondPoint.Y) / 2);
           e.Graphics.DrawString(Math.Round(angle).ToString(CultureInfo.InvariantCulture) + "°", 
-            DefaultFont, Brushes.Blue, stringPoint);
+            DefaultFont, Brushes.Black, stringPoint);
 
-          e.Graphics.DrawLine(Pens.Blue, firstPoint, secondPoint);
+          e.Graphics.DrawLine(Pens.Black, firstPoint, secondPoint);
         }
       }
       if (angles.Count > 0 && !writed)
@@ -420,6 +427,33 @@ namespace MeshCollision
         writed = true;        
         DrawToFIle(angles);
       }
+    }
+
+    private void GetAlphaShapeCalculator(List<Point> points, Graphics g)
+    {
+      AlphaShapeCalculator shapeCalculator = new AlphaShapeCalculator();
+      shapeCalculator.Alpha = (double)55 / Width;
+      shapeCalculator.CloseShape = true;
+
+      var shape = shapeCalculator.CalculateShape(points.ToArray());
+
+      var vertices1 = shape.Vertices;
+      foreach (var edge in shape.Edges)
+      {
+        g.DrawLine(Pens.Red, (float)vertices1[edge.Item1].X, (float)vertices1[edge.Item1].Y,
+          (float)vertices1[edge.Item2].X, (float)vertices1[edge.Item2].Y);
+      }
+    }
+
+    private void Hull(HashSet<Point> points, Graphics g)
+    {
+  //    ConcaveHull.Init.GenerateHull(points);
+
+ //     foreach (var line in ConcaveHull.Hull.hull_concave_edges)
+   //   {
+     //   g.DrawLine(Pens.Red, (float)line.nodes[0].x, (float)line.nodes[0].y,
+       //   (float)line.nodes[1].x, (float)line.nodes[1].y);
+      //}
     }
 
     private bool writed = false;
