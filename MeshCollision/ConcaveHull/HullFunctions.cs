@@ -280,13 +280,13 @@ namespace ConcaveHull
       {
         position = 0;
         opposite_position = 1;
-        while (position < 2)
+        while (position < 2 && line_count < concave_hull.Count && line_count >= 0)
         {
           currentID = concave_hull[line_count].nodes[position].id;
           if (currentID == leftNodeID
               && concave_hull[line_count].nodes[opposite_position].id != rightNodeID)
           {
- //           if (nearbyHullNodes[0] == null)
+            if (nearbyHullNodes[0] == null)
             {
               nearbyHullNodes[0] = concave_hull[line_count].nodes[opposite_position];
               nodesFound++;
@@ -295,7 +295,7 @@ namespace ConcaveHull
           else if (currentID == rightNodeID 
              && concave_hull[line_count].nodes[opposite_position].id != leftNodeID)
           {
-   //         if (nearbyHullNodes[1] == null)
+            if (nearbyHullNodes[1] == null)
             {
               nearbyHullNodes[1] = concave_hull[line_count].nodes[opposite_position];
               nodesFound++;

@@ -5,7 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using howto_convex_hull;
+using MeshCollision.Calculations;
 using MeshCollision.Clustering;
 using MeshCollision.ColorSpaces;
 using Newtonsoft.Json;
@@ -29,9 +29,7 @@ namespace MeshCollision
     public Form1()
     {
       InitializeComponent();
-      
-      colorGetPictureBox.BackColor = Color.Black;
-      
+
       sValueTrackBar.Value = 1000;
       lValueTrackBar.Value = 500;
 
@@ -77,8 +75,6 @@ namespace MeshCollision
     {
       PaintHslCointeinerPictureBox();
       InvalidateImage();
-
-      PaintExampleImage(sender, e);
     }
 
     private void PaintHslCointeinerPictureBox() 
@@ -128,7 +124,7 @@ namespace MeshCollision
             mMax = sli.SelectedMin - 1;
           }
       }
-      var slide = new SelectionElement(mMax, mMin, colorGetPictureBox.BackColor);
+      var slide = new SelectionElement(mMax, mMin, Color.Black);
       slider.AddSelectionElement(slide);
 
       slide.SelectionChanged += OnSlideSelectionChanged;
@@ -146,11 +142,9 @@ namespace MeshCollision
     private void OnSliderElementSelected(object sender, EventArgs eventArgs) 
     {
       var element = (SelectionElement)sender;
-      colorGetPictureBox.BackColor = element.LinesColor;
       sValueTrackBar.Value = element.SValue1000;
       lValueTrackBar.Value = element.LValue1000;
       OnSlideSelectionChanged(sender, eventArgs);
-      hitsTextBox.Text = element.Hits.ToString();
     }
 
     private void SetMinMaxColorBoxes(SelectionElement element)
@@ -195,19 +189,6 @@ namespace MeshCollision
       selectionRangeSlider1.CurrentSelectionElement.LValue1000 = lValueTrackBar.Value;
       OnSlideSelectionChanged(selectionRangeSlider1.CurrentSelectionElement, null);
     }
-    
-    private void colorGetPictureBox_Click(object sender, EventArgs e) {
-      var form = ActiveForm;
-      if (form == null) return;
-      form.Hide();
-      var cd = new ColorDialog();
-      cd.ShowDialog();
-      colorGetPictureBox.BackColor = cd.Color;
-      form.Show();
-      if(selectionRangeSlider1.CurrentSelectionElement == null)
-        return;
-      selectionRangeSlider1.CurrentSelectionElement.LinesColor = cd.Color;
-    }
 
     private void buttonDraw_Click(object sender, EventArgs e)
     {
@@ -224,7 +205,9 @@ namespace MeshCollision
       analythPictureBox.Image = new Bitmap(_initialBitmap);
       _imageAnalyzer = new ImageAnalyzer(_initialBitmap);
 
-      var analizedResult = await _imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement, inProgressLabel);
+      var sens = byte.Parse(textBoxColorSens.Text);
+
+      var analizedResult = await _imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement, inProgressLabel, sens);
       if (analizedResult.Bitmap != null)
       {
         var hitPoints = new List<Point>();
@@ -248,192 +231,42 @@ namespace MeshCollision
             }
           }
         }
-#warning DRAW POINT IN THS POSITION
-        /*
-        var brush = new SolidBrush(colorGetPictureBox.BackColor);
 
-        using (var g = Graphics.FromImage(analythPictureBox.Image))
-        {
-          foreach (var p in hitPoints)
-          {
-            g.FillRectangle(brush, p.X, p.Y,
-              1, 1);
-          }
-        }
-        */
         analizedResult.Points = hitPoints;
         _analyzedPoints = hitPoints;
 
-        array_Points = SimpleClustering.GetCluesters(_analyzedPoints, 3);//7
+        var array_Points = SimpleClustering.GetCluesters(_analyzedPoints, 3);//7
+        DrawHall(array_Points);
 
         analythPictureBox.Invalidate();
       }
     }
 
-    private List<HashSet<Point>> array_Points = new List<HashSet<Point>>();
-
-    //минимальные выпуклые оболочки
-    private void PaintExampleImage(object sender, PaintEventArgs e)
+    private void DrawHall(HashSet<HashSet<Point>> points)
     {
-      var angles = new List<string>();
+      var g = Graphics.FromImage(analythPictureBox.Image);
 
-      foreach (var m_Points in array_Points)
+      foreach (var mPoints in points)
       {
-        if (m_Points.Count < 25)
+        if (mPoints.Count < 20)
           continue;
 
-        foreach (var pt in m_Points)
-        {
-          //  e.Graphics.FillEllipse(Brushes.Cyan, pt.X - 3, pt.Y - 3, 7, 7);
-        }
+        var extremum = PointsCalculations.GetExtemumPoints(mPoints.ToList());
+        DrawPoints(Pens.Blue, extremum, 1, g);
 
-        List<Point> hull = null;
-        if (m_Points.Count >= 3)
-        {
-          // Get the convex hull.
-          hull = Geometry.MakeConvexHull(m_Points.ToList());
-
-          // Draw.
-          // Fill the non-culled points.
-          foreach (Point pt in Geometry.g_NonCulledPoints)
-          {
-            //   e.Graphics.FillEllipse(Brushes.White, pt.X - 3, pt.Y - 3, 7, 7);
-          }
-        }
-
-        // Draw all of the points.
-        foreach (var pt in m_Points)
-        {
- //           e.Graphics.DrawEllipse(Pens.Red, pt.X, pt.Y, 1, 1);
-        }
-
-        var xes = m_Points.GroupBy(val => val.X).ToList();
-        var yes = m_Points.GroupBy(val => val.Y).ToList();
-
-        var points = new HashSet<Point>();
-
-        foreach (var x in xes)
-        {
-          var max = x.Max(val => val.Y);
-          var min = x.Min(val => val.Y);
-
-          if(max == min)
-            continue;
-          
-          var mozhno = true;
-          foreach (var p in points)
-          {
-            if (p.Y == min || p.Y == max)
-            {
-              mozhno = false;
-              break;
-            }
-          }
-          if (!mozhno)
-            continue;
-
-          points.Add(new Point(x.Key, min));
-          points.Add(new Point(x.Key, max));
-        }
-        foreach (var y in yes)
-        {
-          var min = y.Min(val => val.X);
-          var max = y.Max(val => val.X);
-
-          if(min == max)
-            continue;
-
-          var mozhno = true;
-          foreach (var p in points)
-          {
-            if (p.X == min || p.X == max)
-            {
-              mozhno = false;
-              break;
-            }
-          }
-          if(!mozhno)
-            continue;
-
-          points.Add(new Point(min, y.Key));
-          points.Add(new Point(max, y.Key));
-        }
-        
-        foreach (var pt in points)
-        {
-
-            e.Graphics.DrawEllipse(Pens.Black, pt.X, pt.Y, 1, 1);
-        }
-
-        GetAlphaShapeCalculator(points.ToList(), e.Graphics);
-
- //       var s = ConcaveHull.Calc(points.ToList(), 3).ToArray();
-
-        //     e.Graphics.DrawPolygon(Pens.Red, s); //Pens.Blue, hull_points);
-
-        //     e.Graphics.DrawPolygon(Pens.Red, points.ToArray());
-        
-        if (m_Points.Count >= 3)
-        {
-          // Draw the MinMax quadrilateral.
-          //   e.Graphics.DrawPolygon(Pens.Red, Geometry.g_MinMaxCorners);
-
-          // Draw the culling box.
-          //    e.Graphics.DrawRectangle(Pens.Orange, Geometry.g_MinMaxBox);
-
-          // Draw the convex hull.
-          if (hull == null)
-            continue;
-
-          var hullPoints = new Point[hull.Count];
-          hull.CopyTo(hullPoints);
-#warning e.Graphics.DrawPolygon(Pens.Red, hullPoints); //Pens.Blue, hull_points);
-
-
-          //find remoted points in figure
-          var firstPoint = new Point();
-          var secondPoint = new Point();
-          var distance = 0;
-
-          foreach (var targetP in hullPoints)
-          {
-            for (var hullIndex = 0; hullIndex < hullPoints.Length; hullIndex++)
-            {
-              var distBetweetPoints = targetP.DistanceSquared(hullPoints[hullIndex]);
-
-              if (distBetweetPoints > distance)
-              {
-                distance = distBetweetPoints;
-                firstPoint = targetP;
-                secondPoint = hullPoints[hullIndex];
-              }
-            }
-          }
-
-          var angle = AngleBetweenLineAndHorisontalAxis(firstPoint, secondPoint);
-          angles.Add(angle.ToString(CultureInfo.InvariantCulture));
-         
-
-          var stringPoint = new Point((firstPoint.X + secondPoint.X) / 2,
-            (firstPoint.Y + secondPoint.Y) / 2);
-          e.Graphics.DrawString(Math.Round(angle).ToString(CultureInfo.InvariantCulture) + "°", 
-            DefaultFont, Brushes.Black, stringPoint);
-
-          e.Graphics.DrawLine(Pens.Black, firstPoint, secondPoint);
-        }
-      }
-      if (angles.Count > 0 && !writed)
-      {
-        writed = true;        
-        DrawToFIle(angles);
+        // CustConcaveHull(extremum, g);
+          UnityConcaveHull(mPoints, g);
+        //  AlphaFilterConcaveHull(extremum, g, Int32.Parse(textBoxRadius.Text));
       }
     }
 
-    private void GetAlphaShapeCalculator(List<Point> points, Graphics g)
+    private void AlphaFilterConcaveHull(HashSet<Point> points, Graphics g, double radius)
     {
-      AlphaShapeCalculator shapeCalculator = new AlphaShapeCalculator();
-      shapeCalculator.Alpha = (double)55 / Width;
-      shapeCalculator.CloseShape = true;
+      var shapeCalculator = new AlphaShapeCalculator
+      {
+        Radius = radius,
+        CloseShape = true
+      };
 
       var shape = shapeCalculator.CalculateShape(points.ToArray());
 
@@ -445,49 +278,36 @@ namespace MeshCollision
       }
     }
 
-    private void Hull(HashSet<Point> points, Graphics g)
+    private void UnityConcaveHull(HashSet<Point> points, Graphics g)
     {
-  //    ConcaveHull.Init.GenerateHull(points);
-
- //     foreach (var line in ConcaveHull.Hull.hull_concave_edges)
-   //   {
-     //   g.DrawLine(Pens.Red, (float)line.nodes[0].x, (float)line.nodes[0].y,
-       //   (float)line.nodes[1].x, (float)line.nodes[1].y);
-      //}
-    }
-
-    private bool writed = false;
-    private void DrawToFIle(List<string> values)
-    {
-      var path = "angles.txt";
-
-      using (var w = File.AppendText(path))
+      ConcaveHull.Init.generateHull(points.ToList());
+      
+      foreach (var line in ConcaveHull.Hull.hull_concave_edges)
       {
-        for (var index = 0; index < values.Count; index++)
-        {
-          var s = values[index];
-          w.WriteLine($"{index}: {s}");
-        }
+        g.DrawLine(Pens.Red, (float)line.nodes[0].x, (float)line.nodes[0].y,
+          (float)line.nodes[1].x, (float)line.nodes[1].y);
       }
     }
 
-    private double AngleBetweenLineAndHorisontalAxis(Point p1, Point p2)
+    private void CustConcaveHull(HashSet<Point> points, Graphics g)
     {
-      var p3 = new Point(0, 0);
-      var p4 = new Point(100, 0);
+      var custom = CustomConcaveHull.Calc(points.ToList(), 3);
 
-      var angle1 = (float)Math.Atan2(p2.Y - p1.Y, p1.X - p2.X);
-      var angle2 = (float)Math.Atan2(p4.Y - p3.Y, p3.X - p4.X);
-      var calculatedAngle = (angle1 - angle2) * (float)(180.0 / Math.PI);
-      if (calculatedAngle < 0)
-        calculatedAngle += 360;
+      if(custom != null)
+        g.DrawPolygon(Pens.Red, custom.ToArray());
+    }
 
-      return calculatedAngle - 180;//
+    private void DrawPoints(Pen pen, IEnumerable<Point> points, int size, Graphics g)
+    {
+      foreach (var pt in points)
+      {
+        g.DrawEllipse(pen, pt.X, pt.Y, size, size);
+      }
     }
 
     private void examplePictureBox_Paint(object sender, PaintEventArgs e)
     {
-      var brush = new SolidBrush(colorGetPictureBox.BackColor);
+      var brush = new SolidBrush(Color.Black);
 
       for (var i = 0; i < _exampleImagePoints.Count; i++)
       {

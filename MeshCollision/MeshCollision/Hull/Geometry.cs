@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
 using System.Drawing;
 
-namespace howto_convex_hull
+namespace MeshCollision.Hull
 {
   static class Geometry
   {

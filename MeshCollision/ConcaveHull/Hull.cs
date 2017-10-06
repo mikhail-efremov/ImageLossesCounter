@@ -27,7 +27,11 @@ namespace ConcaveHull
 
     public static void setConvHull(List<Node> nodes)
     {
-      unused_nodes.AddRange(nodes);
+      unused_nodes.Clear();
+      hull_edges.Clear();
+      hull_concave_edges.Clear();
+
+    unused_nodes.AddRange(nodes);
       hull_edges.AddRange(getHull(nodes));
       foreach (Line line in hull_edges)
       {

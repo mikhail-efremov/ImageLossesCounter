@@ -56,12 +56,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Calculations\AngleCalculations.cs" />
+    <Compile Include="Calculations\PointsCalculations.cs" />
     <Compile Include="Clustering\QtCluctering.cs" />
     <Compile Include="Clustering\SimpleClustering.cs" />
     <Compile Include="ColorSpaces\HslColorSpace.cs" />
     <Compile Include="ColorSpaces\IColorSpace.cs" />
     <Compile Include="ColorSpaces\RgbColorSpace.cs" />
-    <Compile Include="ConcaveHull.cs" />
+    <Compile Include="CustomConcaveHull.cs" />
     <Compile Include="CustomControl.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
@@ -69,7 +71,8 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Geometry.cs" />
+    <Compile Include="Hull\Geometry.cs" />
+    <Compile Include="Hull\ConvexHull.cs" />
     <Compile Include="ImageAnalyzer.cs" />
     <Compile Include="KMeansDemo.cs" />
     <Compile Include="Line.cs" />

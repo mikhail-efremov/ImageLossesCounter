@@ -95,10 +95,15 @@ namespace ConcaveHull
       order = MergeSort(p0, order);
       List<Node> result = new List<Node>();
       result.Add(p0);
-      result.Add(order[0]);
-      result.Add(order[1]);
-      order.RemoveAt(0);
-      order.RemoveAt(0);
+      if(order.Count > 0)
+        result.Add(order[0]);
+      if (order.Count > 1)
+        result.Add(order[1]);
+
+      if (order.Count > 0)
+        order.RemoveAt(0);
+      if (order.Count > 0)
+        order.RemoveAt(0);
       foreach (Node value in order)
       {
         keepLeft(result, value);

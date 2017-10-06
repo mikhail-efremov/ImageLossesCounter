@@ -7,56 +7,65 @@ namespace ConcaveHull
 {
   public class Init
   {
-  //  List<Node> dot_list = new List<Node>(); //Used only for the demo
+  static   List<Node> LIST = new List<Node>(); //Used only for the demo
 
-    public static string seed;
+    public static string seed = "dada";
     public static int scaleFactor = 1;
     public static int number_of_dots;
 
     //-1..1
-    public static double concavity = -.2;
+    public static double concavity = -.3;
     public static bool isSquareGrid = true;
-
-    void Start()
+    
+    public static void generateHull(List<Point> dot_list)
     {
-   //   setDots(number_of_dots); //Used only for the demo
-   //   generateHull();
-    }
-
-    public static void GenerateHull(HashSet<Point> points)
-    {
-      var id = 0;
-      var node = points.Select(p => new Node(p.X, p.Y, id++)).ToList();
-      generateHull(node);
-    }
-
-    public static void generateHull(List<Node> dot_list)
-    {
-      Hull.setConvHull(dot_list);
+      HUIZIVNASHO(dot_list);
+      Hull.setConvHull(LIST);
       Hull.setConcaveHull(Math.Round(Convert.ToDecimal(concavity), 2), scaleFactor, isSquareGrid);
+      LIST.Clear();
     }
-    /*
-    public void setDots(int number_of_dots)
+    
+    public  static void setDots(int number_of_dots)
     {
       //Used only for the demo
       System.Random pseudorandom = new System.Random(seed.GetHashCode());
       for (int x = 0; x < number_of_dots; x++)
       {
-        dot_list.Add(new Node(pseudorandom.Next(0, 100), pseudorandom.Next(0, 100), x));
+        LIST.Add(new Node(pseudorandom.Next(0, 100), pseudorandom.Next(0, 100), x));
       }
       //Delete repeated nodes
-      for (int pivot_position = 0; pivot_position < dot_list.Count; pivot_position++)
+      for (int pivot_position = 0; pivot_position < LIST.Count; pivot_position++)
       {
-        for (int position = 0; position < dot_list.Count; position++)
-          if (dot_list[pivot_position].x == dot_list[position].x && dot_list[pivot_position].y == dot_list[position].y
-              && dot_list[pivot_position].id != dot_list[position].id)
+        for (int position = 0; position < LIST.Count; position++)
+          if (LIST[pivot_position].x == LIST[position].x && LIST[pivot_position].y == LIST[position].y
+              && LIST[pivot_position].id != LIST[position].id)
           {
-            dot_list.RemoveAt(position);
+            LIST.RemoveAt(position);
             position--;
           }
       }
     }
     
+    public static void HUIZIVNASHO(List<Point> points)
+    {
+      //Used only for the demo
+      for (int x = 0; x < points.Count; x++)
+      {
+        LIST.Add(new Node(points[x].X, points[x].Y, x));
+      }
+      //Delete repeated nodes
+      for (int pivot_position = 0; pivot_position < LIST.Count; pivot_position++)
+      {
+        for (int position = 0; position < LIST.Count; position++)
+          if (LIST[pivot_position].x == LIST[position].x && LIST[pivot_position].y == LIST[position].y
+              && LIST[pivot_position].id != LIST[position].id)
+          {
+            LIST.RemoveAt(position);
+            position--;
+          }
+      }
+    }
+    /*
     void OnDrawGizmos()
     {
 

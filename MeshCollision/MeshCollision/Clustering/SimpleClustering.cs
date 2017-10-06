@@ -6,15 +6,15 @@ namespace MeshCollision.Clustering
 {
   public class SimpleClustering
   {
-    public static List<HashSet<Point>> GetCluesters(List<Point> basePoints, double distance)
+    public static HashSet<HashSet<Point>> GetCluesters(List<Point> basePoints, double distance)
     {
       if (basePoints.Count < 1)
-        return new List<HashSet<Point>>();
+        return new HashSet<HashSet<Point>>();
 
       var powDistance = distance * distance;
 
-      var clusters = GetCluster(basePoints, powDistance);
-      return clusters.ToList();
+      var clusters = new HashSet<HashSet<Point>>(GetCluster(basePoints, powDistance));
+      return clusters;
     }
 
     private static IEnumerable<HashSet<Point>> GetCluster(IEnumerable<Point> basePoints, double powDistance)

@@ -29,7 +29,7 @@ namespace MeshCollision
       Bitmap.Unlock();
     }
 
-    private List<Line> GetHitLines(List<IColorSpace> colors) {
+    private List<Line> GetHitLines(List<IColorSpace> colors, byte sens) {
       if (colors == null || colors.Count == 0) {
         return new List<Line>();
       }
@@ -47,7 +47,7 @@ namespace MeshCollision
 
         foreach (var line in rawMesh) {
           foreach (var point in line.Points) {
-            if (color.ColorSimilar(point, clonedBuffer, 100)) {
+            if (color.ColorSimilar(point, clonedBuffer, sens)) {
               if (similarMesh.Contains(searchLine))
               {
                 similarMesh[similarMesh.IndexOf(searchLine)].Points.Add(point);
@@ -63,7 +63,7 @@ namespace MeshCollision
       return similarMesh;
     }
 
-    public Task<AnalyzeResult> Analize(SelectionElement element, Label inProgressLabel)
+    public Task<AnalyzeResult> Analize(SelectionElement element, Label inProgressLabel, byte sens)
     {
       var buffer = Bitmap.Bitmap;
       inProgressLabel.Text = "in progress";
@@ -76,7 +76,7 @@ namespace MeshCollision
 
         var colors = SetColors(element, element.SelectedMin, element.SelectedMax);
 
-        var hitLines = GetHitLines(colors);
+        var hitLines = GetHitLines(colors, sens);
         foreach (var line in hitLines)
         {
           if(line == null) continue;

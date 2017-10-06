@@ -2,18 +2,15 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace nAlpha
 {
     public class AlphaShapeCalculator
     {
-        public double Alpha { get; set; }
         public bool CloseShape { get; set; }
-        public double Radius => 1/Alpha;
+        public double Radius { get; set; }
 
-        private List<Tuple<int, int>> resultingEdges = new List<Tuple<int, int>>();
+    private List<Tuple<int, int>> resultingEdges = new List<Tuple<int, int>>();
         private List<PointA> resultingVertices = new List<PointA>();
         private PointA[] points;
 
@@ -38,6 +35,8 @@ namespace nAlpha
         {
             var vertexCounter = CountVertices();
             var vertexIndices = vertexCounter.GetIndicesByCount(1);
+
+      if(vertexIndices.Length > 1) //CUSTOM
             AddClosingEdges(vertexIndices);
         }
 

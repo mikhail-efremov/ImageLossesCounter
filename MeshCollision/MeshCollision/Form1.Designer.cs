@@ -38,13 +38,6 @@
       this.lValueTrackBar = new System.Windows.Forms.TrackBar();
       this.sValueInfoLabel = new System.Windows.Forms.Label();
       this.lValueInfoLable = new System.Windows.Forms.Label();
-      this.linesCountInfoLabel = new System.Windows.Forms.Label();
-      this.linesCountTextBox = new System.Windows.Forms.TextBox();
-      this.buttonGetLinesCount = new System.Windows.Forms.Button();
-      this.linesColorInfoLabel = new System.Windows.Forms.Label();
-      this.colorGetPictureBox = new System.Windows.Forms.PictureBox();
-      this.hitsInfoLabel = new System.Windows.Forms.Label();
-      this.hitsTextBox = new System.Windows.Forms.TextBox();
       this.buttonDraw = new System.Windows.Forms.Button();
       this.inProgressLabel = new System.Windows.Forms.Label();
       this.examplePictureBox = new System.Windows.Forms.PictureBox();
@@ -53,12 +46,15 @@
       this.exampleToAnalythLabel = new System.Windows.Forms.Label();
       this.selectionRangeSlider1 = new MeshCollision.SelectionRangeSlider();
       this.analythPictureBox = new System.Windows.Forms.PictureBox();
+      this.textBoxRadius = new System.Windows.Forms.TextBox();
+      this.label2 = new System.Windows.Forms.Label();
+      this.label3 = new System.Windows.Forms.Label();
+      this.textBoxColorSens = new System.Windows.Forms.TextBox();
       ((System.ComponentModel.ISupportInitialize)(this.maxPictureBox)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.minPictureBox)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.hslCointeinerPictureBox)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.sValueTrackBar)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.lValueTrackBar)).BeginInit();
-      ((System.ComponentModel.ISupportInitialize)(this.colorGetPictureBox)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.examplePictureBox)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.analythPictureBox)).BeginInit();
       this.SuspendLayout();
@@ -163,80 +159,6 @@
       this.lValueInfoLable.TabIndex = 23;
       this.lValueInfoLable.Text = "L:";
       // 
-      // linesCountInfoLabel
-      // 
-      this.linesCountInfoLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.linesCountInfoLabel.AutoSize = true;
-      this.linesCountInfoLabel.Location = new System.Drawing.Point(23, 580);
-      this.linesCountInfoLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.linesCountInfoLabel.Name = "linesCountInfoLabel";
-      this.linesCountInfoLabel.Size = new System.Drawing.Size(51, 20);
-      this.linesCountInfoLabel.TabIndex = 24;
-      this.linesCountInfoLabel.Text = "Lines:";
-      // 
-      // linesCountTextBox
-      // 
-      this.linesCountTextBox.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.linesCountTextBox.Location = new System.Drawing.Point(117, 576);
-      this.linesCountTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-      this.linesCountTextBox.Name = "linesCountTextBox";
-      this.linesCountTextBox.Size = new System.Drawing.Size(116, 26);
-      this.linesCountTextBox.TabIndex = 25;
-      // 
-      // buttonGetLinesCount
-      // 
-      this.buttonGetLinesCount.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.buttonGetLinesCount.Location = new System.Drawing.Point(243, 571);
-      this.buttonGetLinesCount.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-      this.buttonGetLinesCount.Name = "buttonGetLinesCount";
-      this.buttonGetLinesCount.Size = new System.Drawing.Size(38, 35);
-      this.buttonGetLinesCount.TabIndex = 26;
-      this.buttonGetLinesCount.Text = "S";
-      this.buttonGetLinesCount.UseVisualStyleBackColor = true;
-      // 
-      // linesColorInfoLabel
-      // 
-      this.linesColorInfoLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.linesColorInfoLabel.AutoSize = true;
-      this.linesColorInfoLabel.Location = new System.Drawing.Point(23, 625);
-      this.linesColorInfoLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.linesColorInfoLabel.Name = "linesColorInfoLabel";
-      this.linesColorInfoLabel.Size = new System.Drawing.Size(89, 20);
-      this.linesColorInfoLabel.TabIndex = 27;
-      this.linesColorInfoLabel.Text = "Lines color:";
-      // 
-      // colorGetPictureBox
-      // 
-      this.colorGetPictureBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-      this.colorGetPictureBox.Location = new System.Drawing.Point(115, 608);
-      this.colorGetPictureBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-      this.colorGetPictureBox.Name = "colorGetPictureBox";
-      this.colorGetPictureBox.Size = new System.Drawing.Size(118, 31);
-      this.colorGetPictureBox.TabIndex = 28;
-      this.colorGetPictureBox.TabStop = false;
-      this.colorGetPictureBox.Click += new System.EventHandler(this.colorGetPictureBox_Click);
-      // 
-      // hitsInfoLabel
-      // 
-      this.hitsInfoLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.hitsInfoLabel.AutoSize = true;
-      this.hitsInfoLabel.Location = new System.Drawing.Point(23, 660);
-      this.hitsInfoLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.hitsInfoLabel.Name = "hitsInfoLabel";
-      this.hitsInfoLabel.Size = new System.Drawing.Size(41, 20);
-      this.hitsInfoLabel.TabIndex = 29;
-      this.hitsInfoLabel.Text = "Hits:";
-      // 
-      // hitsTextBox
-      // 
-      this.hitsTextBox.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.hitsTextBox.Location = new System.Drawing.Point(117, 649);
-      this.hitsTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-      this.hitsTextBox.Name = "hitsTextBox";
-      this.hitsTextBox.ReadOnly = true;
-      this.hitsTextBox.Size = new System.Drawing.Size(116, 26);
-      this.hitsTextBox.TabIndex = 30;
-      // 
       // buttonDraw
       // 
       this.buttonDraw.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
@@ -327,24 +249,63 @@
       this.analythPictureBox.TabStop = false;
       this.analythPictureBox.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureBox1_Paint);
       // 
+      // textBoxRadius
+      // 
+      this.textBoxRadius.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.textBoxRadius.Location = new System.Drawing.Point(115, 579);
+      this.textBoxRadius.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+      this.textBoxRadius.Name = "textBoxRadius";
+      this.textBoxRadius.Size = new System.Drawing.Size(116, 26);
+      this.textBoxRadius.TabIndex = 40;
+      this.textBoxRadius.Text = "1000";
+      // 
+      // label2
+      // 
+      this.label2.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.label2.AutoSize = true;
+      this.label2.Location = new System.Drawing.Point(25, 582);
+      this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      this.label2.Name = "label2";
+      this.label2.Size = new System.Drawing.Size(87, 20);
+      this.label2.TabIndex = 41;
+      this.label2.Text = "Hull radius:";
+      // 
+      // label3
+      // 
+      this.label3.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.label3.AutoSize = true;
+      this.label3.Location = new System.Drawing.Point(25, 625);
+      this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      this.label3.Name = "label3";
+      this.label3.Size = new System.Drawing.Size(88, 20);
+      this.label3.TabIndex = 43;
+      this.label3.Text = "Color sens:";
+      // 
+      // textBoxColorSens
+      // 
+      this.textBoxColorSens.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.textBoxColorSens.Location = new System.Drawing.Point(115, 622);
+      this.textBoxColorSens.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+      this.textBoxColorSens.Name = "textBoxColorSens";
+      this.textBoxColorSens.Size = new System.Drawing.Size(116, 26);
+      this.textBoxColorSens.TabIndex = 42;
+      this.textBoxColorSens.Text = "100";
+      // 
       // Form1
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(1092, 694);
+      this.Controls.Add(this.label3);
+      this.Controls.Add(this.textBoxColorSens);
+      this.Controls.Add(this.label2);
+      this.Controls.Add(this.textBoxRadius);
       this.Controls.Add(this.exampleToAnalythLabel);
       this.Controls.Add(this.label1);
       this.Controls.Add(this.compareImagesButton);
       this.Controls.Add(this.examplePictureBox);
       this.Controls.Add(this.inProgressLabel);
       this.Controls.Add(this.buttonDraw);
-      this.Controls.Add(this.hitsTextBox);
-      this.Controls.Add(this.hitsInfoLabel);
-      this.Controls.Add(this.colorGetPictureBox);
-      this.Controls.Add(this.linesColorInfoLabel);
-      this.Controls.Add(this.buttonGetLinesCount);
-      this.Controls.Add(this.linesCountTextBox);
-      this.Controls.Add(this.linesCountInfoLabel);
       this.Controls.Add(this.minPictureBox);
       this.Controls.Add(this.maxPictureBox);
       this.Controls.Add(this.lValueInfoLable);
@@ -365,7 +326,6 @@
       ((System.ComponentModel.ISupportInitialize)(this.hslCointeinerPictureBox)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.sValueTrackBar)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.lValueTrackBar)).EndInit();
-      ((System.ComponentModel.ISupportInitialize)(this.colorGetPictureBox)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.examplePictureBox)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.analythPictureBox)).EndInit();
       this.ResumeLayout(false);
@@ -385,13 +345,6 @@
     private System.Windows.Forms.TrackBar lValueTrackBar;
     private System.Windows.Forms.Label sValueInfoLabel;
     private System.Windows.Forms.Label lValueInfoLable;
-    private System.Windows.Forms.Label linesCountInfoLabel;
-    private System.Windows.Forms.TextBox linesCountTextBox;
-    private System.Windows.Forms.Button buttonGetLinesCount;
-    private System.Windows.Forms.Label linesColorInfoLabel;
-    private System.Windows.Forms.PictureBox colorGetPictureBox;
-    private System.Windows.Forms.Label hitsInfoLabel;
-    private System.Windows.Forms.TextBox hitsTextBox;
     private System.Windows.Forms.Button buttonDraw;
     private System.Windows.Forms.Label inProgressLabel;
     private System.Windows.Forms.PictureBox examplePictureBox;
@@ -399,6 +352,10 @@
     private System.Windows.Forms.Label label1;
     private System.Windows.Forms.Label exampleToAnalythLabel;
     private System.Windows.Forms.PictureBox analythPictureBox;
+    private System.Windows.Forms.TextBox textBoxRadius;
+    private System.Windows.Forms.Label label2;
+    private System.Windows.Forms.Label label3;
+    private System.Windows.Forms.TextBox textBoxColorSens;
   }
 }
 
