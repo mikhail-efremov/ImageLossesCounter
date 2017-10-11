@@ -14,7 +14,7 @@ namespace ConcaveHull
     public static int number_of_dots;
 
     //-1..1
-    public static double concavity = -.3;
+    public static double concavity = -1;
     public static bool isSquareGrid = true;
     
     public static void generateHull(List<Point> dot_list)

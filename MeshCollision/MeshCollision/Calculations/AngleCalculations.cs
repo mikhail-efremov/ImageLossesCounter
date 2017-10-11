@@ -49,7 +49,7 @@ namespace MeshCollision.Calculations
     }
 
     private static double AngleBetweenLineAndHorisontalAxis(Point p1, Point p2)
-    {
+    {/*
       var p3 = new Point(0, 0);
       var p4 = new Point(100, 0);
 
@@ -60,6 +60,15 @@ namespace MeshCollision.Calculations
         calculatedAngle += 360;
 
       return calculatedAngle - 180;//
+      */
+      var deltaY = p2.Y - p1.Y;
+      var deltaX = p2.X - p1.X;
+
+      var angle = Math.Atan2(deltaY, deltaX) * 180 / Math.PI;
+
+      if (angle < 0)
+        return angle + 180;
+      return angle;
     }
   }
 }

@@ -236,15 +236,18 @@ namespace MeshCollision
         _analyzedPoints = hitPoints;
 
         var array_Points = SimpleClustering.GetCluesters(_analyzedPoints, 3);//7
-        DrawHall(array_Points);
+        DrawHallAndCalculateError(array_Points);
 
         analythPictureBox.Invalidate();
       }
     }
 
-    private void DrawHall(HashSet<HashSet<Point>> points)
+    private void DrawHallAndCalculateError(HashSet<HashSet<Point>> points)
     {
       var g = Graphics.FromImage(analythPictureBox.Image);
+
+      var examplesPoints = new List<Point>(_exampleImagePoints);
+      var hitPoints = new List<Point>();
 
       foreach (var mPoints in points)
       {
@@ -255,9 +258,32 @@ namespace MeshCollision
         DrawPoints(Pens.Blue, extremum, 1, g);
 
         // CustConcaveHull(extremum, g);
-          UnityConcaveHull(mPoints, g);
-        //  AlphaFilterConcaveHull(extremum, g, Int32.Parse(textBoxRadius.Text));
+          UnityConcaveHull(extremum, g);
+        //AlphaFilterConcaveHull(extremum, g, Int32.Parse(textBoxRadius.Text));
+
+        var orientation = AngleCalculations.CalculatePointsOrientation(extremum.ToList());
+
+        g.DrawLine(Pens.Black, orientation.FirstPoint, orientation.SecondPoint);
+        g.DrawString(orientation.Angles, DefaultFont, Brushes.Black, orientation.AnglesPosition);
+        
+        var analizator = new PointInPolygonChecker(mPoints.ToList());
+        
+        foreach (var p in examplesPoints)
+        {
+          if (analizator.PointInPolygon(p.X, p.Y))
+          {
+            hitPoints.Add(p);
+          }
+        }
+        foreach (var h in hitPoints)
+        {
+          examplesPoints.Remove(h);
+        }
       }
+
+      var sum = hitPoints.Count + examplesPoints.Count;
+      var persent = ((float)hitPoints.Count / sum) * 100;
+      exampleToAnalythLabel.Text = hitPoints.Count + " из " + sum +". " + persent + "%";
     }
 
     private void AlphaFilterConcaveHull(HashSet<Point> points, Graphics g, double radius)
@@ -408,6 +434,23 @@ namespace MeshCollision
     private void compareImagesButton_Click(object sender, EventArgs e)
     {
       var examples = new List<Point>(_exampleImagePoints);
+
+      var analizator = new Calculations.PointInPolygonChecker(examples);
+
+      var inHere = 0;
+      var outHere = 0;
+
+      foreach (var p in examples)
+      {
+        if (analizator.PointInPolygon(p.X, p.Y))
+          inHere++;
+        else
+        {
+          outHere++;
+        }
+      }
+
+      return;
       var analyzed = new List<Point>(_analyzedPoints);
 
       analyzed.RemoveAll(x => examples.Contains(x));
@@ -424,6 +467,6 @@ namespace MeshCollision
       exampleToAnalythLabel.Text = Math.Round(ne, 2) + "%";
     }
 
-    private const int sizeOfPaint = 1;
+    private const int sizeOfPaint = 5;
   }
 }

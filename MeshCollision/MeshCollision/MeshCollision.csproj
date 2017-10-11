@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Calculations\AngleCalculations.cs" />
+    <Compile Include="Calculations\PointInPolygonChecker.cs" />
     <Compile Include="Calculations\PointsCalculations.cs" />
     <Compile Include="Clustering\QtCluctering.cs" />
     <Compile Include="Clustering\SimpleClustering.cs" />
