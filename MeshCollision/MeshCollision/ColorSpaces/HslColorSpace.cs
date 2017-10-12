@@ -137,5 +137,10 @@ namespace MeshCollision.ColorSpaces
     {
       throw new NotImplementedException();
     }
+
+    public bool ColorSimilar(Point point, Bitmap bitmap, byte sens)
+    {
+      throw new NotImplementedException();
+    }
   }
 }

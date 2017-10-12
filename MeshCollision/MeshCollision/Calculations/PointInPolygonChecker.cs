@@ -8,7 +8,7 @@ namespace MeshCollision.Calculations
   public class PointInPolygonChecker
   {
     private readonly List<Point> _points;
-
+    //http://csharphelper.com/blog/2014/07/determine-whether-a-point-is-inside-a-polygon-in-c/
     public PointInPolygonChecker(List<Point> points)
     {
       _points = points;

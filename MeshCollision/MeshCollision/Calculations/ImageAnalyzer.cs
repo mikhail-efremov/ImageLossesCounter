@@ -4,12 +4,12 @@ using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MeshCollision.ColorSpaces;
+using MeshCollision.Controlls;
 
 namespace MeshCollision
 {
   public struct AnalyzeResult
   {
-    public Bitmap Bitmap;
     public List<Point> Points;
   }
 
@@ -65,12 +65,11 @@ namespace MeshCollision
 
     public Task<AnalyzeResult> Analize(SelectionElement element, Label inProgressLabel, byte sens)
     {
-      var buffer = Bitmap.Bitmap;
       inProgressLabel.Text = "in progress";
       
       return Task.Factory.StartNew(() =>
       {
-        var result = new AnalyzeResult { Bitmap = buffer};
+        var result = new AnalyzeResult();
         
         var points = new List<Point>();
 

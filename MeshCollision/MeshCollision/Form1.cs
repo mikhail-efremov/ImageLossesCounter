@@ -1,28 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using MeshCollision.Calculations;
+using MeshCollision.Calculations.Hull;
 using MeshCollision.Clustering;
 using MeshCollision.ColorSpaces;
-using Newtonsoft.Json;
-using utorials.Clustering.Hard;
+using MeshCollision.Controlls;
 using nAlpha;
 
 namespace MeshCollision
 {
   public partial class Form1 : Form
   {
-    private ImageAnalyzer _imageAnalyzer;
-
-    private Bitmap _initialBitmap;
-
-
+    private Bitmap _clearImage;
+    
     private readonly List<Point> _exampleImagePoints = new List<Point>();
-    private List<Point> _analyzedPoints = new List<Point>();
 
     private bool _inDrawProcess;
 
@@ -33,10 +27,12 @@ namespace MeshCollision
       sValueTrackBar.Value = 1000;
       lValueTrackBar.Value = 500;
 
-      UploadImage();
+      if (!UploadImage())
+        Environment.Exit(0);
     }
     
-    private bool UploadImage() {
+    private bool UploadImage()
+    {
       var open = new OpenFileDialog
       {
         Filter = @"Image Files(*.jpg; *.jpeg; *.gif; *.bmp)|*.jpg; *.jpeg; *.gif; *.bmp"
@@ -51,9 +47,7 @@ namespace MeshCollision
 
       var cloneRect = new Rectangle(0, 0, image.Width, image.Height);
       var format = image.PixelFormat;
-      _initialBitmap = image.Clone(cloneRect, format);
-
-      _imageAnalyzer = new ImageAnalyzer(image);
+      _clearImage = image.Clone(cloneRect, format);
 
       analythPictureBox.Size = image.Size;
       analythPictureBox.Image = image;
@@ -61,6 +55,7 @@ namespace MeshCollision
       var exampleImage = new Bitmap(fileName);
       examplePictureBox.Size = exampleImage.Size;
       examplePictureBox.Image = exampleImage;
+
       return true;
     }
 
@@ -73,7 +68,6 @@ namespace MeshCollision
     
     private void pictureBox1_Paint(object sender, PaintEventArgs e)
     {
-      PaintHslCointeinerPictureBox();
       InvalidateImage();
     }
 
@@ -106,7 +100,8 @@ namespace MeshCollision
       InvalidateImage();
     }
 
-    private void SuperSliderAddeder(SelectionRangeSlider slider) {
+    private void SuperSliderAddeder(SelectionRangeSlider slider)
+    {
       var mMin = 0;
       var mMax = 360;
 
@@ -130,9 +125,12 @@ namespace MeshCollision
       slide.SelectionChanged += OnSlideSelectionChanged;
       slide.ElementSelected += OnSliderElementSelected;
       OnSlideSelectionChanged(slide, null);
+
+      PaintHslCointeinerPictureBox();
     }
 
-    private void OnSlideSelectionChanged(object sender, EventArgs eventArgs) {
+    private void OnSlideSelectionChanged(object sender, EventArgs eventArgs)
+    {
       selectionRangeSlider1.Invalidate();
       
       var element = (SelectionElement) sender;
@@ -194,7 +192,7 @@ namespace MeshCollision
     {
       using (var g = Graphics.FromImage(analythPictureBox.Image))
       {
-        g.DrawImage(_initialBitmap, 0, 0);
+        g.DrawImage(_clearImage, 0, 0);
       }
 
       AnalizeImageAsync();
@@ -202,44 +200,19 @@ namespace MeshCollision
 
     private async void AnalizeImageAsync()
     {
-      analythPictureBox.Image = new Bitmap(_initialBitmap);
-      _imageAnalyzer = new ImageAnalyzer(_initialBitmap);
+      analythPictureBox.Image = new Bitmap(_clearImage);
+      var imageAnalyzer = new ImageAnalyzer(_clearImage);
 
       var sens = byte.Parse(textBoxColorSens.Text);
 
-      var analizedResult = await _imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement, inProgressLabel, sens);
-      if (analizedResult.Bitmap != null)
-      {
-        var hitPoints = new List<Point>();
+      PerformanceCalculator.Start("AnalizeImageAsync Full");
+      var analizedResult = await imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement, inProgressLabel, sens);
+      PerformanceCalculator.Stop("AnalizeImageAsync Full");
+      
+      var arrayPoints = SimpleClustering.GetCluesters(analizedResult.Points, 3);//7
+      DrawHallAndCalculateError(arrayPoints);
 
-        foreach (var point in analizedResult.Points)
-        {
-          var rectangle = new Rectangle
-          {
-            Location = point,
-            Size = new Size(sizeOfPaint, sizeOfPaint)
-          };
-
-          for (var x = 0; x < examplePictureBox.Size.Width; x++)
-          for (var y = 0; y < examplePictureBox.Size.Height; y++)
-          {
-            var p = new Point(x, y);
-
-            if (rectangle.Contains(p) && !hitPoints.Contains(p))
-            {
-              hitPoints.Add(p);
-            }
-          }
-        }
-
-        analizedResult.Points = hitPoints;
-        _analyzedPoints = hitPoints;
-
-        var array_Points = SimpleClustering.GetCluesters(_analyzedPoints, 3);//7
-        DrawHallAndCalculateError(array_Points);
-
-        analythPictureBox.Invalidate();
-      }
+      analythPictureBox.Invalidate();
     }
 
     private void DrawHallAndCalculateError(HashSet<HashSet<Point>> points)
@@ -282,7 +255,7 @@ namespace MeshCollision
       }
 
       var sum = hitPoints.Count + examplesPoints.Count;
-      var persent = ((float)hitPoints.Count / sum) * 100;
+      var persent = (float)hitPoints.Count / sum * 100;
       exampleToAnalythLabel.Text = hitPoints.Count + " из " + sum +". " + persent + "%";
     }
 
@@ -373,7 +346,8 @@ namespace MeshCollision
       }
     }
 
-    private void examplePictureBox_MouseUp(object sender, MouseEventArgs e) {
+    private void examplePictureBox_MouseUp(object sender, MouseEventArgs e)
+    {
       if (!_inDrawProcess)
         return;
 
@@ -388,7 +362,8 @@ namespace MeshCollision
       _inDrawProcess = false;
     }
 
-    private void examplePictureBox_MouseLeave(object sender, EventArgs e) {
+    private void examplePictureBox_MouseLeave(object sender, EventArgs e)
+    {
       _inDrawProcess = false;
     }
 
@@ -397,7 +372,7 @@ namespace MeshCollision
       var rectangle = new Rectangle
       {
         Location = point,
-        Size = new Size(sizeOfPaint, sizeOfPaint)
+        Size = new Size(SIZE_OF_PAINT, SIZE_OF_PAINT)
       };
       
       for (var i = 0; i < examplePictureBox.Size.Height; i++)
@@ -418,7 +393,7 @@ namespace MeshCollision
       var rectangle = new Rectangle
       {
         Location = point,
-        Size = new Size(sizeOfPaint, sizeOfPaint)
+        Size = new Size(SIZE_OF_PAINT, SIZE_OF_PAINT)
       };
 
       for (var i = 0; i < examplePictureBox.Size.Height; i++)
@@ -449,24 +424,8 @@ namespace MeshCollision
           outHere++;
         }
       }
-
-      return;
-      var analyzed = new List<Point>(_analyzedPoints);
-
-      analyzed.RemoveAll(x => examples.Contains(x));
-      var percent = analyzed.Count / ((float)_analyzedPoints.Count / 100);
-
-      var examples1 = new List<Point>(_exampleImagePoints);
-      var analyzed1 = new List<Point>(_analyzedPoints);
-
-      examples1.RemoveAll(x => analyzed1.Contains(x));
-      var percent1 = examples1.Count / ((float)_exampleImagePoints.Count / 100);
-
-      var ne = (percent + percent1) / 2;
-
-      exampleToAnalythLabel.Text = Math.Round(ne, 2) + "%";
     }
 
-    private const int sizeOfPaint = 5;
+    private const int SIZE_OF_PAINT = 5;
   }
 }

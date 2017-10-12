@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace MeshCollision
+namespace MeshCollision.Clustering
 {
-  public class KMeansDemo
+  public class KMeans
   {
     public static void Start(List<Line> lines)
     {

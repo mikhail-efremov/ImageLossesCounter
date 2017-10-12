@@ -6,5 +6,6 @@ namespace MeshCollision.ColorSpaces
   {
     bool ColorSimilar(IColorSpace compareColorSpace, byte sens);
     bool ColorSimilar(Point point, UnsafeBitmap unsafeBitmap, byte sens);
+    bool ColorSimilar(Point point, Bitmap bitmap, byte sens);
   }
 }

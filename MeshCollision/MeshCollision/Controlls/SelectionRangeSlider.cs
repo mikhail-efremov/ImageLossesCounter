@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Linq;
-using System.Drawing;
-using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
 
-namespace MeshCollision
+namespace MeshCollision.Controlls
 {
   public class SelectionRangeSlider : UserControl
   {
@@ -18,7 +18,6 @@ namespace MeshCollision
     public SelectionElement CurrentSelectionElement = null;
 
     public SelectionRangeSlider() {
-      //    InitializeComponent();
       SetStyle(ControlStyles.AllPaintingInWmPaint, true);
       SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
       Paint += SelectionRangeSlider_Paint;

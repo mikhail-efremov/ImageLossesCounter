@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using MeshCollision.Calculations;
 
 namespace MeshCollision.ColorSpaces
 {
@@ -50,6 +51,12 @@ namespace MeshCollision.ColorSpaces
           if (B >= rgb.B - sens && B <= rgb.B + sens)
             return true;
       return false;
+    }
+
+    public bool ColorSimilar(Point point, Bitmap bitmap, byte sens)
+    {
+      var cs = new RgbColorSpace(bitmap.GetPixel(point.X, point.Y));
+      return ColorSimilar(cs, sens);
     }
 
     public bool ColorSimilar(Point point, UnsafeBitmap unsafeBitmap, byte sens) {

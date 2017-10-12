@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace MeshCollision
+namespace MeshCollision.Controlls
 {
 	public class CustomControl
 	{
@@ -11,7 +11,5 @@ namespace MeshCollision
 			Description = description;
 			Control = control;
 		}
-
-
 	}
 }

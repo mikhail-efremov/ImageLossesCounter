@@ -1,9 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Collections.Generic;
 
-namespace MeshCollision
+namespace MeshCollision.Controlls
 {
 	public class MeshCollideObject
 	{
@@ -66,28 +66,6 @@ namespace MeshCollision
       {
         var form = Form1.ActiveForm;
         form.Hide();
-        /*
-        var newForm = new Form();
-
-        var pic = new PictureBox();
-        pic.Image = new Bitmap(Form1.Bitmap.Bitmap);
-        newForm.Size = form.Size;
-        pic.Size = Form1.Bitmap.Bitmap.Size;
-        pic.Click += (o, eventArgs) =>
-        {
-          var mArgs = (MouseEventArgs) eventArgs;
-          Form1.Bitmap.Lock();
-          var pixel = Form1.Bitmap.GetPixel(mArgs.X, mArgs.Y);
-          Form1.Bitmap.Unlock();
-          searchingColorPictureBox.BackColor = Color.FromArgb(pixel.R, pixel.G, pixel.B);
-          var form1 = Form1.ActiveForm;
-          form1.Hide();
-
-          form.Show();
-        };
-        newForm.Controls.Add(pic);
-        newForm.ShowDialog();
-        */
         form.Show();
       };
 

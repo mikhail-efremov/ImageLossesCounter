@@ -1,4 +1,6 @@
-﻿namespace MeshCollision
+﻿using MeshCollision.Controlls;
+
+namespace MeshCollision
 {
     partial class Form1
     {
@@ -44,7 +46,7 @@
       this.compareImagesButton = new System.Windows.Forms.Button();
       this.label1 = new System.Windows.Forms.Label();
       this.exampleToAnalythLabel = new System.Windows.Forms.Label();
-      this.selectionRangeSlider1 = new MeshCollision.SelectionRangeSlider();
+      this.selectionRangeSlider1 = new SelectionRangeSlider();
       this.analythPictureBox = new System.Windows.Forms.PictureBox();
       this.textBoxRadius = new System.Windows.Forms.TextBox();
       this.label2 = new System.Windows.Forms.Label();
