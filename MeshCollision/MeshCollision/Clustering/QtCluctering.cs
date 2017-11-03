@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 
 public static class PointExt
@@ -11,6 +10,7 @@ public static class PointExt
     return diffX * diffX + diffY * diffY;
   }
 }
+
 static class QtClustering
 {
   public static List<List<Point>> Start(List<Point> points, double maxDiameter)

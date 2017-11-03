@@ -14,6 +14,8 @@ namespace MeshCollision
 {
   public partial class Form1 : Form
   {
+    private const int IMAGES_OFFSET = 15;
+
     private Bitmap _clearImage;
     
     private readonly List<Point> _exampleImagePoints = new List<Point>();
@@ -55,6 +57,8 @@ namespace MeshCollision
       var exampleImage = new Bitmap(fileName);
       examplePictureBox.Size = exampleImage.Size;
       examplePictureBox.Image = exampleImage;
+      
+      analythPictureBox.Location = new Point(analythPictureBox.Size.Width + IMAGES_OFFSET, examplePictureBox.Location.Y);
 
       return true;
     }
@@ -71,9 +75,10 @@ namespace MeshCollision
       InvalidateImage();
     }
 
-    private void PaintHslCointeinerPictureBox() 
+    private void PaintHslCointeinerPictureBox()
     {
-      if (selectionRangeSlider1.CurrentSelectionElement == null)
+      var element = selectionRangeSlider1.CurrentSelectionElement;
+      if (element == null)
         return;
 
       var image = new Bitmap(hslCointeinerPictureBox.InitialImage, hslCointeinerPictureBox.Size);
@@ -82,14 +87,16 @@ namespace MeshCollision
       for (var i = 0; i < width; i++)
       {
         var color = HslColorSpace.ColorFromHsl((double)i / width,
-          selectionRangeSlider1.CurrentSelectionElement.SValue1,
-          selectionRangeSlider1.CurrentSelectionElement.LValue1);
+          element.SValue1,
+          element.LValue1);
 
         for (var j = 0; j < image.Size.Height; j++)
         {
           image.SetPixel(i, j, color);
         }
       }
+
+      labelTestValues.Text = $@"H:[{element.SelectedMin}:{element.SelectedMax}] S:{element.SValue1} L{element.LValue1}";
 
       hslCointeinerPictureBox.Image = image;
     }
@@ -135,6 +142,24 @@ namespace MeshCollision
       
       var element = (SelectionElement) sender;
       SetMinMaxColorBoxes(element);
+
+      labelTestValues.Text = $@"H:[{element.SelectedMin}:{element.SelectedMax}] S:{element.SValue1} L{element.LValue1}";
+    }
+
+    private void sValueTrackBar_ValueChanged(object sender, EventArgs e)
+    {
+      if (selectionRangeSlider1.CurrentSelectionElement == null) return;
+      selectionRangeSlider1.CurrentSelectionElement.SValue1000 = sValueTrackBar.Value;
+      OnSlideSelectionChanged(selectionRangeSlider1.CurrentSelectionElement, null);
+      PaintHslCointeinerPictureBox();
+    }
+
+    private void lValueTrackBar_ValueChanged(object sender, EventArgs e)
+    {
+      if (selectionRangeSlider1.CurrentSelectionElement == null) return;
+      selectionRangeSlider1.CurrentSelectionElement.LValue1000 = lValueTrackBar.Value;
+      OnSlideSelectionChanged(selectionRangeSlider1.CurrentSelectionElement, null);
+      PaintHslCointeinerPictureBox();
     }
 
     private void OnSliderElementSelected(object sender, EventArgs eventArgs) 
@@ -174,20 +199,6 @@ namespace MeshCollision
       SuperSliderAddeder(selectionRangeSlider1);
     }
 
-    private void sValueTrackBar_ValueChanged(object sender, EventArgs e)
-    {
-      if (selectionRangeSlider1.CurrentSelectionElement == null) return;
-      selectionRangeSlider1.CurrentSelectionElement.SValue1000 = sValueTrackBar.Value;
-      OnSlideSelectionChanged(selectionRangeSlider1.CurrentSelectionElement, null);
-    }
-
-    private void lValueTrackBar_ValueChanged(object sender, EventArgs e) 
-    {
-      if (selectionRangeSlider1.CurrentSelectionElement == null) return;
-      selectionRangeSlider1.CurrentSelectionElement.LValue1000 = lValueTrackBar.Value;
-      OnSlideSelectionChanged(selectionRangeSlider1.CurrentSelectionElement, null);
-    }
-
     private void buttonDraw_Click(object sender, EventArgs e)
     {
       using (var g = Graphics.FromImage(analythPictureBox.Image))
@@ -205,11 +216,33 @@ namespace MeshCollision
 
       var sens = byte.Parse(textBoxColorSens.Text);
 
-      PerformanceCalculator.Start("AnalizeImageAsync Full");
       var analizedResult = await imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement, inProgressLabel, sens);
-      PerformanceCalculator.Stop("AnalizeImageAsync Full");
       
-      var arrayPoints = SimpleClustering.GetCluesters(analizedResult.Points, 3);//7
+      //need to correct error calculation
+      var hitPoints = new List<Point>();
+        
+      foreach (var point in analizedResult.Points)
+      {
+        var rectangle = new Rectangle
+        {
+          Location = point,
+          Size = new Size(SIZE_OF_PAINT, SIZE_OF_PAINT)
+        };
+          
+        for (var x = 0; x < examplePictureBox.Size.Width; x++)
+        for (var y = 0; y < examplePictureBox.Size.Height; y++)
+        {
+          var p = new Point(x, y);
+          if (rectangle.Contains(p) && !hitPoints.Contains(p))
+          {
+            hitPoints.Add(p);
+          }
+        }
+      }
+
+      analizedResult.Points = hitPoints;
+      var arrayPoints = SimpleClustering.GetCluesters(hitPoints, 3);//7
+      
       DrawHallAndCalculateError(arrayPoints);
 
       analythPictureBox.Invalidate();
@@ -224,7 +257,7 @@ namespace MeshCollision
 
       foreach (var mPoints in points)
       {
-        if (mPoints.Count < 20)
+        if (mPoints.Count < 50)
           continue;
 
         var extremum = PointsCalculations.GetExtemumPoints(mPoints.ToList());
@@ -306,7 +339,7 @@ namespace MeshCollision
 
     private void examplePictureBox_Paint(object sender, PaintEventArgs e)
     {
-      var brush = new SolidBrush(Color.Black);
+      var brush = new SolidBrush(Color.Red);
 
       for (var i = 0; i < _exampleImagePoints.Count; i++)
       {

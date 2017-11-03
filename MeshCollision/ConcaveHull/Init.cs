@@ -19,7 +19,7 @@ namespace ConcaveHull
     
     public static void generateHull(List<Point> dot_list)
     {
-      HUIZIVNASHO(dot_list);
+      TestModel(dot_list);
       Hull.setConvHull(LIST);
       Hull.setConcaveHull(Math.Round(Convert.ToDecimal(concavity), 2), scaleFactor, isSquareGrid);
       LIST.Clear();
@@ -46,7 +46,7 @@ namespace ConcaveHull
       }
     }
     
-    public static void HUIZIVNASHO(List<Point> points)
+    public static void TestModel(List<Point> points)
     {
       //Used only for the demo
       for (int x = 0; x < points.Count; x++)

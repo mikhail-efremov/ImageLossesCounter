@@ -52,9 +52,7 @@ namespace MeshCollision.Clustering
       return result;
     }
 
-
-
-
+    
     private List<Point> GetCluster(List<Point> basePoints, Point startPoint, double powDistance)
     {
       var cluster = new List<Point>();
