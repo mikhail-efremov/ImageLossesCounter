@@ -1,20 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MeshCollision.Clustering
 {
   public class SimpleClustering
   {
-    public static HashSet<HashSet<Point>> GetCluesters(List<Point> basePoints, double distance)
+    public static Task<HashSet<HashSet<Point>>> GetCluesters(List<Point> basePoints, double distance)
     {
-      if (basePoints.Count < 1)
-        return new HashSet<HashSet<Point>>();
+      return Task.Factory.StartNew(() =>
+      {
+        if (basePoints.Count < 1)
+          return new HashSet<HashSet<Point>>();
 
-      var powDistance = distance * distance;
+        var powDistance = distance * distance;
 
-      var clusters = new HashSet<HashSet<Point>>(GetCluster(basePoints, powDistance));
-      return clusters;
+        var clusters = new HashSet<HashSet<Point>>(GetCluster(basePoints, powDistance));
+        return clusters;
+      });
     }
 
     private static IEnumerable<HashSet<Point>> GetCluster(IEnumerable<Point> basePoints, double powDistance)

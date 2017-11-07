@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using MeshCollision.Calculations;
 using MeshCollision.Calculations.Hull;
 using MeshCollision.Clustering;
 using MeshCollision.ColorSpaces;
 using MeshCollision.Controlls;
+using Microsoft.Build.Utilities;
 using nAlpha;
+using Task = System.Threading.Tasks.Task;
 
 namespace MeshCollision
 {
@@ -216,39 +219,52 @@ namespace MeshCollision
 
       var sens = byte.Parse(textBoxColorSens.Text);
 
-      var analizedResult = await imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement, inProgressLabel, sens);
-      
-      //need to correct error calculation
-      var hitPoints = new List<Point>();
-        
-      foreach (var point in analizedResult.Points)
-      {
-        var rectangle = new Rectangle
-        {
-          Location = point,
-          Size = new Size(SIZE_OF_PAINT, SIZE_OF_PAINT)
-        };
-          
-        for (var x = 0; x < examplePictureBox.Size.Width; x++)
-        for (var y = 0; y < examplePictureBox.Size.Height; y++)
-        {
-          var p = new Point(x, y);
-          if (rectangle.Contains(p) && !hitPoints.Contains(p))
-          {
-            hitPoints.Add(p);
-          }
-        }
-      }
+      executionInformation.Text = @"Points analize in progress 5%";
+      var analizedResult = await imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement, sens);
+
+      executionInformation.Text = @"Points error calculation in progress 40%";
+      var hitPoints = await CalculatePointsError(analizedResult.Points);
 
       analizedResult.Points = hitPoints;
-      var arrayPoints = SimpleClustering.GetCluesters(hitPoints, 3);//7
       
-      DrawHallAndCalculateError(arrayPoints);
+      executionInformation.Text = @"Claster analyth in progress 75%";
+      var arrayPoints = await SimpleClustering.GetCluesters(hitPoints, 3);//7
+      
+      DrawHallAndCalculateOrientation(arrayPoints);
+      executionInformation.Text = @"Done 100%";
 
       analythPictureBox.Invalidate();
     }
 
-    private void DrawHallAndCalculateError(HashSet<HashSet<Point>> points)
+    private Task<List<Point>> CalculatePointsError(List<Point> points)
+    {
+      return Task.Factory.StartNew(() =>
+      { 
+        var hitPoints = new List<Point>();
+
+        foreach (var point in points)
+        {
+          var rectangle = new Rectangle
+          {
+            Location = point,
+            Size = new Size(SIZE_OF_PAINT, SIZE_OF_PAINT)
+          };
+
+          for (var x = 0; x < examplePictureBox.Size.Width; x++)
+          for (var y = 0; y < examplePictureBox.Size.Height; y++)
+          {
+            var p = new Point(x, y);
+            if (rectangle.Contains(p) && !hitPoints.Contains(p))
+            {
+              hitPoints.Add(p);
+            }
+          }
+        }
+        return hitPoints;
+      });
+    }
+
+    private void DrawHallAndCalculateOrientation(HashSet<HashSet<Point>> points)
     {
       var g = Graphics.FromImage(analythPictureBox.Image);
 

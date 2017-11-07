@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using MeshCollision.Clustering;
 
 namespace MeshCollision.Calculations.Hull
 {

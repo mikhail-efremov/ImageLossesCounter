@@ -30,7 +30,6 @@ namespace MeshCollision
         /// </summary>
         private void InitializeComponent()
         {
-      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
       this.buttonLoadImage = new System.Windows.Forms.Button();
       this.colorDialog1 = new System.Windows.Forms.ColorDialog();
       this.maxPictureBox = new System.Windows.Forms.PictureBox();
@@ -42,9 +41,7 @@ namespace MeshCollision
       this.sValueInfoLabel = new System.Windows.Forms.Label();
       this.lValueInfoLable = new System.Windows.Forms.Label();
       this.buttonDraw = new System.Windows.Forms.Button();
-      this.inProgressLabel = new System.Windows.Forms.Label();
       this.examplePictureBox = new System.Windows.Forms.PictureBox();
-      this.compareImagesButton = new System.Windows.Forms.Button();
       this.label1 = new System.Windows.Forms.Label();
       this.exampleToAnalythLabel = new System.Windows.Forms.Label();
       this.selectionRangeSlider1 = new MeshCollision.Controlls.SelectionRangeSlider();
@@ -67,7 +64,7 @@ namespace MeshCollision
       // buttonLoadImage
       // 
       this.buttonLoadImage.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.buttonLoadImage.Location = new System.Drawing.Point(11, 22);
+      this.buttonLoadImage.Location = new System.Drawing.Point(599, 65);
       this.buttonLoadImage.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.buttonLoadImage.Name = "buttonLoadImage";
       this.buttonLoadImage.Size = new System.Drawing.Size(134, 35);
@@ -79,7 +76,7 @@ namespace MeshCollision
       // maxPictureBox
       // 
       this.maxPictureBox.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.maxPictureBox.Location = new System.Drawing.Point(191, 149);
+      this.maxPictureBox.Location = new System.Drawing.Point(191, 121);
       this.maxPictureBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.maxPictureBox.Name = "maxPictureBox";
       this.maxPictureBox.Size = new System.Drawing.Size(28, 28);
@@ -89,7 +86,7 @@ namespace MeshCollision
       // minPictureBox
       // 
       this.minPictureBox.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.minPictureBox.Location = new System.Drawing.Point(155, 149);
+      this.minPictureBox.Location = new System.Drawing.Point(151, 121);
       this.minPictureBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.minPictureBox.Name = "minPictureBox";
       this.minPictureBox.Size = new System.Drawing.Size(28, 28);
@@ -99,7 +96,7 @@ namespace MeshCollision
       // button1
       // 
       this.button1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.button1.Location = new System.Drawing.Point(155, 22);
+      this.button1.Location = new System.Drawing.Point(741, 65);
       this.button1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.button1.Name = "button1";
       this.button1.Size = new System.Drawing.Size(112, 35);
@@ -111,7 +108,7 @@ namespace MeshCollision
       // hslCointeinerPictureBox
       // 
       this.hslCointeinerPictureBox.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.hslCointeinerPictureBox.Location = new System.Drawing.Point(11, 116);
+      this.hslCointeinerPictureBox.Location = new System.Drawing.Point(4, 34);
       this.hslCointeinerPictureBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.hslCointeinerPictureBox.Name = "hslCointeinerPictureBox";
       this.hslCointeinerPictureBox.Size = new System.Drawing.Size(1052, 20);
@@ -121,7 +118,7 @@ namespace MeshCollision
       // sValueTrackBar
       // 
       this.sValueTrackBar.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.sValueTrackBar.Location = new System.Drawing.Point(265, 143);
+      this.sValueTrackBar.Location = new System.Drawing.Point(275, 64);
       this.sValueTrackBar.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.sValueTrackBar.Maximum = 1000;
       this.sValueTrackBar.Name = "sValueTrackBar";
@@ -133,7 +130,7 @@ namespace MeshCollision
       // lValueTrackBar
       // 
       this.lValueTrackBar.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.lValueTrackBar.Location = new System.Drawing.Point(693, 320);
+      this.lValueTrackBar.Location = new System.Drawing.Point(273, 135);
       this.lValueTrackBar.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.lValueTrackBar.Maximum = 1000;
       this.lValueTrackBar.Name = "lValueTrackBar";
@@ -146,7 +143,7 @@ namespace MeshCollision
       // 
       this.sValueInfoLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
       this.sValueInfoLabel.AutoSize = true;
-      this.sValueInfoLabel.Location = new System.Drawing.Point(228, 154);
+      this.sValueInfoLabel.Location = new System.Drawing.Point(243, 80);
       this.sValueInfoLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.sValueInfoLabel.Name = "sValueInfoLabel";
       this.sValueInfoLabel.Size = new System.Drawing.Size(24, 20);
@@ -157,7 +154,7 @@ namespace MeshCollision
       // 
       this.lValueInfoLable.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
       this.lValueInfoLable.AutoSize = true;
-      this.lValueInfoLable.Location = new System.Drawing.Point(658, 323);
+      this.lValueInfoLable.Location = new System.Drawing.Point(243, 148);
       this.lValueInfoLable.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.lValueInfoLable.Name = "lValueInfoLable";
       this.lValueInfoLable.Size = new System.Drawing.Size(22, 20);
@@ -167,7 +164,7 @@ namespace MeshCollision
       // buttonDraw
       // 
       this.buttonDraw.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.buttonDraw.Location = new System.Drawing.Point(277, 22);
+      this.buttonDraw.Location = new System.Drawing.Point(861, 65);
       this.buttonDraw.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.buttonDraw.Name = "buttonDraw";
       this.buttonDraw.Size = new System.Drawing.Size(112, 35);
@@ -175,17 +172,6 @@ namespace MeshCollision
       this.buttonDraw.Text = "Draw";
       this.buttonDraw.UseVisualStyleBackColor = true;
       this.buttonDraw.Click += new System.EventHandler(this.buttonDraw_Click);
-      // 
-      // inProgressLabel
-      // 
-      this.inProgressLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.inProgressLabel.AutoSize = true;
-      this.inProgressLabel.Location = new System.Drawing.Point(517, 29);
-      this.inProgressLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-      this.inProgressLabel.Name = "inProgressLabel";
-      this.inProgressLabel.Size = new System.Drawing.Size(93, 20);
-      this.inProgressLabel.TabIndex = 32;
-      this.inProgressLabel.Text = "no progress";
       // 
       // examplePictureBox
       // 
@@ -201,23 +187,11 @@ namespace MeshCollision
       this.examplePictureBox.MouseMove += new System.Windows.Forms.MouseEventHandler(this.examplePictureBox_MouseMove);
       this.examplePictureBox.MouseUp += new System.Windows.Forms.MouseEventHandler(this.examplePictureBox_MouseUp);
       // 
-      // compareImagesButton
-      // 
-      this.compareImagesButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.compareImagesButton.Location = new System.Drawing.Point(397, 22);
-      this.compareImagesButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-      this.compareImagesButton.Name = "compareImagesButton";
-      this.compareImagesButton.Size = new System.Drawing.Size(112, 35);
-      this.compareImagesButton.TabIndex = 34;
-      this.compareImagesButton.Text = "Compare";
-      this.compareImagesButton.UseVisualStyleBackColor = true;
-      this.compareImagesButton.Click += new System.EventHandler(this.compareImagesButton_Click);
-      // 
       // label1
       // 
       this.label1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
       this.label1.AutoSize = true;
-      this.label1.Location = new System.Drawing.Point(618, 29);
+      this.label1.Location = new System.Drawing.Point(22, 198);
       this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.label1.Name = "label1";
       this.label1.Size = new System.Drawing.Size(116, 20);
@@ -228,7 +202,7 @@ namespace MeshCollision
       // 
       this.exampleToAnalythLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
       this.exampleToAnalythLabel.AutoSize = true;
-      this.exampleToAnalythLabel.Location = new System.Drawing.Point(743, 29);
+      this.exampleToAnalythLabel.Location = new System.Drawing.Point(147, 198);
       this.exampleToAnalythLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.exampleToAnalythLabel.Name = "exampleToAnalythLabel";
       this.exampleToAnalythLabel.Size = new System.Drawing.Size(72, 20);
@@ -238,7 +212,7 @@ namespace MeshCollision
       // selectionRangeSlider1
       // 
       this.selectionRangeSlider1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.selectionRangeSlider1.Location = new System.Drawing.Point(11, 87);
+      this.selectionRangeSlider1.Location = new System.Drawing.Point(4, 5);
       this.selectionRangeSlider1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.selectionRangeSlider1.Name = "selectionRangeSlider1";
       this.selectionRangeSlider1.Size = new System.Drawing.Size(1052, 20);
@@ -258,7 +232,7 @@ namespace MeshCollision
       // 
       this.label3.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
       this.label3.AutoSize = true;
-      this.label3.Location = new System.Drawing.Point(441, 323);
+      this.label3.Location = new System.Drawing.Point(13, 88);
       this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.label3.Name = "label3";
       this.label3.Size = new System.Drawing.Size(88, 20);
@@ -268,7 +242,7 @@ namespace MeshCollision
       // textBoxColorSens
       // 
       this.textBoxColorSens.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.textBoxColorSens.Location = new System.Drawing.Point(531, 320);
+      this.textBoxColorSens.Location = new System.Drawing.Point(103, 85);
       this.textBoxColorSens.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.textBoxColorSens.Name = "textBoxColorSens";
       this.textBoxColorSens.Size = new System.Drawing.Size(116, 26);
@@ -279,21 +253,21 @@ namespace MeshCollision
       // 
       this.labelTestValues.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
       this.labelTestValues.AutoSize = true;
-      this.labelTestValues.Location = new System.Drawing.Point(444, 357);
+      this.labelTestValues.Location = new System.Drawing.Point(271, 198);
       this.labelTestValues.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.labelTestValues.Name = "labelTestValues";
-      this.labelTestValues.Size = new System.Drawing.Size(85, 20);
+      this.labelTestValues.Size = new System.Drawing.Size(145, 20);
       this.labelTestValues.TabIndex = 44;
-      this.labelTestValues.Text = "test values";
+      this.labelTestValues.Text = "H:[50:100] S:1 L0.5";
       // 
       // executionInformation
       // 
       this.executionInformation.Anchor = System.Windows.Forms.AnchorStyles.None;
-      this.executionInformation.Location = new System.Drawing.Point(588, 140);
+      this.executionInformation.Location = new System.Drawing.Point(595, 110);
       this.executionInformation.Name = "executionInformation";
-      this.executionInformation.Size = new System.Drawing.Size(475, 80);
+      this.executionInformation.Size = new System.Drawing.Size(461, 108);
       this.executionInformation.TabIndex = 45;
-      this.executionInformation.Text = resources.GetString("executionInformation.Text");
+      this.executionInformation.Text = "Execution info";
       // 
       // panel1
       // 
@@ -313,10 +287,8 @@ namespace MeshCollision
       this.panel1.Controls.Add(this.lValueTrackBar);
       this.panel1.Controls.Add(this.label1);
       this.panel1.Controls.Add(this.sValueInfoLabel);
-      this.panel1.Controls.Add(this.compareImagesButton);
       this.panel1.Controls.Add(this.lValueInfoLable);
       this.panel1.Controls.Add(this.maxPictureBox);
-      this.panel1.Controls.Add(this.inProgressLabel);
       this.panel1.Controls.Add(this.minPictureBox);
       this.panel1.Controls.Add(this.buttonDraw);
       this.panel1.Location = new System.Drawing.Point(12, 451);
@@ -362,9 +334,7 @@ namespace MeshCollision
     private System.Windows.Forms.Label sValueInfoLabel;
     private System.Windows.Forms.Label lValueInfoLable;
     private System.Windows.Forms.Button buttonDraw;
-    private System.Windows.Forms.Label inProgressLabel;
     private System.Windows.Forms.PictureBox examplePictureBox;
-    private System.Windows.Forms.Button compareImagesButton;
     private System.Windows.Forms.Label label1;
     private System.Windows.Forms.Label exampleToAnalythLabel;
     private System.Windows.Forms.PictureBox analythPictureBox;

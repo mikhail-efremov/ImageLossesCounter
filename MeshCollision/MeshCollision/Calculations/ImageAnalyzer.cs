@@ -63,10 +63,8 @@ namespace MeshCollision
       return similarMesh;
     }
 
-    public Task<AnalyzeResult> Analize(SelectionElement element, Label inProgressLabel, byte sens)
+    public Task<AnalyzeResult> Analize(SelectionElement element, byte sens)
     {
-      inProgressLabel.Text = "in progress";
-      
       return Task.Factory.StartNew(() =>
       {
         var result = new AnalyzeResult();
@@ -89,7 +87,6 @@ namespace MeshCollision
         }
 
         result.Points = points;
-        inProgressLabel.Invoke((MethodInvoker)(() => inProgressLabel.Text = "no progress"));
         return result;
       });
     }
