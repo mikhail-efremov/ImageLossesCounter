@@ -6,7 +6,7 @@ namespace MeshCollision.Calculations
 {
   public class PointsCalculations
   {
-    public static HashSet<Point> GetExtemumPoints(List<Point> inputPoints)
+    public static HashSet<Point> GetExtemumPoints(HashSet<Point> inputPoints)
     {
         var xes = inputPoints.GroupBy(val => val.X).ToList();
         var yes = inputPoints.GroupBy(val => val.Y).ToList();

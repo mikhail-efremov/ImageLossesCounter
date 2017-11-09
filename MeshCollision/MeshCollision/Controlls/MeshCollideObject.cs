@@ -144,6 +144,7 @@ namespace MeshCollision.Controlls
 				var line = new Line(xpt, ypt, bitmap.Height);
 				lines.Add(line);
 			}
+      //meybe need to remove dublicats
 
 			return lines;
 		}

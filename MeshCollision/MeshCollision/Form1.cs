@@ -2,22 +2,18 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using MeshCollision.Calculations;
-using MeshCollision.Calculations.Hull;
 using MeshCollision.Clustering;
 using MeshCollision.ColorSpaces;
 using MeshCollision.Controlls;
-using Microsoft.Build.Utilities;
-using nAlpha;
-using Task = System.Threading.Tasks.Task;
 
 namespace MeshCollision
 {
   public partial class Form1 : Form
   {
     private const int IMAGES_OFFSET = 15;
+    private const int SIZE_OF_PAINT = 5;
 
     private Bitmap _clearImage;
     
@@ -219,76 +215,47 @@ namespace MeshCollision
 
       var sens = byte.Parse(textBoxColorSens.Text);
 
-      executionInformation.Text = @"Points analize in progress 5%";
+      executionInformation.Text = @"Points analize in progress 10%";
       var analizedResult = await imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement, sens);
-
-      executionInformation.Text = @"Points error calculation in progress 40%";
-      var hitPoints = await CalculatePointsError(analizedResult.Points);
-
-      analizedResult.Points = hitPoints;
       
-      executionInformation.Text = @"Claster analyth in progress 75%";
-      var arrayPoints = await SimpleClustering.GetCluesters(hitPoints, 3);//7
-      
-      DrawHallAndCalculateOrientation(arrayPoints);
+      executionInformation.Text = @"Claster analyth in progress 30%";
+      var clasters = await SimpleClustering.GetCluesters(analizedResult.Clasters, distance:3);//7
+
+      executionInformation.Text = @"Find hulls orientation and draw 60%";
+      DrawHallAndCalculateOrientation(clasters, pointsInClasterThreshold:15);
       executionInformation.Text = @"Done 100%";
 
       analythPictureBox.Invalidate();
     }
 
-    private Task<List<Point>> CalculatePointsError(List<Point> points)
+    private void DrawHallAndCalculateOrientation(HashSet<HashSet<Point>> clasters, int pointsInClasterThreshold)
     {
-      return Task.Factory.StartNew(() =>
-      { 
-        var hitPoints = new List<Point>();
+      if (pointsInClasterThreshold < 2)
+        pointsInClasterThreshold = 2;
 
-        foreach (var point in points)
-        {
-          var rectangle = new Rectangle
-          {
-            Location = point,
-            Size = new Size(SIZE_OF_PAINT, SIZE_OF_PAINT)
-          };
-
-          for (var x = 0; x < examplePictureBox.Size.Width; x++)
-          for (var y = 0; y < examplePictureBox.Size.Height; y++)
-          {
-            var p = new Point(x, y);
-            if (rectangle.Contains(p) && !hitPoints.Contains(p))
-            {
-              hitPoints.Add(p);
-            }
-          }
-        }
-        return hitPoints;
-      });
-    }
-
-    private void DrawHallAndCalculateOrientation(HashSet<HashSet<Point>> points)
-    {
       var g = Graphics.FromImage(analythPictureBox.Image);
 
       var examplesPoints = new List<Point>(_exampleImagePoints);
       var hitPoints = new List<Point>();
 
-      foreach (var mPoints in points)
+      foreach (var points in clasters)
       {
-        if (mPoints.Count < 50)
+        if (points.Count < pointsInClasterThreshold)
           continue;
 
-        var extremum = PointsCalculations.GetExtemumPoints(mPoints.ToList());
+        var extremum = PointsCalculations.GetExtemumPoints(points);
         DrawPoints(Pens.Blue, extremum, 1, g);
 
-        // CustConcaveHull(extremum, g);
-          UnityConcaveHull(extremum, g);
-        //AlphaFilterConcaveHull(extremum, g, Int32.Parse(textBoxRadius.Text));
+       // CustomConcaveHull.CustConcaveHull(extremum, g);
+        UnityConcaveHull(extremum, g);
+       // AlphaShapeCalculator.AlphaFilterConcaveHull(extremum, g, Int32.Parse(textBoxRadius.Text));
 
         var orientation = AngleCalculations.CalculatePointsOrientation(extremum.ToList());
 
         g.DrawLine(Pens.Black, orientation.FirstPoint, orientation.SecondPoint);
         g.DrawString(orientation.Angles, DefaultFont, Brushes.Black, orientation.AnglesPosition);
         
-        var analizator = new PointInPolygonChecker(mPoints.ToList());
+        var analizator = new PointInPolygonChecker(points.ToList());
         
         foreach (var p in examplesPoints)
         {
@@ -308,24 +275,6 @@ namespace MeshCollision
       exampleToAnalythLabel.Text = hitPoints.Count + " из " + sum +". " + persent + "%";
     }
 
-    private void AlphaFilterConcaveHull(HashSet<Point> points, Graphics g, double radius)
-    {
-      var shapeCalculator = new AlphaShapeCalculator
-      {
-        Radius = radius,
-        CloseShape = true
-      };
-
-      var shape = shapeCalculator.CalculateShape(points.ToArray());
-
-      var vertices1 = shape.Vertices;
-      foreach (var edge in shape.Edges)
-      {
-        g.DrawLine(Pens.Red, (float)vertices1[edge.Item1].X, (float)vertices1[edge.Item1].Y,
-          (float)vertices1[edge.Item2].X, (float)vertices1[edge.Item2].Y);
-      }
-    }
-
     private void UnityConcaveHull(HashSet<Point> points, Graphics g)
     {
       ConcaveHull.Init.generateHull(points.ToList());
@@ -335,14 +284,6 @@ namespace MeshCollision
         g.DrawLine(Pens.Red, (float)line.nodes[0].x, (float)line.nodes[0].y,
           (float)line.nodes[1].x, (float)line.nodes[1].y);
       }
-    }
-
-    private void CustConcaveHull(HashSet<Point> points, Graphics g)
-    {
-      var custom = CustomConcaveHull.Calc(points.ToList(), 3);
-
-      if(custom != null)
-        g.DrawPolygon(Pens.Red, custom.ToArray());
     }
 
     private void DrawPoints(Pen pen, IEnumerable<Point> points, int size, Graphics g)
@@ -454,27 +395,5 @@ namespace MeshCollision
 
       picture.Invalidate();
     }
-
-    private void compareImagesButton_Click(object sender, EventArgs e)
-    {
-      var examples = new List<Point>(_exampleImagePoints);
-
-      var analizator = new Calculations.PointInPolygonChecker(examples);
-
-      var inHere = 0;
-      var outHere = 0;
-
-      foreach (var p in examples)
-      {
-        if (analizator.PointInPolygon(p.X, p.Y))
-          inHere++;
-        else
-        {
-          outHere++;
-        }
-      }
-    }
-
-    private const int SIZE_OF_PAINT = 5;
   }
 }

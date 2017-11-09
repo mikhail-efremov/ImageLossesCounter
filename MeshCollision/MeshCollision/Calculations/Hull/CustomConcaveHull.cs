@@ -8,7 +8,15 @@ namespace MeshCollision.Calculations.Hull
 {
   class CustomConcaveHull
   {
-    public static List<Point> Calc(List<Point> pointsList, int numberOfNeighbours)
+    public static void CustConcaveHull(HashSet<Point> points, Graphics g)
+    {
+      var custom = Calc(points.ToList(), 3);
+
+      if (custom != null)
+        g.DrawPolygon(Pens.Red, custom.ToArray());
+    }
+
+    private static List<Point> Calc(List<Point> pointsList, int numberOfNeighbours)
     {
       var kk = Math.Max(numberOfNeighbours, 3);
 

@@ -10,6 +10,26 @@ namespace nAlpha
         public bool CloseShape { get; set; }
         public double Radius { get; set; }
 
+    public static void AlphaFilterConcaveHull(HashSet<Point> points, Graphics g, double radius)
+    {
+      var shapeCalculator = new AlphaShapeCalculator
+      {
+        Radius = radius,
+        CloseShape = true
+      };
+
+      var shape = shapeCalculator.CalculateShape(points.ToArray());
+      /*
+      var vertices1 = shape.Vertices;
+      foreach (var edge in shape.Edges)
+      {
+        g.DrawLine(Pens.Red, (float)vertices1[edge.Item1].X, (float)vertices1[edge.Item1].Y,
+          (float)vertices1[edge.Item2].X, (float)vertices1[edge.Item2].Y);
+      }
+      */
+    }
+
+
     private List<Tuple<int, int>> resultingEdges = new List<Tuple<int, int>>();
         private List<PointA> resultingVertices = new List<PointA>();
         private PointA[] points;

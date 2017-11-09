@@ -191,18 +191,18 @@ namespace MeshCollision
       // 
       this.label1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
       this.label1.AutoSize = true;
-      this.label1.Location = new System.Drawing.Point(22, 198);
+      this.label1.Location = new System.Drawing.Point(597, 184);
       this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.label1.Name = "label1";
-      this.label1.Size = new System.Drawing.Size(116, 20);
+      this.label1.Size = new System.Drawing.Size(89, 20);
       this.label1.TabIndex = 35;
-      this.label1.Text = "Погрешность:";
+      this.label1.Text = "Покрытие:";
       // 
       // exampleToAnalythLabel
       // 
       this.exampleToAnalythLabel.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
       this.exampleToAnalythLabel.AutoSize = true;
-      this.exampleToAnalythLabel.Location = new System.Drawing.Point(147, 198);
+      this.exampleToAnalythLabel.Location = new System.Drawing.Point(694, 184);
       this.exampleToAnalythLabel.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.exampleToAnalythLabel.Name = "exampleToAnalythLabel";
       this.exampleToAnalythLabel.Size = new System.Drawing.Size(72, 20);
@@ -265,7 +265,7 @@ namespace MeshCollision
       this.executionInformation.Anchor = System.Windows.Forms.AnchorStyles.None;
       this.executionInformation.Location = new System.Drawing.Point(595, 110);
       this.executionInformation.Name = "executionInformation";
-      this.executionInformation.Size = new System.Drawing.Size(461, 108);
+      this.executionInformation.Size = new System.Drawing.Size(461, 74);
       this.executionInformation.TabIndex = 45;
       this.executionInformation.Text = "Execution info";
       // 

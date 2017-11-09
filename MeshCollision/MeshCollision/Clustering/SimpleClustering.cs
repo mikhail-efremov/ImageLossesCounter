@@ -7,7 +7,7 @@ namespace MeshCollision.Clustering
 {
   public class SimpleClustering
   {
-    public static Task<HashSet<HashSet<Point>>> GetCluesters(List<Point> basePoints, double distance)
+    public static Task<HashSet<HashSet<Point>>> GetCluesters(HashSet<Point> basePoints, double distance)
     {
       return Task.Factory.StartNew(() =>
       {

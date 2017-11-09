@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using MeshCollision.ColorSpaces;
 using MeshCollision.Controlls;
 
@@ -10,7 +9,7 @@ namespace MeshCollision
 {
   public struct AnalyzeResult
   {
-    public List<Point> Points;
+    public HashSet<Point> Clasters;
   }
 
   public class ImageAnalyzer
@@ -30,7 +29,8 @@ namespace MeshCollision
     }
 
     private List<Line> GetHitLines(List<IColorSpace> colors, byte sens) {
-      if (colors == null || colors.Count == 0) {
+      if (colors == null || colors.Count == 0)
+      {
         return new List<Line>();
       }
 
@@ -69,7 +69,7 @@ namespace MeshCollision
       {
         var result = new AnalyzeResult();
         
-        var points = new List<Point>();
+        var points = new HashSet<Point>();
 
         var colors = SetColors(element, element.SelectedMin, element.SelectedMax);
 
@@ -86,7 +86,7 @@ namespace MeshCollision
           }
         }
 
-        result.Points = points;
+        result.Clasters = points;
         return result;
       });
     }

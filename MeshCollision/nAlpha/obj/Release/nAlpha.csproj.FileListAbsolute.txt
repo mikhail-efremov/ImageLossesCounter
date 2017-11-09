@@ -1,0 +1,12 @@
+C:\Repo\ImageLossesCounter\MeshCollision\nAlpha\bin\Release\nAlpha.dll
+C:\Repo\ImageLossesCounter\MeshCollision\nAlpha\bin\Release\nAlpha.pdb
+C:\Repo\ImageLossesCounter\MeshCollision\nAlpha\bin\Release\System.Drawing.dll
+C:\Repo\ImageLossesCounter\MeshCollision\nAlpha\bin\Release\System.Configuration.dll
+C:\Repo\ImageLossesCounter\MeshCollision\nAlpha\bin\Release\System.Security.dll
+C:\Repo\ImageLossesCounter\MeshCollision\nAlpha\bin\Release\System.Drawing.xml
+C:\Repo\ImageLossesCounter\MeshCollision\nAlpha\bin\Release\System.Configuration.xml
+C:\Repo\ImageLossesCounter\MeshCollision\nAlpha\bin\Release\System.Security.xml
+C:\Repo\ImageLossesCounter\MeshCollision\nAlpha\obj\Release\nAlpha.csprojResolveAssemblyReference.cache
+C:\Repo\ImageLossesCounter\MeshCollision\nAlpha\obj\Release\nAlpha.csproj.CoreCompileInputs.cache
+C:\Repo\ImageLossesCounter\MeshCollision\nAlpha\obj\Release\nAlpha.dll
+C:\Repo\ImageLossesCounter\MeshCollision\nAlpha\obj\Release\nAlpha.pdb

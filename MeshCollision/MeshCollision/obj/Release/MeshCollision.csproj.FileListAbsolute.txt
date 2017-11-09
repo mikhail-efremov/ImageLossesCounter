@@ -1,0 +1,5 @@
+C:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Release\MeshCollision.csprojResolveAssemblyReference.cache
+C:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Release\MeshCollision.Form1.resources
+C:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Release\MeshCollision.Properties.Resources.resources
+C:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Release\MeshCollision.csproj.GenerateResource.Cache
+C:\Repo\ImageLossesCounter\MeshCollision\MeshCollision\obj\Release\MeshCollision.csproj.CoreCompileInputs.cache

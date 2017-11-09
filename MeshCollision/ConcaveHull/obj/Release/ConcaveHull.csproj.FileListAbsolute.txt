@@ -1,0 +1,5 @@
+C:\Repo\ImageLossesCounter\MeshCollision\ConcaveHull\bin\Release\ConcaveHull.dll
+C:\Repo\ImageLossesCounter\MeshCollision\ConcaveHull\bin\Release\ConcaveHull.pdb
+C:\Repo\ImageLossesCounter\MeshCollision\ConcaveHull\obj\Release\ConcaveHull.csproj.CoreCompileInputs.cache
+C:\Repo\ImageLossesCounter\MeshCollision\ConcaveHull\obj\Release\ConcaveHull.dll
+C:\Repo\ImageLossesCounter\MeshCollision\ConcaveHull\obj\Release\ConcaveHull.pdb
