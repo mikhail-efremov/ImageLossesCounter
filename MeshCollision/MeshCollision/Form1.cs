@@ -13,7 +13,7 @@ namespace MeshCollision
   public partial class Form1 : Form
   {
     private const int IMAGES_OFFSET = 15;
-    private const int SIZE_OF_PAINT = 5;
+    private const int SIZE_OF_PAINT = 60;
 
     private Bitmap _clearImage;
     
@@ -226,6 +226,7 @@ namespace MeshCollision
       executionInformation.Text = @"Done 100%";
 
       analythPictureBox.Invalidate();
+      examplePictureBox.Invalidate();
     }
 
     private void DrawHallAndCalculateOrientation(HashSet<HashSet<Point>> clasters, int pointsInClasterThreshold)
@@ -234,6 +235,7 @@ namespace MeshCollision
         pointsInClasterThreshold = 2;
 
       var g = Graphics.FromImage(analythPictureBox.Image);
+      var c = Graphics.FromImage(examplePictureBox.Image);
 
       var examplesPoints = new List<Point>(_exampleImagePoints);
       var hitPoints = new List<Point>();
@@ -246,28 +248,46 @@ namespace MeshCollision
         var extremum = PointsCalculations.GetExtemumPoints(points);
         DrawPoints(Pens.Blue, extremum, 1, g);
 
-       // CustomConcaveHull.CustConcaveHull(extremum, g);
         UnityConcaveHull(extremum, g);
-       // AlphaShapeCalculator.AlphaFilterConcaveHull(extremum, g, Int32.Parse(textBoxRadius.Text));
-
+       
         var orientation = AngleCalculations.CalculatePointsOrientation(extremum.ToList());
 
         g.DrawLine(Pens.Black, orientation.FirstPoint, orientation.SecondPoint);
         g.DrawString(orientation.Angles, DefaultFont, Brushes.Black, orientation.AnglesPosition);
         
-        var analizator = new PointInPolygonChecker(points.ToList());
+   //     var analizator = new PointInPolygonChecker(popitka);
         
-        foreach (var p in examplesPoints)
+        foreach (var ex in examplesPoints)
         {
-          if (analizator.PointInPolygon(p.X, p.Y))
+          var res = false;
+          foreach (var line in ConcaveHull.Hull.hull_concave_edges)
           {
-            hitPoints.Add(p);
+            g.DrawLine(Pens.Red, (float)line.nodes[0].x, (float)line.nodes[0].y,
+              (float)line.nodes[1].x, (float)line.nodes[1].y);
+
+            if (intersects((int)line.nodes[0].x, (int)line.nodes[0].y, (int)line.nodes[1].x, (int)line.nodes[1].y,
+              ex.X, 0, ex.X, ex.Y))
+            {
+              res = !res;
+            }
+          }
+
+          if (res)
+          {
+            hitPoints.Add(ex);
+          }
+          else
+          {
+            c.FillRectangle(Brushes.Black,
+              ex.X, ex.Y, 1, 1);
           }
         }
-        foreach (var h in hitPoints)
-        {
-          examplesPoints.Remove(h);
-        }
+      }
+
+      foreach (var h in hitPoints)
+      {
+        c.FillRectangle(Brushes.White,
+          h.X, h.Y, 1, 1);
       }
 
       var sum = hitPoints.Count + examplesPoints.Count;
@@ -275,13 +295,71 @@ namespace MeshCollision
       exampleToAnalythLabel.Text = hitPoints.Count + " из " + sum +". " + persent + "%";
     }
 
+    //https://stackoverflow.com/questions/9043805/test-if-two-lines-intersect-javascript-function
+    bool intersects(int a, int b, int c, int d, int p, int q, int r, int s)
+    {
+      int det;
+      float gamma, lambda;
+      det = (c - a) * (s - q) - (r - p) * (d - b);
+      if (det == 0)//parallel or equal
+      {
+        return false;
+      }
+
+      lambda = ((s - q) * (r - a) + (p - r) * (s - b)) / (float)det;
+      gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / (float)det;
+      return (0 <= lambda && lambda <= 1) && (0 <= gamma && gamma <= 1);
+    }
+
+    public bool IsPointInPolygon(Point p, Point[] polygon, Graphics g)
+    {
+      double minX = polygon[0].X;
+      double maxX = polygon[0].X;
+      double minY = polygon[0].Y;
+      double maxY = polygon[0].Y;
+      for (int i = 1; i < polygon.Length; i++)
+      {
+        Point q = polygon[i];
+        minX = Math.Min(q.X, minX);
+        maxX = Math.Max(q.X, maxX);
+        minY = Math.Min(q.Y, minY);
+        maxY = Math.Max(q.Y, maxY);
+      }
+
+      if (p.X < minX || p.X > maxX || p.Y < minY || p.Y > maxY)
+      {
+        return false;
+      }
+
+      // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+      bool inside = false;
+      for (int i = 0, j = polygon.Length - 1; i < polygon.Length; j = i++)
+      {
+        g.DrawLine(Pens.Red, (float)p.X, (float)p.Y,
+          (float)p.X, (float)p.Y);
+
+        if ((polygon[i].Y > p.Y) != (polygon[j].Y > p.Y) &&
+            p.X < (polygon[j].X - polygon[i].X) * (p.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) + polygon[i].X)
+        {
+          inside = !inside;
+        }
+      }
+
+      return inside;
+    }
+
     private void UnityConcaveHull(HashSet<Point> points, Graphics g)
     {
       ConcaveHull.Init.generateHull(points.ToList());
-      
+      var c = Graphics.FromImage(examplePictureBox.Image);
+
+
       foreach (var line in ConcaveHull.Hull.hull_concave_edges)
       {
         g.DrawLine(Pens.Red, (float)line.nodes[0].x, (float)line.nodes[0].y,
+          (float)line.nodes[1].x, (float)line.nodes[1].y);
+
+        c.DrawLine(Pens.Red, (float)line.nodes[0].x, (float)line.nodes[0].y,
           (float)line.nodes[1].x, (float)line.nodes[1].y);
       }
     }
@@ -297,7 +375,7 @@ namespace MeshCollision
     private void examplePictureBox_Paint(object sender, PaintEventArgs e)
     {
       var brush = new SolidBrush(Color.Red);
-
+      return;
       for (var i = 0; i < _exampleImagePoints.Count; i++)
       {
         e.Graphics.FillRectangle(brush,
