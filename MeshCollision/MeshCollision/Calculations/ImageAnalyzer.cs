@@ -28,7 +28,36 @@ namespace MeshCollision
       Bitmap.Unlock();
     }
 
-    private List<Line> GetHitLines(List<IColorSpace> colors, byte sens) {
+    public Task<AnalyzeResult> Analize(SelectionElement element, byte sens)
+    {
+      return Task.Factory.StartNew(() =>
+      {
+        var result = new AnalyzeResult();
+
+        var points = new HashSet<Point>();
+
+        var colors = SetColors(element);
+
+        var hitLines = GetHitLines(colors, sens);
+        foreach (var line in hitLines)
+        {
+          if (line == null) continue;
+          foreach (var point in line.Points)
+          {
+            if (!points.Contains(point))
+            {
+              points.Add(point);
+            }
+          }
+        }
+
+        result.Clasters = points;
+        return result;
+      });
+    }
+
+    private List<Line> GetHitLines(List<IColorSpace> colors, byte sens)
+    {
       if (colors == null || colors.Count == 0)
       {
         return new List<Line>();
@@ -62,61 +91,31 @@ namespace MeshCollision
       });
       return similarMesh;
     }
-
-    public Task<AnalyzeResult> Analize(SelectionElement element, byte sens)
-    {
-      return Task.Factory.StartNew(() =>
-      {
-        var result = new AnalyzeResult();
-        
-        var points = new HashSet<Point>();
-
-        var colors = SetColors(element, element.SelectedMin, element.SelectedMax);
-
-        var hitLines = GetHitLines(colors, sens);
-        foreach (var line in hitLines)
-        {
-          if(line == null) continue;
-          foreach (var point in line.Points)
-          {
-            if (!points.Contains(point))
-            {
-              points.Add(point);
-            }
-          }
-        }
-
-        result.Clasters = points;
-        return result;
-      });
-    }
     
-    private List<IColorSpace> SetColors(SelectionElement element, int min, int max) {
+    private List<IColorSpace> SetColors(SelectionElement element)
+    {
       var colors = new List<IColorSpace>();
+
+      var curMax = element.SelectedMax;
+      var curMin = element.SelectedMin;
+
+      var max = element.Max;
+
+      var sValue = element.SValue1;
+      var lValue = element.LValue1;
       
-      for (; min < max; min++) {
+      for (; curMin < curMax; curMin++) {
         colors.Add(new RgbColorSpace(
-          HslColorSpace.ColorFromHsl((double)min / element.Max, element.SValue1, element.LValue1)));
-      }
-
-      return colors;
-    }
-
-    private List<IColorSpace> SetHslColor(SelectionElement element, int min, int max) {
-      var colors = new List<IColorSpace>();
-      
-      for (; min < max; min++) {
-        colors.Add(new HslColorSpace((float)min / element.Max, (float)element.SValue1, (float)element.LValue1));
+          HslColorSpace.ColorFromHsl((double)curMin / max, sValue, lValue)));
       }
 
       return colors;
     }
   }
 
-
   public static class PointExt
   {
-    public static Decimal GetDistance(this Point p1, Point p2)
+    public static decimal GetDistance(this Point p1, Point p2)
     {
       return Convert.ToDecimal(Math.Sqrt(Math.Pow(p1.X - p2.X, 2) + Math.Pow(p1.Y - p2.Y, 2)));
     }

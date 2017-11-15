@@ -56,10 +56,6 @@ namespace MeshCollision.Clustering
 
       Console.WriteLine("Raw data by cluster:\n");
       return ShowClustered(points, clustering, numClusters, 1);
-
-      Console.WriteLine("\nEnd k-means clustering demo\n");
-      Console.ReadLine();
-
     } // Main
 
     // ============================================================================
@@ -307,24 +303,6 @@ namespace MeshCollision.Clustering
         NumClusters = numClusters,
         Decimals = decimals
       };
-
-      for (int k = 0; k < numClusters; ++k)
-      {
-        Console.WriteLine("===================");
-        for (int i = 0; i < data.Length; ++i)
-        {
-          var clusterID = clustering[i];
-          if (clusterID != k) continue;
-          Console.Write(i.ToString().PadLeft(3) + " ");
-          for (int j = 0; j < data[i].Length; ++j)
-          {
-            if (data[i][j] >= 0.0) Console.Write(" ");
-            Console.Write(data[i][j].ToString("F" + decimals) + " ");
-          }
-          Console.WriteLine("");
-        }
-        Console.WriteLine("===================");
-      } // k
     }
 
     public class ClasteringData

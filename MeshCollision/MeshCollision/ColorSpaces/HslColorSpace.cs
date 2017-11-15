@@ -22,6 +22,7 @@ namespace MeshCollision.ColorSpaces
       return string.Format("H:{0};S:{1};L:{2}", H, S, L);
     }
 
+    //http://james-ramsden.com/convert-from-hsl-to-rgb-colour-codes-in-c/
     public static Color ColorFromHsl(double h, double s, double l)
     {
       double r = 0, g = 0, b = 0;
@@ -32,36 +33,36 @@ namespace MeshCollision.ColorSpaces
           r = g = b = l;
         else
         {
-          double temp2;
+          double k2;
           if (l < 0.5)
-            temp2 = l * (1.0 + s);
+            k2 = l * (1.0 + s);
           else
-            temp2 = l + s - (l * s);
+            k2 = l + s - (l * s);
 
-          double temp1 = 2.0 * l - temp2;
+          double k1 = 2.0 * l - k2;
 
-          r = GetColorComponent(temp1, temp2, h + 1.0 / 3.0);
-          g = GetColorComponent(temp1, temp2, h);
-          b = GetColorComponent(temp1, temp2, h - 1.0 / 3.0);
+          r = GetColorComponent(k1, k2, h + 1.0 / 3.0);
+          g = GetColorComponent(k1, k2, h);
+          b = GetColorComponent(k1, k2, h - 1.0 / 3.0);
         }
       }
-      return Color.FromArgb((int) (255 * r), (int) (255 * g), (int) (255 * b));
+      return Color.FromArgb(Convert.ToInt32(255 * r), Convert.ToInt32(255 * g), Convert.ToInt32(255 * b));
     }
 
-    private static double GetColorComponent(double temp1, double temp2, double temp3)
+    private static double GetColorComponent(double k1, double k2, double k3)
     {
-      if (temp3 < 0.0)
-        temp3 += 1.0;
-      else if (temp3 > 1.0)
-        temp3 -= 1.0;
+      if (k3 < 0.0)
+        k3 += 1.0;
+      else if (k3 > 1.0)
+        k3 -= 1.0;
 
-      if (temp3 < 1.0 / 6.0)
-        return temp1 + (temp2 - temp1) * 6.0 * temp3;
-      if (temp3 < 0.5)
-        return temp2;
-      if (temp3 < 2.0 / 3.0)
-        return temp1 + (temp2 - temp1) * (2.0 / 3.0 - temp3) * 6.0;
-      return temp1;
+      if (k3 < 1.0 / 6.0)
+        return k1 + (k2 - k1) * 6.0 * k3;
+      if (k3 < 0.5)
+        return k2;
+      if (k3 < 2.0 / 3.0)
+        return k1 + (k2 - k1) * (2.0 / 3.0 - k3) * 6.0;
+      return k1;
     }
 
     public static HslColorSpace FromRGB(byte R, byte G, byte B)
@@ -123,7 +124,6 @@ namespace MeshCollision.ColorSpaces
         return true;
 
       var hsens = 50;
-      var ssens = 0.2f;
       var lsens = 0.6f;
 
       if (H >= hsl.H - hsens && H <= hsl.H + hsens)

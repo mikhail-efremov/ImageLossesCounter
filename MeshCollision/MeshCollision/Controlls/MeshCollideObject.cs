@@ -132,7 +132,7 @@ namespace MeshCollision.Controlls
 				var line = new Line(xpt, ypt, bitmap.Width);
 				lines.Add(line);
 			}
-
+      
 			//vertical
 			for (var index = 0; index < widthLinesCount; index++)
 			{

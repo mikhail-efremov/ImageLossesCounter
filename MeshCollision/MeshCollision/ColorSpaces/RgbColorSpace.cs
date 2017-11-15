@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using MeshCollision.Calculations;
 
 namespace MeshCollision.ColorSpaces
 {

@@ -222,7 +222,6 @@ namespace MeshCollision.Calculations.Hull
       hull.Add(firstPoint);
       Vertex currentPoint = firstPoint;
       Vertex[] dataset = RemoveIndex(clean, 0);
-      double previousAngle = 0;
       int step = 2;
       int i;
       while (((currentPoint != firstPoint) || (step == 2)) && (dataset.Length > 0))

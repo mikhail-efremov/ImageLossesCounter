@@ -44,13 +44,14 @@ namespace MeshCollision
       this.examplePictureBox = new System.Windows.Forms.PictureBox();
       this.label1 = new System.Windows.Forms.Label();
       this.exampleToAnalythLabel = new System.Windows.Forms.Label();
-      this.selectionRangeSlider1 = new MeshCollision.Controlls.SelectionRangeSlider();
       this.analythPictureBox = new System.Windows.Forms.PictureBox();
       this.label3 = new System.Windows.Forms.Label();
       this.textBoxColorSens = new System.Windows.Forms.TextBox();
       this.labelTestValues = new System.Windows.Forms.Label();
       this.executionInformation = new System.Windows.Forms.Label();
       this.panel1 = new System.Windows.Forms.Panel();
+      this.paintModeCheckBox = new System.Windows.Forms.CheckBox();
+      this.selectionRangeSlider1 = new MeshCollision.Controlls.SelectionRangeSlider();
       ((System.ComponentModel.ISupportInitialize)(this.maxPictureBox)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.minPictureBox)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.hslCointeinerPictureBox)).BeginInit();
@@ -209,15 +210,6 @@ namespace MeshCollision
       this.exampleToAnalythLabel.TabIndex = 39;
       this.exampleToAnalythLabel.Text = "100.00%";
       // 
-      // selectionRangeSlider1
-      // 
-      this.selectionRangeSlider1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.selectionRangeSlider1.Location = new System.Drawing.Point(4, 5);
-      this.selectionRangeSlider1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-      this.selectionRangeSlider1.Name = "selectionRangeSlider1";
-      this.selectionRangeSlider1.Size = new System.Drawing.Size(1052, 20);
-      this.selectionRangeSlider1.TabIndex = 16;
-      // 
       // analythPictureBox
       // 
       this.analythPictureBox.Location = new System.Drawing.Point(554, 18);
@@ -274,6 +266,7 @@ namespace MeshCollision
       this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.panel1.BackColor = System.Drawing.SystemColors.Window;
+      this.panel1.Controls.Add(this.paintModeCheckBox);
       this.panel1.Controls.Add(this.buttonLoadImage);
       this.panel1.Controls.Add(this.executionInformation);
       this.panel1.Controls.Add(this.selectionRangeSlider1);
@@ -295,6 +288,26 @@ namespace MeshCollision
       this.panel1.Name = "panel1";
       this.panel1.Size = new System.Drawing.Size(1070, 231);
       this.panel1.TabIndex = 46;
+      // 
+      // paintModeCheckBox
+      // 
+      this.paintModeCheckBox.AutoSize = true;
+      this.paintModeCheckBox.Location = new System.Drawing.Point(17, 121);
+      this.paintModeCheckBox.Name = "paintModeCheckBox";
+      this.paintModeCheckBox.Size = new System.Drawing.Size(115, 24);
+      this.paintModeCheckBox.TabIndex = 46;
+      this.paintModeCheckBox.Text = "Paint mode";
+      this.paintModeCheckBox.UseVisualStyleBackColor = true;
+      this.paintModeCheckBox.CheckedChanged += new System.EventHandler(this.paintModeCheckBox_CheckedChanged);
+      // 
+      // selectionRangeSlider1
+      // 
+      this.selectionRangeSlider1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.selectionRangeSlider1.Location = new System.Drawing.Point(4, 5);
+      this.selectionRangeSlider1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+      this.selectionRangeSlider1.Name = "selectionRangeSlider1";
+      this.selectionRangeSlider1.Size = new System.Drawing.Size(1052, 20);
+      this.selectionRangeSlider1.TabIndex = 16;
       // 
       // Form1
       // 
@@ -343,6 +356,7 @@ namespace MeshCollision
     private System.Windows.Forms.Label labelTestValues;
     private System.Windows.Forms.Label executionInformation;
     private System.Windows.Forms.Panel panel1;
+    private System.Windows.Forms.CheckBox paintModeCheckBox;
   }
 }
 

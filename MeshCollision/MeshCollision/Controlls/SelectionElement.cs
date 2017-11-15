@@ -56,16 +56,18 @@ namespace MeshCollision.Controlls
 
     private int sValue1000 = 1000;
     public int SValue1000 {
-      get { return sValue1000; }
-      set { sValue1000 = value; } }
+      get => sValue1000;
+      set => sValue1000 = value;
+    }
 
     private int lValue1000 = 500;
     public int LValue1000 { 
-      get { return lValue1000; } 
-      set { lValue1000 = value; } }
+      get => lValue1000;
+      set => lValue1000 = value;
+    }
 
-    public double SValue1 {get { return SValue1000 / 1000d; } }
-    public double LValue1 {get { return LValue1000 / 1000d; } }
+    public double SValue1 => SValue1000 / 1000d;
+    public double LValue1 => LValue1000 / 1000d;
 
     [Description("Fired when SelectedMin or SelectedMax changes.")]
     public event EventHandler SelectionChanged;
