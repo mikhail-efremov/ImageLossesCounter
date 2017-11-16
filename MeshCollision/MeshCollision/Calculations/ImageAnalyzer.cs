@@ -5,13 +5,8 @@ using System.Threading.Tasks;
 using MeshCollision.ColorSpaces;
 using MeshCollision.Controlls;
 
-namespace MeshCollision
+namespace MeshCollision.Calculations
 {
-  public struct AnalyzeResult
-  {
-    public HashSet<Point> Clasters;
-  }
-
   public class ImageAnalyzer
   {
     public UnsafeBitmap Bitmap;
@@ -19,8 +14,8 @@ namespace MeshCollision
     public readonly int LineWeight = 6;
     public readonly int LineHeight = 6;
 
-    private static readonly float _indent = 10;
-    
+    private const float INDENT = 10;
+
     public ImageAnalyzer(Image image)
     {
       Bitmap = new UnsafeBitmap(new Bitmap(image));
@@ -28,12 +23,10 @@ namespace MeshCollision
       Bitmap.Unlock();
     }
 
-    public Task<AnalyzeResult> Analize(SelectionElement element, byte sens)
+    public Task<HashSet<Point>> Analize(SelectionElement element, byte sens)
     {
       return Task.Factory.StartNew(() =>
       {
-        var result = new AnalyzeResult();
-
         var points = new HashSet<Point>();
 
         var colors = SetColors(element);
@@ -51,8 +44,7 @@ namespace MeshCollision
           }
         }
 
-        result.Clasters = points;
-        return result;
+        return points;
       });
     }
 
@@ -63,7 +55,7 @@ namespace MeshCollision
         return new List<Line>();
       }
 
-      var rawMesh = MeshCollideObject.GetRawMesh(Bitmap.Bitmap, _indent);
+      var rawMesh = MeshCollideObject.GetRawMesh(Bitmap.Bitmap, INDENT);
       
       var similarMesh = new List<Line>();
       var clonedBuffer = new UnsafeBitmap((Bitmap)Bitmap.Bitmap.Clone());

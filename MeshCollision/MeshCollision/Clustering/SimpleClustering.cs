@@ -35,7 +35,10 @@ namespace MeshCollision.Clustering
 
     public static HashSet<Point> GetPoints(Point origin, List<Point> points, double powDistance)
     {
-      var result = new HashSet<Point> {origin}; //wath out
+      var result = new HashSet<Point>
+      {
+        origin
+      };
       var found = new Queue<Point>();
       found.Enqueue(origin);
 
@@ -54,29 +57,6 @@ namespace MeshCollision.Clustering
       }
 
       return result;
-    }
-
-    
-    private List<Point> GetCluster(List<Point> basePoints, Point startPoint, double powDistance)
-    {
-      var cluster = new List<Point>();
-
-      var findedPoints = basePoints
-        .Where(p => p.DistanceSquared(startPoint) < powDistance)
-        .ToList();
-
-      basePoints.RemoveAll(p => cluster.Contains(p));
-
-      if (findedPoints.Count < 1)
-        return cluster;
-      
-      var b = findedPoints[0];
-      findedPoints.Remove(b);
-      cluster.Add(b);
-
-      cluster.AddRange(GetCluster(basePoints, b, powDistance));
-
-      return cluster;
     }
   }
 }

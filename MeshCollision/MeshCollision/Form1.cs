@@ -219,10 +219,10 @@ namespace MeshCollision
 
       executionInformation.Text = @"Points analize in progress 10%";
       var analizedResult = await imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement, sens);
-      
-      executionInformation.Text = @"Claster analyth in progress 30%";
-      var clasters = await SimpleClustering.GetCluesters(analizedResult.Clasters, distance:3);//7
 
+      executionInformation.Text = @"Claster analyth in progress 30%";
+      var clasters = await SimpleClustering.GetCluesters(analizedResult, distance:3);//need to documented
+      
       executionInformation.Text = @"Find hulls orientation and draw 60%";
       DrawHallAndCalculateOrientation(clasters, pointsInClasterThreshold:15);
       executionInformation.Text = @"Done 100%";
@@ -250,7 +250,7 @@ namespace MeshCollision
           continue;
 
         var extremum = PointsCalculations.GetExtemumPoints(points);
-        DrawPoints(Pens.Blue, extremum, 1, g);
+        DrawPoints(Brushes.Blue, extremum, 1, g);
 
         UnityConcaveHull(extremum, g);
 
@@ -308,16 +308,6 @@ namespace MeshCollision
       var sum = hitPoints.Count + examplesPoints.Count;
       var persent = (float)hitPoints.Count / sum * 100;
       exampleToAnalythLabel.Text = hitPoints.Count + " из " + sum +". " + persent + "%";
-    }
-
-    public static bool inLine(Point A, Point B, Point C)
-    {
-      // if AC is horizontal
-      if (A.X == C.X) return B.X == C.X;
-      // if AC is vertical.
-      if (A.Y == C.Y) return B.Y == C.Y;
-      // match the gradients
-      return (A.X - C.X) * (A.Y - C.Y) == (C.X - B.X) * (C.Y - B.Y);
     }
 
     //https://stackoverflow.com/questions/9043805/test-if-two-lines-intersect-javascript-function
@@ -381,11 +371,11 @@ namespace MeshCollision
       }
     }
 
-    private void DrawPoints(Pen pen, IEnumerable<Point> points, int size, Graphics g)
+    private void DrawPoints(Brush brush, IEnumerable<Point> points, int size, Graphics g)
     {
       foreach (var pt in points)
       {
-        g.DrawEllipse(pen, pt.X, pt.Y, size, size);
+        g.FillRectangle(brush, pt.X, pt.Y, size, size);
       }
     }
 
@@ -395,12 +385,8 @@ namespace MeshCollision
         return;
 
       var g = e?.Graphics ?? examplePictureBox.CreateGraphics();
-
-      var brush = new SolidBrush(Color.Red);
-      foreach (var point in _exampleImagePoints)
-      {
-        g.FillRectangle(brush, point.X, point.Y, 1, 1);
-      }
+      
+      DrawPoints(new SolidBrush(Color.Red), _exampleImagePoints, 1, g);
     }
 
     private void examplePictureBox_MouseDown(object sender, MouseEventArgs e)

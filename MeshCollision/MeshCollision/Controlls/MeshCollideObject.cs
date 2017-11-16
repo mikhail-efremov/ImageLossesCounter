@@ -118,8 +118,8 @@ namespace MeshCollision.Controlls
       
       var	widthLinesCount = bitmap.Width / weightIndent;      
       var	heightLinesCount = bitmap.Height / heightIndent;
-      
-			var lines = new List<Line>();
+
+      var lines = new List<Line>();
 
 			//horizontal
 			for (var index = 0; index < heightLinesCount; index++)
@@ -145,6 +145,8 @@ namespace MeshCollision.Controlls
 				lines.Add(line);
 			}
       //meybe need to remove dublicats
+
+      
 
 			return lines;
 		}
