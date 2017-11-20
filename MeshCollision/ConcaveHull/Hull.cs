@@ -1,86 +1,60 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace ConcaveHull
 {
   public static class Hull
   {
-    public static int scaleFactor;
-    public static List<Node> unused_nodes = new List<Node>();
-    public static List<Line> hull_edges = new List<Line>();
-    public static List<Line> hull_concave_edges = new List<Line>();
+    private static int _scaleFactor;
+    private static readonly List<Node> _unusedNodes = new List<Node>();
+    private static readonly List<Line> _hullEdges = new List<Line>();
+    private static List<Line> _hullConcaveEdges = new List<Line>();
 
-    public static List<Line> getHull(List<Node> nodes)
+    private static readonly List<Node> _list = new List<Node>(); //i dont know why this need
+
+    public static List<Line> Generate(List<Point> dotList, double concavity /*-1..1*/,
+      int scaleFactor, bool isSquareGrid)
     {
-      List<Node> convexH = new List<Node>();
-      List<Line> exitLines = new List<Line>();
-
-      convexH = new List<Node>();
-      convexH.AddRange(GrahamScan.convexHull(nodes));
-      for (int i = 0; i < convexH.Count - 1; i++)
-      {
-        exitLines.Add(new Line(convexH[i], convexH[i + 1]));
-      }
-      exitLines.Add(new Line(convexH[0], convexH[convexH.Count - 1]));
-      return exitLines;
+      return SetConcaveHull(dotList, Math.Round(Convert.ToDecimal(concavity), 2), scaleFactor, isSquareGrid);
     }
 
-    public static void setConvHull(List<Node> nodes)
-    {
-      unused_nodes.Clear();
-      hull_edges.Clear();
-      hull_concave_edges.Clear();
-
-    unused_nodes.AddRange(nodes);
-      hull_edges.AddRange(getHull(nodes));
-      foreach (Line line in hull_edges)
-      {
-        foreach (Node node in line.nodes)
-        {
-          if (unused_nodes.Find(a => a.id == node.id) != null)
-          {
-            unused_nodes.Remove(unused_nodes.Where(a => a.id == node.id).First());
-          }
-        }
-      }
-    }
-
-    public static void setConcaveHull(decimal concavity, int scaleFactor, bool isSquareGrid)
+    private static List<Line> SetConcaveHull(IReadOnlyList<Point> dotList, decimal concavity, int scaleFactor, bool isSquareGrid)
     {
       /* Run setConvHull before! 
        * Concavity is a value used to restrict the concave angles 
        * it can go from -1 to 1 (it wont crash if you go further)
        * */
-      Hull.scaleFactor = scaleFactor;
-      hull_concave_edges = new List<Line>(hull_edges.OrderByDescending(a => Line.getLength(a.nodes[0], a.nodes[1])).ToList());
-      Line selected_edge;
-      List<Line> aux = new List<Line>(); ;
-      int list_original_size;
-      int count = 0;
-      bool listIsModified = false;
+      TestModel(dotList);
+      SetConvHull(_list);
+
+      _scaleFactor = scaleFactor;
+      _hullConcaveEdges = new List<Line>(_hullEdges.OrderByDescending(a => Line.getLength(a.nodes[0], a.nodes[1])).ToList());
+      bool listIsModified;
       do
       {
         listIsModified = false;
-        count = 0;
-        list_original_size = hull_concave_edges.Count;
-        while (count < list_original_size)
+        var count = 0;
+        var listOriginalSize = _hullConcaveEdges.Count;
+        while (count < listOriginalSize)
         {
-          selected_edge = hull_concave_edges[0];
-          hull_concave_edges.RemoveAt(0);
-          aux = new List<Line>();
-          if (!selected_edge.isChecked)
+          var selectedEdge = _hullConcaveEdges[0];
+          _hullConcaveEdges.RemoveAt(0);
+          var aux = new List<Line>();
+          if (!selectedEdge.isChecked)
           {
-            List<Node> nearby_points = HullFunctions.getNearbyPoints(selected_edge, unused_nodes, Hull.scaleFactor);
-            aux.AddRange(HullFunctions.setConcave(selected_edge, nearby_points, hull_concave_edges, concavity, isSquareGrid));
-            listIsModified = listIsModified || (aux.Count > 1);
+            var nearbyPoints = HullFunctions.getNearbyPoints(selectedEdge, _unusedNodes, _scaleFactor);
+            aux.AddRange(HullFunctions.setConcave(selectedEdge, nearbyPoints, _hullConcaveEdges, concavity, isSquareGrid));
+            listIsModified = listIsModified || aux.Count > 1;
 
             if (aux.Count > 1)
             {
-              foreach (Node node in aux[0].nodes)
+              foreach (var node in aux[0].nodes)
               {
-                if (unused_nodes.Find(a => a.id == node.id) != null)
+                if (_unusedNodes.Find(a => a.id == node.id) != null)
                 {
-                  unused_nodes.Remove(unused_nodes.Where(a => a.id == node.id).First());
+                  _unusedNodes.Remove(_unusedNodes.First(a => a.id == node.id));
                 }
               }
             }
@@ -91,14 +65,71 @@ namespace ConcaveHull
           }
           else
           {
-            aux.Add(selected_edge);
+            aux.Add(selectedEdge);
           }
-          hull_concave_edges.AddRange(aux);
+          _hullConcaveEdges.AddRange(aux);
           count++;
         }
-        hull_concave_edges = hull_concave_edges.OrderByDescending(a => Line.getLength(a.nodes[0], a.nodes[1])).ToList();
-        list_original_size = hull_concave_edges.Count;
+        _hullConcaveEdges = _hullConcaveEdges.OrderByDescending(a => Line.getLength(a.nodes[0], a.nodes[1])).ToList();
       } while (listIsModified);
+
+      _list.Clear();
+
+      return _hullConcaveEdges;
+    }
+
+    private static IEnumerable<Line> GetHull(List<Node> nodes)
+    {
+      var exitLines = new List<Line>();
+
+      var convexH = new List<Node>();
+      convexH.AddRange(GrahamScan.convexHull(nodes));
+      for (var i = 0; i < convexH.Count - 1; i++)
+      {
+        exitLines.Add(new Line(convexH[i], convexH[i + 1]));
+      }
+      exitLines.Add(new Line(convexH[0], convexH[convexH.Count - 1]));
+      return exitLines;
+    }
+
+    private static void SetConvHull(List<Node> nodes)
+    {
+      _unusedNodes.Clear();
+      _hullEdges.Clear();
+      _hullConcaveEdges.Clear();
+
+      _unusedNodes.AddRange(nodes);
+      _hullEdges.AddRange(GetHull(nodes));
+      foreach (var line in _hullEdges)
+      {
+        foreach (var node in line.nodes)
+        {
+          if (_unusedNodes.Find(a => a.id == node.id) != null)
+          {
+            _unusedNodes.Remove(_unusedNodes.First(a => a.id == node.id));
+          }
+        }
+      }
+    }
+
+    private static void TestModel(IReadOnlyList<Point> points)
+    {
+      //Used only for the demo
+      for (var x = 0; x < points.Count; x++)
+      {
+        _list.Add(new Node(points[x].X, points[x].Y, x));
+      }
+      //Delete repeated nodes
+      for (var pivotPosition = 0; pivotPosition < _list.Count; pivotPosition++)
+      {
+        for (var position = 0; position < _list.Count; position++)
+          if (_list[pivotPosition].x == _list[position].x && _list[pivotPosition].y == _list[position].y
+              && _list[pivotPosition].id != _list[position].id)
+          {
+            _list.RemoveAt(position);
+            position--;
+          }
+      }
     }
   }
 }

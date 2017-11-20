@@ -251,12 +251,15 @@ namespace MeshCollision
         if (points.Count < pointsInClasterThreshold)
           continue;
 
-//        var extremum = PointsCalculations.GetExtemumPoints(points);
-//        DrawPoints(Brushes.Blue, extremum, 1, g);
+        //        var extremum = PointsCalculations.GetExtemumPoints(points);
 
-        UnityConcaveHull(points, g);//extremum, g);
+        //https://github.com/masphei/ConvexHull
+        //http://www.it.uu.se/edu/course/homepage/projektTDB/ht13/project10/Project-10-report.pdf
+        //https://github.com/Liagson/ConcaveHullGenerator
+        //https://ru.wikipedia.org/wiki/Алгоритм_Грэхема
+        var hull = ConcaveHull.Hull.Generate(points.ToList(), double.Parse(concaveTextBox.Text), 1, true);
 
-        foreach (var line in ConcaveHull.Hull.hull_concave_edges)
+        foreach (var line in hull)
         {
           g.DrawLine(linesPen, (float) line.nodes[0].x, (float) line.nodes[0].y,
             (float) line.nodes[1].x, (float) line.nodes[1].y);
@@ -273,7 +276,7 @@ namespace MeshCollision
         foreach (var ex in examplesPoints)
         {
           var res = false;
-          foreach (var line in ConcaveHull.Hull.hull_concave_edges)
+          foreach (var line in hull)
           {
             var p0X = (int) line.nodes[0].x;
             var p0Y = (int) line.nodes[0].y;
@@ -363,17 +366,6 @@ namespace MeshCollision
       }
 
       return inside;
-    }
-
-    private void UnityConcaveHull(HashSet<Point> points, Graphics g)
-    {
-      ConcaveHull.Init.generateHull(points.ToList());
-      
-      foreach (var line in ConcaveHull.Hull.hull_concave_edges)
-      {
-        g.DrawLine(Pens.Red, (float)line.nodes[0].x, (float)line.nodes[0].y,
-          (float)line.nodes[1].x, (float)line.nodes[1].y);
-      }
     }
 
     private void DrawPoints(Brush brush, IEnumerable<Point> points, int size, Graphics g)

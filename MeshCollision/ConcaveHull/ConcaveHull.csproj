@@ -44,7 +44,6 @@
     <Compile Include="GrahamScan.cs" />
     <Compile Include="Hull.cs" />
     <Compile Include="HullFunctions.cs" />
-    <Compile Include="Init.cs" />
     <Compile Include="Line.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
