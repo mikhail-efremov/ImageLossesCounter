@@ -58,7 +58,7 @@
   <ItemGroup>
     <Compile Include="Calculations\AngleCalculations.cs" />
     <Compile Include="Calculations\PointsCalculations.cs" />
-    <Compile Include="Clustering\QtCluctering.cs" />
+    <Compile Include="PointExt.cs" />
     <Compile Include="Clustering\SimpleClustering.cs" />
     <Compile Include="ColorSpaces\HslColorSpace.cs" />
     <Compile Include="ColorSpaces\IColorSpace.cs" />

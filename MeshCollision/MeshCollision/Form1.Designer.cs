@@ -52,6 +52,8 @@ namespace MeshCollision
       this.panel1 = new System.Windows.Forms.Panel();
       this.paintModeCheckBox = new System.Windows.Forms.CheckBox();
       this.selectionRangeSlider1 = new MeshCollision.Controlls.SelectionRangeSlider();
+      this.label2 = new System.Windows.Forms.Label();
+      this.clusterDistanceTextBox = new System.Windows.Forms.TextBox();
       ((System.ComponentModel.ISupportInitialize)(this.maxPictureBox)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.minPictureBox)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.hslCointeinerPictureBox)).BeginInit();
@@ -266,6 +268,8 @@ namespace MeshCollision
       this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.panel1.BackColor = System.Drawing.SystemColors.Window;
+      this.panel1.Controls.Add(this.clusterDistanceTextBox);
+      this.panel1.Controls.Add(this.label2);
       this.panel1.Controls.Add(this.paintModeCheckBox);
       this.panel1.Controls.Add(this.buttonLoadImage);
       this.panel1.Controls.Add(this.executionInformation);
@@ -308,6 +312,27 @@ namespace MeshCollision
       this.selectionRangeSlider1.Name = "selectionRangeSlider1";
       this.selectionRangeSlider1.Size = new System.Drawing.Size(1052, 20);
       this.selectionRangeSlider1.TabIndex = 16;
+      // 
+      // label2
+      // 
+      this.label2.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.label2.AutoSize = true;
+      this.label2.Location = new System.Drawing.Point(13, 164);
+      this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      this.label2.Name = "label2";
+      this.label2.Size = new System.Drawing.Size(92, 20);
+      this.label2.TabIndex = 47;
+      this.label2.Text = "Cluster dist:";
+      // 
+      // clusterDistanceTextBox
+      // 
+      this.clusterDistanceTextBox.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.clusterDistanceTextBox.Location = new System.Drawing.Point(103, 161);
+      this.clusterDistanceTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+      this.clusterDistanceTextBox.Name = "clusterDistanceTextBox";
+      this.clusterDistanceTextBox.Size = new System.Drawing.Size(116, 26);
+      this.clusterDistanceTextBox.TabIndex = 48;
+      this.clusterDistanceTextBox.Text = "10";
       // 
       // Form1
       // 
@@ -357,6 +382,8 @@ namespace MeshCollision
     private System.Windows.Forms.Label executionInformation;
     private System.Windows.Forms.Panel panel1;
     private System.Windows.Forms.CheckBox paintModeCheckBox;
+    private System.Windows.Forms.TextBox clusterDistanceTextBox;
+    private System.Windows.Forms.Label label2;
   }
 }
 

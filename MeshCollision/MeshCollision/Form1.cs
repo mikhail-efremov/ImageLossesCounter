@@ -118,12 +118,14 @@ namespace MeshCollision
           return;
         }
         if (sli.SelectedMax != mMax)
-          if (sli.SelectedMax > mMin) {
+          if (sli.SelectedMax > mMin)
+          {
             mMin = sli.SelectedMax + 1;
             continue;
           }
         if (sli.SelectedMin != 0)
-          if (sli.SelectedMin < mMax) {
+          if (sli.SelectedMin < mMax)
+          {
             mMax = sli.SelectedMin - 1;
           }
       }
@@ -221,17 +223,17 @@ namespace MeshCollision
       var analizedResult = await imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement, sens);
 
       executionInformation.Text = @"Claster analyth in progress 30%";
-      var clasters = await SimpleClustering.GetCluesters(analizedResult, distance:3);//need to documented
+      var clusters = await SimpleClustering.GetCluesters(analizedResult, double.Parse(clusterDistanceTextBox.Text));
       
       executionInformation.Text = @"Find hulls orientation and draw 60%";
-      DrawHallAndCalculateOrientation(clasters, pointsInClasterThreshold:15);
+      DrawHallAndCalculateOrientation(clusters, 15, Pens.DarkRed, false);
       executionInformation.Text = @"Done 100%";
 
       analythPictureBox.Invalidate();
       examplePictureBox.Invalidate();
     }
 
-    private void DrawHallAndCalculateOrientation(HashSet<HashSet<Point>> clasters, int pointsInClasterThreshold)
+    private void DrawHallAndCalculateOrientation(HashSet<HashSet<Point>> clasters, int pointsInClasterThreshold, Pen linesPen, bool showAngles)
     {
       examplePictureBox.Image = _clearExample;
 
@@ -249,21 +251,24 @@ namespace MeshCollision
         if (points.Count < pointsInClasterThreshold)
           continue;
 
-        var extremum = PointsCalculations.GetExtemumPoints(points);
-        DrawPoints(Brushes.Blue, extremum, 1, g);
+//        var extremum = PointsCalculations.GetExtemumPoints(points);
+//        DrawPoints(Brushes.Blue, extremum, 1, g);
 
-        UnityConcaveHull(extremum, g);
+        UnityConcaveHull(points, g);//extremum, g);
 
         foreach (var line in ConcaveHull.Hull.hull_concave_edges)
         {
-          g.DrawLine(Pens.Red, (float) line.nodes[0].x, (float) line.nodes[0].y,
+          g.DrawLine(linesPen, (float) line.nodes[0].x, (float) line.nodes[0].y,
             (float) line.nodes[1].x, (float) line.nodes[1].y);
         }
 
-        var orientation = AngleCalculations.CalculatePointsOrientation(extremum.ToList());
+        var orientation = AngleCalculations.CalculatePointsOrientation(points.ToList());//extremum.ToList());
 
-        g.DrawLine(Pens.Black, orientation.FirstPoint, orientation.SecondPoint);
-        g.DrawString(orientation.Angles, DefaultFont, Brushes.Black, orientation.AnglesPosition);
+        if (showAngles)
+        {
+          g.DrawLine(Pens.Black, orientation.FirstPoint, orientation.SecondPoint);
+          g.DrawString(orientation.Angles, DefaultFont, Brushes.Black, orientation.AnglesPosition);
+        }
 
         foreach (var ex in examplesPoints)
         {
