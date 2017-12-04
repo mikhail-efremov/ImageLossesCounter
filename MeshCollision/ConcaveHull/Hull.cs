@@ -8,11 +8,6 @@ namespace ConcaveHull
   public static class Hull
   {
     private static int _scaleFactor;
-    private static readonly List<Node> _unusedNodes = new List<Node>();
-    private static readonly List<Line> _hullEdges = new List<Line>();
-    private static List<Line> _hullConcaveEdges = new List<Line>();
-
-    private static readonly List<Node> _list = new List<Node>(); //i dont know why this need
 
     public static List<Line> Generate(List<Point> dotList, double concavity /*-1..1*/,
       int scaleFactor, bool isSquareGrid)
@@ -22,39 +17,39 @@ namespace ConcaveHull
 
     private static List<Line> SetConcaveHull(IReadOnlyList<Point> dotList, decimal concavity, int scaleFactor, bool isSquareGrid)
     {
-      /* Run setConvHull before! 
-       * Concavity is a value used to restrict the concave angles 
+       /* Concavity is a value used to restrict the concave angles 
        * it can go from -1 to 1 (it wont crash if you go further)
        * */
-      TestModel(dotList);
-      SetConvHull(_list);
+
+      var nodes = CunstructNodes(dotList);
+      var convecsHullEdges = SetConvHull(nodes, out var unusedNodes);
 
       _scaleFactor = scaleFactor;
-      _hullConcaveEdges = new List<Line>(_hullEdges.OrderByDescending(a => Line.getLength(a.nodes[0], a.nodes[1])).ToList());
+      var hullConcaveEdges = new List<Line>(convecsHullEdges.OrderByDescending(a => Line.getLength(a.nodes[0], a.nodes[1])).ToList());
       bool listIsModified;
       do
       {
         listIsModified = false;
         var count = 0;
-        var listOriginalSize = _hullConcaveEdges.Count;
+        var listOriginalSize = hullConcaveEdges.Count;
         while (count < listOriginalSize)
         {
-          var selectedEdge = _hullConcaveEdges[0];
-          _hullConcaveEdges.RemoveAt(0);
+          var selectedEdge = hullConcaveEdges[0];
+          hullConcaveEdges.RemoveAt(0);
           var aux = new List<Line>();
           if (!selectedEdge.isChecked)
           {
-            var nearbyPoints = HullFunctions.getNearbyPoints(selectedEdge, _unusedNodes, _scaleFactor);
-            aux.AddRange(HullFunctions.setConcave(selectedEdge, nearbyPoints, _hullConcaveEdges, concavity, isSquareGrid));
+            var nearbyPoints = HullFunctions.getNearbyPoints(selectedEdge, unusedNodes, _scaleFactor);
+            aux.AddRange(HullFunctions.setConcave(selectedEdge, nearbyPoints, hullConcaveEdges, concavity, isSquareGrid));
             listIsModified = listIsModified || aux.Count > 1;
 
             if (aux.Count > 1)
             {
               foreach (var node in aux[0].nodes)
               {
-                if (_unusedNodes.Find(a => a.id == node.id) != null)
+                if (unusedNodes.Find(a => a.id == node.id) != null)
                 {
-                  _unusedNodes.Remove(_unusedNodes.First(a => a.id == node.id));
+                  unusedNodes.Remove(unusedNodes.First(a => a.id == node.id));
                 }
               }
             }
@@ -67,15 +62,13 @@ namespace ConcaveHull
           {
             aux.Add(selectedEdge);
           }
-          _hullConcaveEdges.AddRange(aux);
+          hullConcaveEdges.AddRange(aux);
           count++;
         }
-        _hullConcaveEdges = _hullConcaveEdges.OrderByDescending(a => Line.getLength(a.nodes[0], a.nodes[1])).ToList();
+        hullConcaveEdges = hullConcaveEdges.OrderByDescending(a => Line.getLength(a.nodes[0], a.nodes[1])).ToList();
       } while (listIsModified);
 
-      _list.Clear();
-
-      return _hullConcaveEdges;
+      return hullConcaveEdges;
     }
 
     private static IEnumerable<Line> GetHull(List<Node> nodes)
@@ -92,44 +85,46 @@ namespace ConcaveHull
       return exitLines;
     }
 
-    private static void SetConvHull(List<Node> nodes)
+    private static List<Line> SetConvHull(List<Node> nodes, out List<Node> unusedNodes)
     {
-      _unusedNodes.Clear();
-      _hullEdges.Clear();
-      _hullConcaveEdges.Clear();
-
-      _unusedNodes.AddRange(nodes);
-      _hullEdges.AddRange(GetHull(nodes));
-      foreach (var line in _hullEdges)
+      var hullEdges = new List<Line>();
+      unusedNodes = new List<Node>();
+      
+      unusedNodes.AddRange(nodes);
+      hullEdges.AddRange(GetHull(nodes));
+      foreach (var line in hullEdges)
       {
         foreach (var node in line.nodes)
         {
-          if (_unusedNodes.Find(a => a.id == node.id) != null)
+          if (unusedNodes.Find(a => a.id == node.id) != null)
           {
-            _unusedNodes.Remove(_unusedNodes.First(a => a.id == node.id));
+            unusedNodes.Remove(unusedNodes.First(a => a.id == node.id));
           }
         }
       }
+      return hullEdges;
     }
 
-    private static void TestModel(IReadOnlyList<Point> points)
+    private static List<Node> CunstructNodes(IReadOnlyList<Point> points)
     {
-      //Used only for the demo
+      var nodes = new List<Node>();
+     
       for (var x = 0; x < points.Count; x++)
       {
-        _list.Add(new Node(points[x].X, points[x].Y, x));
+        nodes.Add(new Node(points[x].X, points[x].Y, x));
       }
       //Delete repeated nodes
-      for (var pivotPosition = 0; pivotPosition < _list.Count; pivotPosition++)
+      for (var pivotPosition = 0; pivotPosition < nodes.Count; pivotPosition++)
       {
-        for (var position = 0; position < _list.Count; position++)
-          if (_list[pivotPosition].x == _list[position].x && _list[pivotPosition].y == _list[position].y
-              && _list[pivotPosition].id != _list[position].id)
+        for (var position = 0; position < nodes.Count; position++)
+          if (nodes[pivotPosition].x == nodes[position].x && nodes[pivotPosition].y == nodes[position].y
+              && nodes[pivotPosition].id != nodes[position].id)
           {
-            _list.RemoveAt(position);
+            nodes.RemoveAt(position);
             position--;
           }
       }
+      return nodes;
     }
   }
 }

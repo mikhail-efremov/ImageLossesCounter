@@ -22,17 +22,17 @@ namespace MeshCollision.Calculations
       var secondPoint = new Point();
       var distance = 0;
 
-      foreach (var targetP in points)
+      foreach (var firstP in points)
       {
-        for (var hullIndex = 0; hullIndex < points.Count; hullIndex++)
+        foreach (var secondP in points)
         {
-          var distBetweetPoints = targetP.DistanceSquared(points[hullIndex]);
+          var distBetweetPoints = firstP.DistanceSquared(secondP);
 
           if (distBetweetPoints > distance)
           {
             distance = distBetweetPoints;
-            firstPoint = targetP;
-            secondPoint = points[hullIndex];
+            firstPoint = firstP;
+            secondPoint = secondP;
           }
         }
       }
@@ -50,18 +50,7 @@ namespace MeshCollision.Calculations
     }
 
     private static double AngleBetweenLineAndHorisontalAxis(Point p1, Point p2)
-    {/*
-      var p3 = new Point(0, 0);
-      var p4 = new Point(100, 0);
-
-      var angle1 = (float)Math.Atan2(p2.Y - p1.Y, p1.X - p2.X);
-      var angle2 = (float)Math.Atan2(p4.Y - p3.Y, p3.X - p4.X);
-      var calculatedAngle = (angle1 - angle2) * (float)(180.0 / Math.PI);
-      if (calculatedAngle < 0)
-        calculatedAngle += 360;
-
-      return calculatedAngle - 180;//
-      */
+    {
       var deltaY = p2.Y - p1.Y;
       var deltaX = p2.X - p1.X;
 

@@ -226,7 +226,7 @@ namespace MeshCollision
       var clusters = await SimpleClustering.GetCluesters(analizedResult, double.Parse(clusterDistanceTextBox.Text));
       
       executionInformation.Text = @"Find hulls orientation and draw 60%";
-      DrawHallAndCalculateOrientation(clusters, 15, Pens.DarkRed, false);
+      DrawHallAndCalculateOrientation(clusters, 15, Pens.DarkRed, true);
       executionInformation.Text = @"Done 100%";
 
       analythPictureBox.Invalidate();
@@ -252,11 +252,7 @@ namespace MeshCollision
           continue;
 
         //        var extremum = PointsCalculations.GetExtemumPoints(points);
-
-        //https://github.com/masphei/ConvexHull
-        //http://www.it.uu.se/edu/course/homepage/projektTDB/ht13/project10/Project-10-report.pdf
-        //https://github.com/Liagson/ConcaveHullGenerator
-        //https://ru.wikipedia.org/wiki/Алгоритм_Грэхема
+        
         var hull = ConcaveHull.Hull.Generate(points.ToList(), double.Parse(concaveTextBox.Text), 1, true);
 
         foreach (var line in hull)
@@ -265,7 +261,7 @@ namespace MeshCollision
             (float) line.nodes[1].x, (float) line.nodes[1].y);
         }
 
-        var orientation = AngleCalculations.CalculatePointsOrientation(points.ToList());//extremum.ToList());
+        var orientation = AngleCalculations.CalculatePointsOrientation(points.ToList());
 
         if (showAngles)
         {

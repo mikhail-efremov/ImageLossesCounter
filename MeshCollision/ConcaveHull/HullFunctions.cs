@@ -232,23 +232,20 @@ namespace ConcaveHull
        * Be carefull: if it's too small it will return very little points (or non!), 
        * if it's too big it will add points that will not be used and will consume time
        * */
-      List<Node> nearbyPoints = new List<Node>();
-      int[] boundary;
-      int tries = 0;
-      int node_x_rel_pos;
-      int node_y_rel_pos;
+      var nearbyPoints = new List<Node>();
+      var tries = 0;
 
       while (tries < 2 && nearbyPoints.Count == 0)
       {
-        boundary = getBoundary(line, scaleFactor);
-        foreach (Node node in nodeList)
+        var boundary = getBoundary(line, scaleFactor);
+        foreach (var node in nodeList)
         {
           //Not part of the line
           if (!(node.x == line.nodes[0].x && node.y == line.nodes[0].y ||
               node.x == line.nodes[1].x && node.y == line.nodes[1].y))
           {
-            node_x_rel_pos = (int)Math.Floor(node.x / scaleFactor);
-            node_y_rel_pos = (int)Math.Floor(node.y / scaleFactor);
+            var node_x_rel_pos = (int)Math.Floor(node.x / scaleFactor);
+            var node_y_rel_pos = (int)Math.Floor(node.y / scaleFactor);
             //Inside the boundary
             if (node_x_rel_pos >= boundary[0] && node_x_rel_pos <= boundary[2] &&
                 node_y_rel_pos >= boundary[1] && node_y_rel_pos <= boundary[3])
