@@ -27,11 +27,12 @@ namespace MeshCollision
       var perfs = Perfs.Where(p => p.Name == name).ToArray();
       if(perfs.Length == 0)
         return;
-      var perf = perfs.First();
-
-      perf.Stopwatch.Stop();
-      Perfs.Remove(perf);
-      WriteStats(perf);
+      foreach (var perf in perfs)
+      {
+        perf.Stopwatch.Stop();
+        Perfs.Remove(perf);
+        WriteStats(perf);
+      }
     }
 
     private static void WriteStats(Perf perf)

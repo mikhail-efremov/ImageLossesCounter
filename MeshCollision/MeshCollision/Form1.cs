@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 using MeshCollision.Calculations;
@@ -212,6 +214,22 @@ namespace MeshCollision
       AnalizeImageAsync();
     }
 
+    private void buttonVisualDraw_Click(object sender, EventArgs e)
+    {
+      analythPictureBox.Image = new Bitmap(_clearImage);
+      var imageAnalyzer = new ImageAnalyzer(_clearImage);
+
+      var sens = byte.Parse(textBoxColorSens.Text);
+
+      executionInformation.Text = @"Points analize in progress 10%";
+      var analizedResult = imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement, sens).Result;
+
+      executionInformation.Text = @"Claster analyth in progress 30%";
+      var clusters = SimpleClustering.GetCluesters(analizedResult, double.Parse(clusterDistanceTextBox.Text));
+
+      DrawVisualImage(clusters.Result, 15);
+    }
+
     private async void AnalizeImageAsync()
     {
       analythPictureBox.Image = new Bitmap(_clearImage);
@@ -233,7 +251,8 @@ namespace MeshCollision
       examplePictureBox.Invalidate();
     }
 
-    private void DrawHallAndCalculateOrientation(HashSet<HashSet<Point>> clasters, int pointsInClasterThreshold, Pen linesPen, bool showAngles)
+    private void DrawHallAndCalculateOrientation(HashSet<HashSet<Point>> clasters, int pointsInClasterThreshold,
+      Pen linesPen, bool showAngles)
     {
       examplePictureBox.Image = _clearExample;
 
@@ -251,8 +270,6 @@ namespace MeshCollision
         if (points.Count < pointsInClasterThreshold)
           continue;
 
-        //        var extremum = PointsCalculations.GetExtemumPoints(points);
-        
         var hull = ConcaveHull.Hull.Generate(points.ToList(), double.Parse(concaveTextBox.Text), 1, true);
 
         foreach (var line in hull)
@@ -261,7 +278,10 @@ namespace MeshCollision
             (float) line.nodes[1].x, (float) line.nodes[1].y);
         }
 
-        var orientation = AngleCalculations.CalculatePointsOrientation(points.ToList());
+        var maxDistance = GetMaxLine(points, out var maxFirstPoint, out var maxLastPoint);
+        var midDistance = GetMiddleLine(points);
+        var orientation =
+          AngleCalculations.CalculatePointsOrientation(points.ToList(), maxFirstPoint, maxLastPoint, maxDistance);
 
         if (showAngles)
         {
@@ -269,26 +289,11 @@ namespace MeshCollision
           g.DrawString(orientation.Angles, DefaultFont, Brushes.Black, orientation.AnglesPosition);
         }
 
+        var extremum = PointsCalculations.GetExtemumPoints(points);
+        var extremumHull = ConcaveHull.Hull.Generate(extremum.ToList(), double.Parse(concaveTextBox.Text), 1, true);
         foreach (var ex in examplesPoints)
         {
-          var res = false;
-          foreach (var line in hull)
-          {
-            var p0X = (int) line.nodes[0].x;
-            var p0Y = (int) line.nodes[0].y;
-            var p1X = (int) line.nodes[1].x;
-            var p1Y = (int) line.nodes[1].y;
-
-            var p2X = ex.X;
-            var p2Y = 0;
-            var p3X = ex.X;
-            var p3Y = ex.Y;
-            
-            if (Intersects(p0X, p0Y, p1X, p1Y, p2X, p2Y, p3X, p3Y))
-            {
-              res = !res;
-            }
-          }
+          var res = PointInRegion(ex, extremumHull);
 
           if (res)
           {
@@ -296,10 +301,20 @@ namespace MeshCollision
           }
           else
           {
-            if(!paintModeCheckBox.Checked)
+            if (!paintModeCheckBox.Checked)
               c.FillRectangle(Brushes.Black, ex.X, ex.Y, 1, 1);
           }
         }
+
+        continue;
+        StatsWriter.Write(new StatsWriter.Stat
+          {
+            Angle = orientation.Angles,
+            Max = Math.Round(maxDistance, 2).ToString(CultureInfo.InvariantCulture),
+            Mid = Math.Round(midDistance, 2).ToString(CultureInfo.InvariantCulture),
+            S = points.Count.ToString()
+          }
+        );
       }
 
       foreach (var h in hitPoints)
@@ -314,54 +329,166 @@ namespace MeshCollision
       exampleToAnalythLabel.Text = hitPoints.Count + " из " + sum +". " + persent + "%";
     }
 
-    //https://stackoverflow.com/questions/9043805/test-if-two-lines-intersect-javascript-function
-    private static bool Intersects(int a, int b, int c, int d, int p, int q, int r, int s)
+    private void DrawVisualImage(HashSet<HashSet<Point>> clasters, int pointsInClasterThreshold)
     {
-      var det = (c - a) * (s - q) - (r - p) * (d - b);
+      cuttingPictureBox.Image =
+        new Bitmap(analythPictureBox.Width, analythPictureBox.Height, PixelFormat.Format24bppRgb);
+      var analBitmap = new Bitmap(analythPictureBox.Image);
+      using (var grp = Graphics.FromImage(cuttingPictureBox.Image))
+      {
+        grp.FillRectangle(
+          Brushes.White, 0, 0, analythPictureBox.Width, analythPictureBox.Height);
+      }
+
+      cuttingPictureBox.Location = new Point(cuttingPictureBox.Size.Width + 380, analythPictureBox.Location.Y);
+
+      var allPoints = MeshCollideObject.GetPoints(new Bitmap(analythPictureBox.Image), 1);
+      var hits = new HashSet<Point>();
+
+      foreach (var points in clasters)
+      {
+        if (points.Count < pointsInClasterThreshold)
+          continue;
+
+        var hulls = ConcaveHull.Hull.Generate(points.ToList(), double.Parse(concaveTextBox.Text), 1, true);
+
+        foreach (var ex in allPoints)
+        {
+          var res = PointInRegion(ex, hulls);
+
+          if (res)
+          {
+            hits.Add(ex);
+          }
+        }
+      }
+      using (var grp = Graphics.FromImage(cuttingPictureBox.Image))
+      {
+        foreach (var pt in hits)
+        {
+          grp.FillRectangle(new SolidBrush(analBitmap.GetPixel(pt.X, pt.Y)), pt.X, pt.Y, 1, 1);
+        }
+      }
+
+      cuttingPictureBox.Invalidate();
+    }
+
+    private bool PointInRegion(Point point, IEnumerable<ConcaveHull.Line> hull)
+    {
+      var res = false;
+      var hitidLines = new List<ConcaveHull.Line>();
+
+      foreach (var line in hull)
+      {
+        var p0X = Convert.ToInt32(line.nodes[0].x);
+        var p0Y = Convert.ToInt32(line.nodes[0].y);
+        var p1X = Convert.ToInt32(line.nodes[1].x);
+        var p1Y = Convert.ToInt32(line.nodes[1].y);
+
+        var p2X = 0;
+        var p2Y = 0;
+        var p3X = point.X;
+        var p3Y = point.Y;
+
+        if (Intersects(p0X, p0Y, p1X, p1Y, p2X, p2Y, p3X, p3Y))
+        {
+          hitidLines.Add(line);
+          res = !res;
+        }
+      }
+
+      foreach (var line in hull)
+      {
+        var p0X = Convert.ToInt32(line.nodes[0].x);
+        var p0Y = Convert.ToInt32(line.nodes[0].y);
+        var p1X = Convert.ToInt32(line.nodes[1].x);
+        var p1Y = Convert.ToInt32(line.nodes[1].y);
+
+        var p2X = 1;
+        var p2Y = 1;
+        var p3X = point.X;
+        var p3Y = point.Y;
+
+        if (Intersects(p0X, p0Y, p1X, p1Y, p2X, p2Y, p3X, p3Y))
+        {
+          res = !res;
+        }
+      }
+      if (res) return false;
+
+      var ulRes = false;
+      foreach (var line in hull)
+      {
+        var p0X = Convert.ToInt32(line.nodes[0].x);
+        var p0Y = Convert.ToInt32(line.nodes[0].y);
+        var p1X = Convert.ToInt32(line.nodes[1].x);
+        var p1Y = Convert.ToInt32(line.nodes[1].y);
+
+        var p2X = 0;
+        var p2Y = 0;
+        var p3X = point.X;
+        var p3Y = point.Y;
+
+        if (Intersects(p0X, p0Y, p1X, p1Y, p2X, p2Y, p3X, p3Y))
+        {
+          ulRes = !ulRes;
+        }
+      }
+
+      return ulRes;
+    }
+
+    private double GetMaxLine(IReadOnlyCollection<Point> points, out Point firstPoint, out Point lastPoint)
+    {
+      firstPoint = new Point();
+      lastPoint = new Point();
+      var distance = 0;
+
+      foreach (var firstP in points)
+      {
+        foreach (var secondP in points)
+        {
+          var distBetweetPoints = firstP.DistanceSquared(secondP);
+
+          if (distBetweetPoints > distance)
+          {
+            distance = distBetweetPoints;
+            firstPoint = firstP;
+            lastPoint = secondP;
+          }
+        }
+      }
+      return Math.Sqrt(distance);
+    }
+
+    private double GetMiddleLine(IReadOnlyCollection<Point> points)
+    {
+      var distance = 0d;
+      var count = 0;
+
+      foreach (var firstP in points)
+      {
+        foreach (var secondP in points)
+        {
+          distance += firstP.DistanceSquared(secondP);
+          count++;
+        }
+      }
+      return Math.Sqrt(distance/count);
+    }
+
+    //https://stackoverflow.com/questions/9043805/test-if-two-lines-intersect-javascript-function
+    private static bool Intersects(int p01x, int p01y, int p02x, int p02y, int p03x, int p03y, int p04x, int p04y)
+    {
+      var det = (p02x - p01x) * (p04y - p03y) - (p04x - p03x) * (p02y - p01y);
       if (det == 0)//parallel or equal
       {
         return false;
       }
 
-      var lambda = ((s - q) * (r - a) + (p - r) * (s - b)) / (float)det;
-      var gamma = ((b - d) * (r - a) + (c - a) * (s - b)) / (float)det;
+      var lambda = (float)((p04y - p03y) * (p04x - p01x) + (p03x - p04x) * (p04y - p01y)) / det;
+      var gamma = (float)((p01y - p02y) * (p04x - p01x) + (p02x - p01x) * (p04y - p01y)) / det;
       return (0 <= lambda && lambda <= 1) && (0 <= gamma && gamma <= 1);
-    }
-
-    public bool IsPointInPolygon(Point p, Point[] polygon, Graphics g)
-    {
-      double minX = polygon[0].X;
-      double maxX = polygon[0].X;
-      double minY = polygon[0].Y;
-      double maxY = polygon[0].Y;
-      for (var i = 1; i < polygon.Length; i++)
-      {
-        var q = polygon[i];
-        minX = Math.Min(q.X, minX);
-        maxX = Math.Max(q.X, maxX);
-        minY = Math.Min(q.Y, minY);
-        maxY = Math.Max(q.Y, maxY);
-      }
-
-      if (p.X < minX || p.X > maxX || p.Y < minY || p.Y > maxY)
-      {
-        return false;
-      }
-
-      // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
-      bool inside = false;
-      for (int i = 0, j = polygon.Length - 1; i < polygon.Length; j = i++)
-      {
-        g.DrawLine(Pens.Red, p.X, p.Y, p.X, p.Y);
-
-        if ((polygon[i].Y > p.Y) != (polygon[j].Y > p.Y) &&
-            p.X < (polygon[j].X - polygon[i].X) * (p.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) + polygon[i].X)
-        {
-          inside = !inside;
-        }
-      }
-
-      return inside;
     }
 
     private void DrawPoints(Brush brush, IEnumerable<Point> points, int size, Graphics g)

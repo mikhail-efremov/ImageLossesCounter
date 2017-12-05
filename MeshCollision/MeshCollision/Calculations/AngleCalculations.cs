@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
-using MeshCollision.Clustering;
 
 namespace MeshCollision.Calculations
 {
@@ -16,36 +15,18 @@ namespace MeshCollision.Calculations
 
   public class AngleCalculations
   {
-    public static PointsOrientation CalculatePointsOrientation(List<Point> points)
+    public static PointsOrientation CalculatePointsOrientation(List<Point> points,
+      Point firstPoint, Point lastPoint, double distance)
     {
-      var firstPoint = new Point();
-      var secondPoint = new Point();
-      var distance = 0;
-
-      foreach (var firstP in points)
-      {
-        foreach (var secondP in points)
-        {
-          var distBetweetPoints = firstP.DistanceSquared(secondP);
-
-          if (distBetweetPoints > distance)
-          {
-            distance = distBetweetPoints;
-            firstPoint = firstP;
-            secondPoint = secondP;
-          }
-        }
-      }
-
-      var angle = AngleBetweenLineAndHorisontalAxis(firstPoint, secondPoint);
+      var angle = AngleBetweenLineAndHorisontalAxis(firstPoint, lastPoint);
       
       return new PointsOrientation
       {
         Angles = Math.Round(angle).ToString(CultureInfo.InvariantCulture) + "°",
-        AnglesPosition = new Point((firstPoint.X + secondPoint.X) / 2,
-          (firstPoint.Y + secondPoint.Y) / 2),
+        AnglesPosition = new Point((firstPoint.X + lastPoint.X) / 2,
+          (firstPoint.Y + lastPoint.Y) / 2),
         FirstPoint = firstPoint,
-        SecondPoint = secondPoint
+        SecondPoint = lastPoint
       };
     }
 

@@ -145,13 +145,49 @@ namespace MeshCollision.Controlls
 				lines.Add(line);
 			}
       //meybe need to remove dublicats
-
       
-
 			return lines;
 		}
 
-		public CustomControl[] GetControlls() {
+	  public static HashSet<Point> GetPoints(Bitmap bitmap, float indent)
+	  {
+	    var weightIndent = indent;
+	    var heightIndent = indent;
+
+	    var widthLinesCount = bitmap.Width / weightIndent;
+	    var heightLinesCount = bitmap.Height / heightIndent;
+
+	    var points = new List<Point>();
+
+	    //horizontal
+	    for (var index = 0; index < heightLinesCount; index++)
+	    {
+	      var coordinate = (int)Math.Round(index * heightIndent);
+
+	      var xpt = new Point(0, coordinate);
+	      var ypt = new Point(bitmap.Width, coordinate);
+
+	      var line = new Line(xpt, ypt, bitmap.Width);
+	      points.AddRange(line.Points);
+	    }
+
+	    //vertical
+	    for (var index = 0; index < widthLinesCount; index++)
+	    {
+	      var coordinate = (int)Math.Round(index * weightIndent);
+
+	      var xpt = new Point(coordinate, 0);
+	      var ypt = new Point(coordinate, bitmap.Height);
+
+	      var line = new Line(xpt, ypt, bitmap.Height);
+	      points.AddRange(line.Points);
+	    }
+	    //meybe need to remove dublicats
+
+	    return new HashSet<Point>(points);
+	  }
+
+    public CustomControl[] GetControlls() {
 		  var controlls = new List<CustomControl>
 		  {
 		    new CustomControl("Hits:", hitsLabel),
