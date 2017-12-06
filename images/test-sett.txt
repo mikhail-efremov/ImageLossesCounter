@@ -1,0 +1,1 @@
+{"ColorMin":92,"ColorMax":122,"L1000":652,"S1000":734,"ColorSens":96,"ClusterDistance":9.0,"Concavity":0.6,"LineWidth":3}

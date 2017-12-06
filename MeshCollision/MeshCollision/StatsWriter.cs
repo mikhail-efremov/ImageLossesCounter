@@ -16,7 +16,7 @@ namespace MeshCollision
     {
       WriteImpl(Environment.NewLine);
 
-      var createText = ++id + "\t" + stat.S + "\t" + stat.Mid + "\t" + stat.Max + "\t" + stat.Angle;
+      var createText = ++id + "\t" + stat.Spix + "\t" + stat.Smm + "\t" + stat.Mid + "\t" + stat.Max + "\t" + stat.Angle;
       WriteImpl(createText);
     }
 
@@ -27,7 +27,8 @@ namespace MeshCollision
 
     internal class Stat
     {
-      public string S;
+      public string Spix;
+      public string Smm;
       public string Mid;
       public string Max;
       public string Angle;

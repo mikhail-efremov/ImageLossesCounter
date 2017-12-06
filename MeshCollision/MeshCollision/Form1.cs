@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using MeshCollision.Calculations;
 using MeshCollision.Clustering;
@@ -23,6 +24,36 @@ namespace MeshCollision
     private readonly List<Point> _exampleImagePoints = new List<Point>();
 
     private bool _inDrawProcess;
+
+    private byte ColorSens
+    {
+      get => byte.Parse(textBoxColorSens.Text);
+      set => textBoxColorSens.Text = value.ToString();
+    }
+
+    private double ClusterDistance
+    {
+      get => double.Parse(clusterDistanceTextBox.Text);
+      set => clusterDistanceTextBox.Text = value.ToString(CultureInfo.InvariantCulture);
+    }
+
+    private double Concavity
+    {
+      get => double.Parse(concaveTextBox.Text.Replace('.', ','));
+      set => concaveTextBox.Text = value.ToString(CultureInfo.InvariantCulture);
+    }
+
+    private int LineWidth
+    {
+      get => int.Parse(lineWidthTextBox.Text);
+      set => lineWidthTextBox.Text = value.ToString();
+    }
+
+    private int EtalonLineWidth
+    {
+      get => int.Parse(etalonLineWithTextBox.Text);
+      set => etalonLineWithTextBox.Text = value.ToString();
+    }
 
     public Form1()
     {
@@ -57,12 +88,25 @@ namespace MeshCollision
       analythPictureBox.Image = image;
       
       var exampleImage = new Bitmap(fileName);
-      examplePictureBox.Size = exampleImage.Size;
+      examplePictureBox.Size = image.Size;
       examplePictureBox.Image = exampleImage;
       _clearExample = image.Clone(cloneRect, format);
         
       analythPictureBox.Location = new Point(analythPictureBox.Size.Width + IMAGES_OFFSET, examplePictureBox.Location.Y);
+      
+      cuttingPictureBox.Image =
+        new Bitmap(analythPictureBox.Width, analythPictureBox.Height, PixelFormat.Format24bppRgb);
 
+      cuttingPictureBox.Size = image.Size;
+      using (var grp = Graphics.FromImage(cuttingPictureBox.Image))
+      {
+        grp.FillRectangle(
+          Brushes.White, 0, 0, analythPictureBox.Width, analythPictureBox.Height);
+      }
+      
+      cuttingPictureBox.Location = new Point(cuttingPictureBox.Size.Width * 2 + IMAGES_OFFSET, analythPictureBox.Location.Y);
+
+      SuperSliderAddeder(selectionRangeSlider1);
       return true;
     }
 
@@ -199,11 +243,6 @@ namespace MeshCollision
       pictureBox.Image = newPic;
     }
 
-    private void button1_Click_1(object sender, EventArgs e)
-    {
-      SuperSliderAddeder(selectionRangeSlider1);
-    }
-
     private void buttonDraw_Click(object sender, EventArgs e)
     {
       using (var g = Graphics.FromImage(analythPictureBox.Image))
@@ -214,86 +253,88 @@ namespace MeshCollision
       AnalizeImageAsync();
     }
 
-    private void buttonVisualDraw_Click(object sender, EventArgs e)
+    private async Task<HashSet<HashSet<Point>>> GetCluesters()
     {
       analythPictureBox.Image = new Bitmap(_clearImage);
       var imageAnalyzer = new ImageAnalyzer(_clearImage);
-
-      var sens = byte.Parse(textBoxColorSens.Text);
-
+      
       executionInformation.Text = @"Points analize in progress 10%";
-      var analizedResult = imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement, sens).Result;
+      var analizedResult = await imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement, ColorSens);
 
       executionInformation.Text = @"Claster analyth in progress 30%";
-      var clusters = SimpleClustering.GetCluesters(analizedResult, double.Parse(clusterDistanceTextBox.Text));
 
-      DrawVisualImage(clusters.Result, 15);
+      return await SimpleClustering.GetCluesters(analizedResult, ClusterDistance);
+    }
+
+    private int _index;
+    private async void buttonVisualDraw_Click(object sender, EventArgs e)
+    {
+      var clusters = await GetCluesters();
+
+      var hits = GetVisualDrawPoits(clusters, 15);
+
+      using (var grp = Graphics.FromImage(cuttingPictureBox.Image))
+      {
+        _index++;
+        var iss = _index;
+        var rred = new Random((int)DateTime.Now.Ticks + iss - 1).Next(0, 255);
+        var gred = new Random((int)DateTime.Now.Ticks + iss).Next(0, 255);
+        var bred = new Random((int)DateTime.Now.Ticks + iss + 1).Next(0, 255);
+
+        foreach (var pt in hits)
+        {
+          grp.FillRectangle(new SolidBrush(
+            //analBitmap.GetPixel(pt.X, pt.Y)
+            Color.FromArgb(rred, gred, bred)
+          ), pt.X, pt.Y, 1, 1);
+        }
+      }
+
+      cuttingPictureBox.Invalidate();
+      executionInformation.Text = @"Done visual 100%";
     }
 
     private async void AnalizeImageAsync()
     {
-      analythPictureBox.Image = new Bitmap(_clearImage);
-      var imageAnalyzer = new ImageAnalyzer(_clearImage);
-
-      var sens = byte.Parse(textBoxColorSens.Text);
-
-      executionInformation.Text = @"Points analize in progress 10%";
-      var analizedResult = await imageAnalyzer.Analize(selectionRangeSlider1.CurrentSelectionElement, sens);
-
-      executionInformation.Text = @"Claster analyth in progress 30%";
-      var clusters = await SimpleClustering.GetCluesters(analizedResult, double.Parse(clusterDistanceTextBox.Text));
+      var clusters = await GetCluesters();
       
       executionInformation.Text = @"Find hulls orientation and draw 60%";
-      DrawHallAndCalculateOrientation(clusters, 15, Pens.DarkRed, true);
-      executionInformation.Text = @"Done 100%";
+      DrawHallAndCalculateOrientation(clusters, 15, Pens.DarkRed, LineWidth, true);
 
-      analythPictureBox.Invalidate();
-      examplePictureBox.Invalidate();
-    }
-
-    private void DrawHallAndCalculateOrientation(HashSet<HashSet<Point>> clasters, int pointsInClasterThreshold,
-      Pen linesPen, bool showAngles)
-    {
-      examplePictureBox.Image = _clearExample;
-
-      if (pointsInClasterThreshold < 2)
-        pointsInClasterThreshold = 2;
-
-      var g = Graphics.FromImage(analythPictureBox.Image);
       var c = Graphics.FromImage(examplePictureBox.Image);
 
-      var examplesPoints = new List<Point>(_exampleImagePoints);
+      var examplesPoints =  new List<Point>(_exampleImagePoints);
+      var allPoints = GetVisualDrawPoits(clusters, 15);
+      var baseCount = allPoints.Count;
+
       var hitPoints = new List<Point>();
 
-      foreach (var points in clasters)
+      foreach (var points in clusters)
       {
-        if (points.Count < pointsInClasterThreshold)
-          continue;
+        var hull = ConcaveHull.Hull.Generate(points.ToList(), Concavity, 1, true);
 
-        var hull = ConcaveHull.Hull.Generate(points.ToList(), double.Parse(concaveTextBox.Text), 1, true);
-
-        foreach (var line in hull)
+        var toDel = new List<Point>();
+        foreach (var p in examplesPoints)
         {
-          g.DrawLine(linesPen, (float) line.nodes[0].x, (float) line.nodes[0].y,
-            (float) line.nodes[1].x, (float) line.nodes[1].y);
+          var res = PointInRegion(p, hull);
+          if (res)
+          {
+            toDel.Add(p);
+          }
         }
 
-        var maxDistance = GetMaxLine(points, out var maxFirstPoint, out var maxLastPoint);
-        var midDistance = GetMiddleLine(points);
-        var orientation =
-          AngleCalculations.CalculatePointsOrientation(points.ToList(), maxFirstPoint, maxLastPoint, maxDistance);
-
-        if (showAngles)
+        foreach (var pd in toDel)
         {
-          g.DrawLine(Pens.Black, orientation.FirstPoint, orientation.SecondPoint);
-          g.DrawString(orientation.Angles, DefaultFont, Brushes.Black, orientation.AnglesPosition);
+          allPoints.Remove(pd);
         }
-
-        var extremum = PointsCalculations.GetExtemumPoints(points);
-        var extremumHull = ConcaveHull.Hull.Generate(extremum.ToList(), double.Parse(concaveTextBox.Text), 1, true);
+      }
+      
+      foreach (var points in clusters)
+      {
+        var hull = ConcaveHull.Hull.Generate(points.ToList(), Concavity, 1, true);
         foreach (var ex in examplesPoints)
         {
-          var res = PointInRegion(ex, extremumHull);
+          var res = PointInRegion(ex, hull);
 
           if (res)
           {
@@ -305,16 +346,6 @@ namespace MeshCollision
               c.FillRectangle(Brushes.Black, ex.X, ex.Y, 1, 1);
           }
         }
-
-        continue;
-        StatsWriter.Write(new StatsWriter.Stat
-          {
-            Angle = orientation.Angles,
-            Max = Math.Round(maxDistance, 2).ToString(CultureInfo.InvariantCulture),
-            Mid = Math.Round(midDistance, 2).ToString(CultureInfo.InvariantCulture),
-            S = points.Count.ToString()
-          }
-        );
       }
 
       foreach (var h in hitPoints)
@@ -324,24 +355,70 @@ namespace MeshCollision
           c.FillRectangle(Brushes.White, h.X, h.Y, 1, 1);
       }
 
-      var sum = hitPoints.Count + examplesPoints.Count;
-      var persent = (float)hitPoints.Count / sum * 100;
-      exampleToAnalythLabel.Text = hitPoints.Count + " из " + sum +". " + persent + "%";
+      var sum1 = hitPoints.Count + examplesPoints.Count;
+      var persent1 = 100 - ((float)hitPoints.Count / sum1 * 100);
+
+      var sum = 0;
+      var persent0 = (double)allPoints.Count / baseCount * 100;
+      var persent = (persent0 + persent1)/2;
+      exampleToAnalythLabel.Text = hitPoints.Count + " из " + sum + ". " + persent + "%";
+
+      executionInformation.Text = @"Done draw 100%";
+
+      analythPictureBox.Invalidate();
+      examplePictureBox.Invalidate();
     }
 
-    private void DrawVisualImage(HashSet<HashSet<Point>> clasters, int pointsInClasterThreshold)
+    private void DrawHallAndCalculateOrientation(HashSet<HashSet<Point>> clasters, int pointsInClasterThreshold,
+      Pen linesPen, int lineWidth, bool showAngles)
     {
-      cuttingPictureBox.Image =
-        new Bitmap(analythPictureBox.Width, analythPictureBox.Height, PixelFormat.Format24bppRgb);
-      var analBitmap = new Bitmap(analythPictureBox.Image);
-      using (var grp = Graphics.FromImage(cuttingPictureBox.Image))
+      examplePictureBox.Image = _clearExample;
+
+      if (pointsInClasterThreshold < 2)
+        pointsInClasterThreshold = 2;
+
+      var g = Graphics.FromImage(analythPictureBox.Image);
+
+      foreach (var points in clasters)
       {
-        grp.FillRectangle(
-          Brushes.White, 0, 0, analythPictureBox.Width, analythPictureBox.Height);
+        if (points.Count < pointsInClasterThreshold)
+          continue;
+
+        var hull = ConcaveHull.Hull.Generate(points.ToList(), Concavity, 1, true);
+
+        foreach (var line in hull)
+        {
+          var npen = new Pen(new SolidBrush(linesPen.Color), lineWidth);
+
+          g.DrawLine(npen, (float) line.nodes[0].x, (float) line.nodes[0].y,
+            (float) line.nodes[1].x, (float) line.nodes[1].y);
+        }
+
+        var maxDistance = GetMaxLine(points, out var maxFirstPoint, out var maxLastPoint);
+        var midDistance = GetMiddleLine(points);
+        var orientation =
+          AngleCalculations.CalculatePointsOrientation(points.ToList(), maxFirstPoint, maxLastPoint, maxDistance);
+
+        if (showAngles)
+        {
+          g.DrawLine(Pens.Black, orientation.FirstPoint, orientation.SecondPoint);          
+          g.DrawString(orientation.Angles, DefaultFont, Brushes.Black, orientation.AnglesPosition);
+        }
+        
+        StatsWriter.Write(new StatsWriter.Stat
+          {
+            Angle = orientation.Angles,
+            Max = Math.Round(maxDistance, 2).ToString(CultureInfo.InvariantCulture),
+            Mid = Math.Round(midDistance, 2).ToString(CultureInfo.InvariantCulture),
+            Spix = points.Count.ToString(),
+            Smm = (points.Count * 0.172f).ToString(CultureInfo.InvariantCulture)
+          }
+        );
       }
-
-      cuttingPictureBox.Location = new Point(cuttingPictureBox.Size.Width + 380, analythPictureBox.Location.Y);
-
+    }
+    
+    private HashSet<Point> GetVisualDrawPoits(HashSet<HashSet<Point>> clasters, int pointsInClasterThreshold)
+    {
       var allPoints = MeshCollideObject.GetPoints(new Bitmap(analythPictureBox.Image), 1);
       var hits = new HashSet<Point>();
 
@@ -350,7 +427,7 @@ namespace MeshCollision
         if (points.Count < pointsInClasterThreshold)
           continue;
 
-        var hulls = ConcaveHull.Hull.Generate(points.ToList(), double.Parse(concaveTextBox.Text), 1, true);
+        var hulls = ConcaveHull.Hull.Generate(points.ToList(), Concavity, 1, true);
 
         foreach (var ex in allPoints)
         {
@@ -362,23 +439,15 @@ namespace MeshCollision
           }
         }
       }
-      using (var grp = Graphics.FromImage(cuttingPictureBox.Image))
-      {
-        foreach (var pt in hits)
-        {
-          grp.FillRectangle(new SolidBrush(analBitmap.GetPixel(pt.X, pt.Y)), pt.X, pt.Y, 1, 1);
-        }
-      }
-
-      cuttingPictureBox.Invalidate();
+      return hits;
     }
 
     private bool PointInRegion(Point point, IEnumerable<ConcaveHull.Line> hull)
     {
       var res = false;
-      var hitidLines = new List<ConcaveHull.Line>();
 
-      foreach (var line in hull)
+      var enumerable = hull as ConcaveHull.Line[] ?? hull.ToArray();
+      foreach (var line in enumerable)
       {
         var p0X = Convert.ToInt32(line.nodes[0].x);
         var p0Y = Convert.ToInt32(line.nodes[0].y);
@@ -392,12 +461,11 @@ namespace MeshCollision
 
         if (Intersects(p0X, p0Y, p1X, p1Y, p2X, p2Y, p3X, p3Y))
         {
-          hitidLines.Add(line);
           res = !res;
         }
       }
 
-      foreach (var line in hull)
+      foreach (var line in enumerable)
       {
         var p0X = Convert.ToInt32(line.nodes[0].x);
         var p0Y = Convert.ToInt32(line.nodes[0].y);
@@ -417,7 +485,7 @@ namespace MeshCollision
       if (res) return false;
 
       var ulRes = false;
-      foreach (var line in hull)
+      foreach (var line in enumerable)
       {
         var p0X = Convert.ToInt32(line.nodes[0].x);
         var p0Y = Convert.ToInt32(line.nodes[0].y);
@@ -566,7 +634,7 @@ namespace MeshCollision
       var rectangle = new Rectangle
       {
         Location = point,
-        Size = new Size(SIZE_OF_PAINT, SIZE_OF_PAINT)
+        Size = new Size(EtalonLineWidth, EtalonLineWidth)
       };
       
       for (var i = 0; i < examplePictureBox.Size.Height; i++)
@@ -587,7 +655,7 @@ namespace MeshCollision
       var rectangle = new Rectangle
       {
         Location = point,
-        Size = new Size(SIZE_OF_PAINT, SIZE_OF_PAINT)
+        Size = new Size(EtalonLineWidth, EtalonLineWidth)
       };
 
       for (var i = 0; i < examplePictureBox.Size.Height; i++)
@@ -603,6 +671,54 @@ namespace MeshCollision
     private void paintModeCheckBox_CheckedChanged(object sender, EventArgs e)
     {
       examplePictureBox_Paint(sender, null);
+    }
+
+    private void saveSettingButton_Click(object sender, EventArgs e)
+    {
+      var element = selectionRangeSlider1.CurrentSelectionElement;
+      var setting = new SettingUnit
+      {
+        ColorMin = element.SelectedMin,
+        ColorMax = element.SelectedMax,
+        L1000 = lValueTrackBar.Value,
+        S1000 = sValueTrackBar.Value,
+
+        ColorSens = ColorSens,
+        ClusterDistance = ClusterDistance,
+        Concavity = Concavity,
+        LineWidth = LineWidth,
+
+        EtalonLineWidth = EtalonLineWidth,
+
+        Points = new HashSet<Point>(_exampleImagePoints)
+      };
+
+      setting.Save(saveFileDialog1);
+    }
+
+    private void loadSettingButton_Click(object sender, EventArgs e)
+    {
+      var setting = SettingUnit.Load();
+      if(setting == null)
+        return;
+
+      var element = selectionRangeSlider1.CurrentSelectionElement;
+      element.SelectedMin = setting.ColorMin;
+      element.SelectedMax = setting.ColorMax;
+      lValueTrackBar.Value = setting.L1000;
+      sValueTrackBar.Value = setting.S1000;
+      selectionRangeSlider1.Invalidate();
+
+      ColorSens = setting.ColorSens;
+      ClusterDistance = setting.ClusterDistance;
+      Concavity = setting.Concavity;
+      LineWidth = setting.LineWidth;
+
+      EtalonLineWidth = setting.EtalonLineWidth;
+
+      if (setting.Points == null) return;
+      _exampleImagePoints.Clear();
+      _exampleImagePoints.AddRange(setting.Points);
     }
   }
 }

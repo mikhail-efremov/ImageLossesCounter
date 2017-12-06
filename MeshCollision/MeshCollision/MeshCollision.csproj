@@ -88,6 +88,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Controlls\SelectionElement.cs" />
+    <Compile Include="SettingUnit.cs" />
     <Compile Include="StatsWriter.cs" />
     <Compile Include="UnsafeBitmap.cs" />
     <EmbeddedResource Include="Form1.resx">

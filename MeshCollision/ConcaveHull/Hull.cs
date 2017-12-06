@@ -76,7 +76,7 @@ namespace ConcaveHull
       var exitLines = new List<Line>();
 
       var convexH = new List<Node>();
-      convexH.AddRange(GrahamScan.convexHull(nodes));
+      convexH.AddRange(GrahamScan.ConvexHull(nodes));
       for (var i = 0; i < convexH.Count - 1; i++)
       {
         exitLines.Add(new Line(convexH[i], convexH[i + 1]));

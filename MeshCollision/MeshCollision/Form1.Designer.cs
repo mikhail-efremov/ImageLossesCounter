@@ -34,7 +34,6 @@ namespace MeshCollision
       this.colorDialog1 = new System.Windows.Forms.ColorDialog();
       this.maxPictureBox = new System.Windows.Forms.PictureBox();
       this.minPictureBox = new System.Windows.Forms.PictureBox();
-      this.button1 = new System.Windows.Forms.Button();
       this.hslCointeinerPictureBox = new System.Windows.Forms.PictureBox();
       this.sValueTrackBar = new System.Windows.Forms.TrackBar();
       this.lValueTrackBar = new System.Windows.Forms.TrackBar();
@@ -50,14 +49,21 @@ namespace MeshCollision
       this.labelTestValues = new System.Windows.Forms.Label();
       this.executionInformation = new System.Windows.Forms.Label();
       this.panel1 = new System.Windows.Forms.Panel();
+      this.loadSettingButton = new System.Windows.Forms.Button();
+      this.saveSettingButton = new System.Windows.Forms.Button();
+      this.label5 = new System.Windows.Forms.Label();
+      this.lineWidthTextBox = new System.Windows.Forms.TextBox();
+      this.buttonVisualDraw = new System.Windows.Forms.Button();
       this.label4 = new System.Windows.Forms.Label();
       this.concaveTextBox = new System.Windows.Forms.TextBox();
       this.clusterDistanceTextBox = new System.Windows.Forms.TextBox();
       this.label2 = new System.Windows.Forms.Label();
       this.paintModeCheckBox = new System.Windows.Forms.CheckBox();
       this.cuttingPictureBox = new System.Windows.Forms.PictureBox();
+      this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
       this.selectionRangeSlider1 = new MeshCollision.Controlls.SelectionRangeSlider();
-      this.buttonVisualDraw = new System.Windows.Forms.Button();
+      this.label6 = new System.Windows.Forms.Label();
+      this.etalonLineWithTextBox = new System.Windows.Forms.TextBox();
       ((System.ComponentModel.ISupportInitialize)(this.maxPictureBox)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.minPictureBox)).BeginInit();
       ((System.ComponentModel.ISupportInitialize)(this.hslCointeinerPictureBox)).BeginInit();
@@ -100,18 +106,6 @@ namespace MeshCollision
       this.minPictureBox.Size = new System.Drawing.Size(28, 28);
       this.minPictureBox.TabIndex = 19;
       this.minPictureBox.TabStop = false;
-      // 
-      // button1
-      // 
-      this.button1.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.button1.Location = new System.Drawing.Point(774, 65);
-      this.button1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-      this.button1.Name = "button1";
-      this.button1.Size = new System.Drawing.Size(112, 35);
-      this.button1.TabIndex = 17;
-      this.button1.Text = "Add";
-      this.button1.UseVisualStyleBackColor = true;
-      this.button1.Click += new System.EventHandler(this.button1_Click_1);
       // 
       // hslCointeinerPictureBox
       // 
@@ -172,7 +166,7 @@ namespace MeshCollision
       // buttonDraw
       // 
       this.buttonDraw.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.buttonDraw.Location = new System.Drawing.Point(894, 65);
+      this.buttonDraw.Location = new System.Drawing.Point(774, 64);
       this.buttonDraw.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.buttonDraw.Name = "buttonDraw";
       this.buttonDraw.Size = new System.Drawing.Size(112, 35);
@@ -231,7 +225,7 @@ namespace MeshCollision
       // 
       this.label3.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
       this.label3.AutoSize = true;
-      this.label3.Location = new System.Drawing.Point(46, 88);
+      this.label3.Location = new System.Drawing.Point(124, 62);
       this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.label3.Name = "label3";
       this.label3.Size = new System.Drawing.Size(88, 20);
@@ -241,10 +235,10 @@ namespace MeshCollision
       // textBoxColorSens
       // 
       this.textBoxColorSens.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.textBoxColorSens.Location = new System.Drawing.Point(136, 85);
+      this.textBoxColorSens.Location = new System.Drawing.Point(214, 59);
       this.textBoxColorSens.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.textBoxColorSens.Name = "textBoxColorSens";
-      this.textBoxColorSens.Size = new System.Drawing.Size(116, 26);
+      this.textBoxColorSens.Size = new System.Drawing.Size(38, 26);
       this.textBoxColorSens.TabIndex = 42;
       this.textBoxColorSens.Text = "100";
       // 
@@ -273,6 +267,12 @@ namespace MeshCollision
       this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
       this.panel1.BackColor = System.Drawing.SystemColors.Window;
+      this.panel1.Controls.Add(this.label6);
+      this.panel1.Controls.Add(this.etalonLineWithTextBox);
+      this.panel1.Controls.Add(this.loadSettingButton);
+      this.panel1.Controls.Add(this.saveSettingButton);
+      this.panel1.Controls.Add(this.label5);
+      this.panel1.Controls.Add(this.lineWidthTextBox);
       this.panel1.Controls.Add(this.buttonVisualDraw);
       this.panel1.Controls.Add(this.label4);
       this.panel1.Controls.Add(this.concaveTextBox);
@@ -283,7 +283,6 @@ namespace MeshCollision
       this.panel1.Controls.Add(this.executionInformation);
       this.panel1.Controls.Add(this.selectionRangeSlider1);
       this.panel1.Controls.Add(this.labelTestValues);
-      this.panel1.Controls.Add(this.button1);
       this.panel1.Controls.Add(this.label3);
       this.panel1.Controls.Add(this.hslCointeinerPictureBox);
       this.panel1.Controls.Add(this.textBoxColorSens);
@@ -301,11 +300,68 @@ namespace MeshCollision
       this.panel1.Size = new System.Drawing.Size(1137, 231);
       this.panel1.TabIndex = 46;
       // 
+      // loadSettingButton
+      // 
+      this.loadSettingButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.loadSettingButton.Location = new System.Drawing.Point(1014, 103);
+      this.loadSettingButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+      this.loadSettingButton.Name = "loadSettingButton";
+      this.loadSettingButton.Size = new System.Drawing.Size(112, 35);
+      this.loadSettingButton.TabIndex = 55;
+      this.loadSettingButton.Text = "Load setting";
+      this.loadSettingButton.UseVisualStyleBackColor = true;
+      this.loadSettingButton.Click += new System.EventHandler(this.loadSettingButton_Click);
+      // 
+      // saveSettingButton
+      // 
+      this.saveSettingButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.saveSettingButton.Location = new System.Drawing.Point(1014, 64);
+      this.saveSettingButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+      this.saveSettingButton.Name = "saveSettingButton";
+      this.saveSettingButton.Size = new System.Drawing.Size(112, 35);
+      this.saveSettingButton.TabIndex = 54;
+      this.saveSettingButton.Text = "Save setting";
+      this.saveSettingButton.UseVisualStyleBackColor = true;
+      this.saveSettingButton.Click += new System.EventHandler(this.saveSettingButton_Click);
+      // 
+      // label5
+      // 
+      this.label5.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.label5.AutoSize = true;
+      this.label5.Location = new System.Drawing.Point(122, 148);
+      this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      this.label5.Name = "label5";
+      this.label5.Size = new System.Drawing.Size(84, 20);
+      this.label5.TabIndex = 53;
+      this.label5.Text = "Line width:";
+      // 
+      // lineWidthTextBox
+      // 
+      this.lineWidthTextBox.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.lineWidthTextBox.Location = new System.Drawing.Point(214, 148);
+      this.lineWidthTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+      this.lineWidthTextBox.Name = "lineWidthTextBox";
+      this.lineWidthTextBox.Size = new System.Drawing.Size(38, 26);
+      this.lineWidthTextBox.TabIndex = 52;
+      this.lineWidthTextBox.Text = "1";
+      // 
+      // buttonVisualDraw
+      // 
+      this.buttonVisualDraw.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.buttonVisualDraw.Location = new System.Drawing.Point(894, 64);
+      this.buttonVisualDraw.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+      this.buttonVisualDraw.Name = "buttonVisualDraw";
+      this.buttonVisualDraw.Size = new System.Drawing.Size(112, 35);
+      this.buttonVisualDraw.TabIndex = 51;
+      this.buttonVisualDraw.Text = "Visual";
+      this.buttonVisualDraw.UseVisualStyleBackColor = true;
+      this.buttonVisualDraw.Click += new System.EventHandler(this.buttonVisualDraw_Click);
+      // 
       // label4
       // 
       this.label4.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
       this.label4.AutoSize = true;
-      this.label4.Location = new System.Drawing.Point(47, 160);
+      this.label4.Location = new System.Drawing.Point(125, 120);
       this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.label4.Name = "label4";
       this.label4.Size = new System.Drawing.Size(81, 20);
@@ -315,20 +371,20 @@ namespace MeshCollision
       // concaveTextBox
       // 
       this.concaveTextBox.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.concaveTextBox.Location = new System.Drawing.Point(136, 157);
+      this.concaveTextBox.Location = new System.Drawing.Point(214, 117);
       this.concaveTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.concaveTextBox.Name = "concaveTextBox";
-      this.concaveTextBox.Size = new System.Drawing.Size(116, 26);
+      this.concaveTextBox.Size = new System.Drawing.Size(38, 26);
       this.concaveTextBox.TabIndex = 49;
       this.concaveTextBox.Text = "0,3";
       // 
       // clusterDistanceTextBox
       // 
       this.clusterDistanceTextBox.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.clusterDistanceTextBox.Location = new System.Drawing.Point(136, 121);
+      this.clusterDistanceTextBox.Location = new System.Drawing.Point(214, 87);
       this.clusterDistanceTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
       this.clusterDistanceTextBox.Name = "clusterDistanceTextBox";
-      this.clusterDistanceTextBox.Size = new System.Drawing.Size(116, 26);
+      this.clusterDistanceTextBox.Size = new System.Drawing.Size(38, 26);
       this.clusterDistanceTextBox.TabIndex = 48;
       this.clusterDistanceTextBox.Text = "10";
       // 
@@ -336,7 +392,7 @@ namespace MeshCollision
       // 
       this.label2.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
       this.label2.AutoSize = true;
-      this.label2.Location = new System.Drawing.Point(42, 124);
+      this.label2.Location = new System.Drawing.Point(114, 90);
       this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
       this.label2.Name = "label2";
       this.label2.Size = new System.Drawing.Size(92, 20);
@@ -348,9 +404,9 @@ namespace MeshCollision
       this.paintModeCheckBox.AutoSize = true;
       this.paintModeCheckBox.Location = new System.Drawing.Point(6, 197);
       this.paintModeCheckBox.Name = "paintModeCheckBox";
-      this.paintModeCheckBox.Size = new System.Drawing.Size(115, 24);
+      this.paintModeCheckBox.Size = new System.Drawing.Size(71, 24);
       this.paintModeCheckBox.TabIndex = 46;
-      this.paintModeCheckBox.Text = "Paint mode";
+      this.paintModeCheckBox.Text = "Paint";
       this.paintModeCheckBox.UseVisualStyleBackColor = true;
       this.paintModeCheckBox.CheckedChanged += new System.EventHandler(this.paintModeCheckBox_CheckedChanged);
       // 
@@ -372,17 +428,26 @@ namespace MeshCollision
       this.selectionRangeSlider1.Size = new System.Drawing.Size(1052, 20);
       this.selectionRangeSlider1.TabIndex = 16;
       // 
-      // buttonVisualDraw
+      // label6
       // 
-      this.buttonVisualDraw.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-      this.buttonVisualDraw.Location = new System.Drawing.Point(1014, 64);
-      this.buttonVisualDraw.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-      this.buttonVisualDraw.Name = "buttonVisualDraw";
-      this.buttonVisualDraw.Size = new System.Drawing.Size(112, 35);
-      this.buttonVisualDraw.TabIndex = 51;
-      this.buttonVisualDraw.Text = "Visual";
-      this.buttonVisualDraw.UseVisualStyleBackColor = true;
-      this.buttonVisualDraw.Click += new System.EventHandler(this.buttonVisualDraw_Click);
+      this.label6.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.label6.AutoSize = true;
+      this.label6.Location = new System.Drawing.Point(78, 180);
+      this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+      this.label6.Name = "label6";
+      this.label6.Size = new System.Drawing.Size(128, 20);
+      this.label6.TabIndex = 57;
+      this.label6.Text = "Etalon line width:";
+      // 
+      // etalonLineWithTextBox
+      // 
+      this.etalonLineWithTextBox.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+      this.etalonLineWithTextBox.Location = new System.Drawing.Point(214, 177);
+      this.etalonLineWithTextBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+      this.etalonLineWithTextBox.Name = "etalonLineWithTextBox";
+      this.etalonLineWithTextBox.Size = new System.Drawing.Size(38, 26);
+      this.etalonLineWithTextBox.TabIndex = 56;
+      this.etalonLineWithTextBox.Text = "1";
       // 
       // Form1
       // 
@@ -415,7 +480,6 @@ namespace MeshCollision
         private System.Windows.Forms.Button buttonLoadImage;
         private System.Windows.Forms.ColorDialog colorDialog1;
     private SelectionRangeSlider selectionRangeSlider1;
-    private System.Windows.Forms.Button button1;
     private System.Windows.Forms.PictureBox hslCointeinerPictureBox;
     private System.Windows.Forms.PictureBox maxPictureBox;
     private System.Windows.Forms.PictureBox minPictureBox;
@@ -440,6 +504,13 @@ namespace MeshCollision
     private System.Windows.Forms.Label label4;
     private System.Windows.Forms.PictureBox cuttingPictureBox;
     private System.Windows.Forms.Button buttonVisualDraw;
+    private System.Windows.Forms.Label label5;
+    private System.Windows.Forms.TextBox lineWidthTextBox;
+    private System.Windows.Forms.Button saveSettingButton;
+    private System.Windows.Forms.Button loadSettingButton;
+    private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+    private System.Windows.Forms.Label label6;
+    private System.Windows.Forms.TextBox etalonLineWithTextBox;
   }
 }
 
